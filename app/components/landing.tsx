@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Landing() {
   return (
     <div>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white">
+      <div className="min-h-screen bg-transparent text-white flex ">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-12">
           <section className="max-w-2xl space-y-8 lg:pr-10">
             <span className="inline-flex rounded-full bg-orange-500/20 px-4 py-2 text-sm font-semibold text-orange-100">
