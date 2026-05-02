@@ -22,7 +22,10 @@ export default function Landing() {
               <button className="inline-flex items-center justify-center rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-orange-400">
                 Comenzar gratis
               </button>
-              <button className="inline-flex items-center justify-center rounded-full border border-slate-300/20 bg-slate-900/70 px-6 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-800">
+              <button
+                className="inline-flex items-center justify-center rounded-full border border-slate-300/20
+              00/70 px-6 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
+              >
                 Ver cómo funciona
               </button>
             </div>

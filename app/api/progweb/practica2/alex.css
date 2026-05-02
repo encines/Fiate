@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+  text-align: center;
+  border-bottom: 5px solid green;
+}
+
+header img {
+  padding: 10px;
+  width: 300px;
+}
+header ul {
+  padding: 0;
+  display: flex;
+  border-top: 2px solid green;
+  justify-content: space-around;
+}
+header ul li {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  margin-top: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+header ul li:first-child {
+  background-color: gray;
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+}
+
+header ul li:last-child {
+  padding: 10px;
+  border-radius: 5px;
+  color: red;
+}
+
+header ul li:nth-child(3) {
+  padding: 10px;
+  border-radius: 5px;
+  color: blue;
+}
+
+section {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 30px 0;
+}
+
+.art1 {
+  width: 60%;
+  text-align: center;
+}
+
+.art1 img {
+  width: 100%;
+  border: 7px solid greenyellow;
+}
+
+.art1 button {
+  padding: 10px 20px;
+  border: none;
+  color: white;
+  background-color: thistle;
+  border-radius: 5px;
+  font-size: large;
+  font-weight: bold;
+}
+
+.art1 div {
+  text-align: justify;
+}
+
+.art1 a {
+  text-decoration: none;
+  color: gray;
+  float: right;
+}
+
+.art2 {
+  width: 30%;
+}
+
+.art2 h3 {
+  color: pink;
+  font-size: 40px;
+  margin-top: 0;
+}
+
+footer {
+  background-color: green;
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+footer div {
+  width: 30%;
+  text-align: center;
+}
+
+footer h4 {
+  color: white;
+  font-size: 20px;
+}

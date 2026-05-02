@@ -1,0 +1,151 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.flex-spaceb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-slogan img {
+  width: 60px;
+}
+
+.logo-slogan h4 {
+  color: #df9a56;
+  font-weight: bold;
+}
+.logo-slogan {
+  padding: 5px 40px 5px 20px;
+}
+
+header nav {
+  background: #de4b8a;
+  padding: 10px;
+}
+
+header nav ul li {
+  display: inline-block;
+  margin: 0 20px;
+}
+
+header nav ul li:first-child a {
+  display: inline-block;
+  background: white;
+  color: #b6ca52;
+  padding: 5px 12px;
+  border-radius: 3px;
+}
+
+header nav ul {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+header nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+section article img {
+  width: 300px;
+  border-radius: 50%;
+  border: 3px solid orange;
+}
+
+section article span {
+  width: 60px;
+  position: absolute;
+  color: #ccc;
+  bottom: 10px;
+  left: 10px;
+  font-size: 8px;
+  text-align: left;
+}
+
+section .imagen {
+  display: inline-block;
+  position: relative;
+  vertical-align: center;
+  margin-right: 4px;
+}
+
+section .texto {
+  width: 50%;
+  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+}
+section article {
+  text-align: center;
+  padding: 40px;
+}
+
+section .texto h2 {
+  color: rgb(97, 171, 214);
+}
+
+section .texto h4 {
+  font-weight: 400;
+  margin: 0;
+}
+
+section .texto p {
+  font-size: 12px;
+  color: lightblue;
+}
+
+section .texto button {
+  background: #b6ca52;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+footer {
+  display: flex;
+  background: #de4b8a;
+  color: #fff;
+  padding: 20px 30px 20px 15px;
+  justify-content: space-between;
+}
+
+footer span {
+  display: block;
+}
+
+footer img {
+  width: 30px;
+  margin-left: 20px;
+}
+
+@media (max-width: 600px) {
+  .logo-slogan {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .logo-slogan img {
+    margin-bottom: 10px;
+  }
+
+  header nav ul li {
+    display: block;
+    margin: 10px 0;
+  }
+
+  section article {
+    padding: 20px;
+  }
+
+  section .texto {
+    width: 100%;
+    margin-top: 20px;
+  }
+}

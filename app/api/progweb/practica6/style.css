@@ -1,0 +1,272 @@
+:root {
+  --bg: #f5f1e8;
+  --bgbrown: #d4ccb8;
+  --blue: #4a6fa5;
+  --blue-dark: #3b5f8a;
+  --gold: #c49a6c;
+  --gold-dark: #a67c52;
+  --red: #c94c4c;
+  --green: #6b8e23;
+  --teal: #3b7a78;
+  --orange: #d98c3f;
+  --text: #2b2b2b;
+}
+body {
+  font-family: "Arial", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: var(--bg);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+.logo img {
+  width: 120px;
+  height: auto;
+}
+.texto-logo {
+  margin-left: 10px;
+}
+.logos {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+header img {
+  height: 50px;
+}
+
+.top {
+  width: 100%;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav ul li {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: bold;
+}
+.navegacion {
+  display: flex;
+  justify-content: center;
+  background-color: var(--bgbrown);
+}
+.inicio {
+  background-color: var(--blue-dark);
+}
+.articulos {
+  background-color: var(--red);
+}
+.tecnica {
+  background-color: var(--orange);
+}
+.historia {
+  background-color: var(--green);
+}
+.foro {
+  background-color: var(--blue);
+}
+.contacto {
+  background-color: var(--gold);
+}
+nav ul li {
+  padding: 10px;
+  color: white;
+}
+
+.principal {
+  padding: 20px;
+  justify-content: column;
+  width: 100%;
+  background-color: white;
+}
+.dos {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 20px;
+}
+.slider {
+  width: 100%;
+  height: auto;
+}
+
+.carta {
+  width: 200px;
+  height: 150px;
+}
+
+aside {
+  width: 100%;
+  margin-top: 0;
+}
+
+.anuncios img {
+  width: 100%;
+  height: auto;
+}
+
+.buscador {
+  background-color: white;
+  width: 100%;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: large;
+  padding: 10px;
+}
+
+.buscar {
+  background-color: var(--blue);
+  padding: 10px 20px;
+  color: white;
+}
+.cajabuscador {
+  padding: 10px;
+  display: flex;
+}
+.buscador2 {
+  padding: 10px;
+  border: 2px solid var(--blue);
+  font-size: large;
+  display: flex;
+  border-radius: 2px;
+  width: 100%;
+}
+
+.buscador2 input {
+  flex: 1;
+}
+
+.buscador2 button {
+  background-color: var(--green);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.publicidad {
+  background-color: var(--gold);
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  font-size: large;
+  display: flex;
+}
+
+.buscador input {
+  padding: 10px;
+  font-size: large;
+}
+
+.anuncios {
+  background-color: white;
+  width: 100%;
+  display: grid;
+  padding: 10px;
+  gap: 15px;
+}
+
+.anuncio1 {
+  background-color: var(--bgbrown);
+  padding: 30px;
+  color: white;
+  font-weight: bold;
+  margin-top: 0;
+
+  font-size: large;
+  grid-column: 1 / 1;
+}
+.lado {
+  width: 60%;
+  padding: 0px 14px 14px 14px;
+  margin-top: 0;
+}
+.anuncio2 {
+  background-color: var(--bgbrown);
+  padding: 30px;
+  color: white;
+  font-weight: bold;
+  font-size: large;
+}
+
+.anuncio3 {
+  background-color: var(--bgbrown);
+  padding: 30px;
+  color: white;
+  font-weight: bold;
+  font-size: large;
+  grid-column: 2 / 1;
+}
+
+.anuncio4 {
+  background-color: var(--bgbrown);
+  padding: 30px;
+  color: white;
+  font-weight: bold;
+  font-size: large;
+  grid-column: 2 / 2;
+}
+
+.categorias {
+  background-color: white;
+  padding: 10px;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: large;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.categorias span {
+  background-color: var(--gold-dark);
+  color: white;
+  padding: 10px 20px;
+}
+
+.categorias p {
+  padding: 5px 0;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--bgbrown);
+  font-size: 14px;
+}
+
+.principal span {
+  color: gray;
+}
+
+.principal h4 {
+  color: var(--gold-dark);
+  font-size: 18px;
+}
+
+.imagen-texto {
+  display: flex;
+  align-items: center;
+}
+
+.principal button {
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}

@@ -1,30 +1,41 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useActionState } from "react";
+import { authenticate } from "../actions/auth";
+
 export default function Login() {
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined,
+  );
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700">
-      <div className="flex min-h-full flex-col w-1/3 justify-center px-6 py-12 lg:px-8 bg-slate-950/90 rounded-3xl shadow-2xl shadow-black/20 backdrop-blur-xl">
+      <div className="flex min-h-full flex-col w-full sm:w-1/3 justify-center px-6 py-12 lg:px-8 bg-slate-950/90 rounded-3xl shadow-2xl shadow-black/20 backdrop-blur-xl m-4">
         <Link href="/" className="text-indigo-400 hover:text-indigo-300">
           Regresar
         </Link>
         <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
           <Image
             src="/logo.png"
-            alt="Your Company"
+            alt="Fiate"
             width={420}
             height={420}
             className="mx-auto h-25 w-auto"
+            priority
           />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
-            Sign in to your account
+            Ingresa a tu cuenta
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form action={formAction} className="space-y-6">
             <div>
               <label className="block text-sm/6 font-medium text-gray-100">
-                Email address
+                Correo electrónico
               </label>
               <div className="mt-2">
                 <input
@@ -32,6 +43,7 @@ export default function Login() {
                   type="email"
                   name="email"
                   required
+                  defaultValue="carlos@example.com"
                   className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                 />
               </div>
@@ -40,14 +52,14 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between">
                 <label className="block text-sm/6 font-medium text-gray-100">
-                  Password
+                  Contraseña
                 </label>
                 <div className="text-sm">
                   <a
                     href="#"
                     className="font-semibold text-indigo-400 hover:text-indigo-300"
                   >
-                    Olvidaste tu contraseña?
+                    ¿Olvidaste tu contraseña?
                   </a>
                 </div>
               </div>
@@ -57,29 +69,35 @@ export default function Login() {
                   type="password"
                   name="password"
                   required
+                  defaultValue="123456"
                   className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                 />
               </div>
             </div>
 
+            {errorMessage && (
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            )}
+
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                disabled={isPending}
+                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:bg-indigo-500/50"
               >
-                Sign in
+                {isPending ? "Ingresando..." : "Ingresar"}
               </button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-400">
-            No estas registrado?{" "}
-            <a
-              href="#"
+            ¿No estás registrado?{" "}
+            <Link
+              href="/register"
               className="font-semibold text-indigo-400 hover:text-indigo-300"
             >
-              Registrate ahora!
-            </a>
+              ¡Regístrate ahora!
+            </Link>
           </p>
         </div>
       </div>
