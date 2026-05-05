@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import { auth } from "../../auth";
 import { revalidatePath } from "next/cache";
 import { AddVehicleSchema } from "../../lib/validations";
+import { discoverMaintenancePlan } from "./discoverMaintenancePlan";
 
 export async function addVehicle(prevState: any, formData: FormData) {
   const session = await auth();
@@ -21,7 +22,7 @@ export async function addVehicle(prevState: any, formData: FormData) {
 
   const parsed = AddVehicleSchema.safeParse(rawData);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const { brand: brandName, model: modelName, year, currentKm, lastServiceKm } = parsed.data;
@@ -79,37 +80,11 @@ export async function addVehicle(prevState: any, formData: FormData) {
       },
     });
 
-    // 5. Autocompletar historial si hay tareas en el catálogo
-    const tasks = await prisma.maintenanceTask.findMany({
-      where: { catalogCarId: catalogCar.id },
-    });
-
-    if (tasks.length > 0) {
-      const historyData = [];
-      const baseDate = new Date();
-      const targetKm = lastServiceKm || currentKm;
-
-      for (const task of tasks) {
-        if (!task.frequencyKm) continue;
-
-        let currentMilestone = task.frequencyKm;
-        while (currentMilestone <= targetKm) {
-          historyData.push({
-            userCarId: newCar.id,
-            taskId: task.id,
-            date: baseDate,
-            kmAtService: currentMilestone,
-            cost: 0,
-          });
-          currentMilestone += task.frequencyKm;
-        }
-      }
-
-      if (historyData.length > 0) {
-        await prisma.serviceHistory.createMany({
-          data: historyData,
-        });
-      }
+    // 5. Autodiscover plan si existe en catálogo o IA
+    try {
+      await discoverMaintenancePlan(newCar.id);
+    } catch (e) {
+      console.warn("No se pudo autodiscurbir el plan al crear:", e);
     }
 
     revalidatePath("/dashboard");

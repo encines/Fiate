@@ -7,7 +7,7 @@ import HeaderIn from "./headerIn";
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
   cars: any[];
-  activeCarId: string | null;
+  activeCarId: string | null | undefined;
   catalogCars: any[];
   userEmail: string;
 }
@@ -22,7 +22,7 @@ export default function ResponsiveLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors">
       {/* Overlay para cerrar el menú en móvil */}
       {isSidebarOpen && (
         <div 
@@ -46,26 +46,26 @@ export default function ResponsiveLayout({
 
       {/* Contenido Principal */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <header className="sticky top-0 z-30 border-b border-zinc-700/80 bg-zinc-950/90 px-4 py-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-950/90 px-4 py-4 backdrop-blur sm:px-6 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Botón Hamburguesa */}
               <button 
                 onClick={() => setIsSidebarOpen(true)}
-                className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white lg:hidden"
+                className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white lg:hidden transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
               </button>
               
               <div className="flex flex-col">
                 <h1 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">AutoLedger</h1>
-                <span className="text-sm font-semibold text-white">Dashboard</span>
+                <span className="text-sm font-semibold text-zinc-900 dark:text-white">Dashboard</span>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               <span className="hidden text-xs text-zinc-400 sm:block">{userEmail}</span>
-              <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-zinc-800">
+              <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-zinc-200 dark:ring-zinc-800 transition-colors">
                 {userEmail[0]?.toUpperCase()}
               </div>
             </div>

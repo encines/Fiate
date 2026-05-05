@@ -44,12 +44,12 @@ export default function AddVehicleModal({ catalogCars }: AddVehicleModalProps) {
 
       {isOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-700/80 bg-zinc-900 shadow-2xl p-6">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-white">Agregar Nuevo Vehículo</h3>
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Agregar Nuevo Vehículo</h3>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="text-zinc-400 hover:text-white"
+                className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               >
                 ✕
               </button>
@@ -58,29 +58,29 @@ export default function AddVehicleModal({ catalogCars }: AddVehicleModalProps) {
             <form action={formAction} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-sm font-medium text-zinc-300">Marca</label>
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Marca</label>
                   <input 
                     type="text" 
                     name="brand" 
                     required
                     placeholder="Ej: Nissan"
-                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-sm font-medium text-zinc-300">Modelo</label>
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Modelo</label>
                   <input 
                     type="text" 
                     name="model" 
                     required
                     placeholder="Ej: Versa"
-                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-300">Año</label>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Año</label>
                 <input 
                   type="number" 
                   name="year" 
@@ -88,29 +88,29 @@ export default function AddVehicleModal({ catalogCars }: AddVehicleModalProps) {
                   placeholder="Ej: 2020"
                   min="1900"
                   max={new Date().getFullYear() + 1}
-                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-300">Kilometraje Actual (km)</label>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Kilometraje Actual (km)</label>
                 <input 
                   type="number" 
                   name="currentKm" 
                   required
                   placeholder="Ej: 50000"
                   min="0"
-                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-300">Último Servicio Realizado (Kilometraje)</label>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Último Servicio Realizado (Kilometraje)</label>
                 <input 
                   type="number" 
                   name="lastServiceKm" 
                   placeholder="Ej: 40000 (Opcional)"
-                  className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
                 <p className="mt-1 text-xs text-zinc-500">Usaremos esto para marcar qué tareas del manual ya deberías tener listas.</p>
               </div>
@@ -123,7 +123,7 @@ export default function AddVehicleModal({ catalogCars }: AddVehicleModalProps) {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-semibold text-zinc-300 hover:bg-zinc-800"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 >
                   Cancelar
                 </button>

@@ -80,8 +80,60 @@ const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
     { name: "Líquido de frenos", km: 40000 },
     { name: "Bujías", km: 100000 },
     { name: "Aceite de transmisión CVT", km: 60000 },
+  ],
+  "honda civic": [
+    { name: "Aceite de motor y filtro", km: 10000 },
+    { name: "Rotación de neumáticos", km: 10000 },
+    { name: "Filtro de aire del motor", km: 30000 },
+    { name: "Filtro de cabina (A/C)", km: 30000 },
+    { name: "Inspección de frenos", km: 20000 },
+    { name: "Cambio de líquido de frenos", km: 40000 },
+    { name: "Bujías de encendido", km: 100000 },
+    { name: "Ajuste de válvulas", km: 120000 },
+    { name: "Inspección de bandas", km: 20000 },
+  ],
+  "lamborghini urus": [
+    { name: "Cambio de aceite y filtro", km: 15000 },
+    { name: "Filtro de aire", km: 30000 },
+    { name: "Bujías", km: 60000 },
+    { name: "Líquido de frenos", km: 30000 },
+    { name: "Inspección de frenos cerámicos", km: 15000 },
+    { name: "Aceite de diferencial", km: 60000 },
+  ],
+  "bmw 3 series": [
+    { name: "Aceite de motor y filtro", km: 12000 },
+    { name: "Filtro de microaire (Cabina)", km: 24000 },
+    { name: "Líquido de frenos", km: 24000 },
+    { name: "Bujías", km: 60000 },
+    { name: "Inspección de vehículo", km: 24000 },
+  ],
+  "mercedes-benz c-class": [
+    { name: "Servicio A (Aceite y Filtro)", km: 15000 },
+    { name: "Servicio B (Filtros y Líquidos)", km: 30000 },
+    { name: "Líquido de frenos", km: 30000 },
+    { name: "Bujías", km: 75000 },
+  ],
+  "audi a4": [
+    { name: "Cambio de aceite", km: 15000 },
+    { name: "Filtro de polen", km: 30000 },
+    { name: "Bujías", km: 60000 },
+    { name: "Aceite de transmisión S-Tronic", km: 60000 },
+    { name: "Líquido de frenos", km: 30000 },
+  ],
+  "generic": [
+    { name: "Cambio de aceite y filtro", km: 10000 },
+    { name: "Filtro de aire", km: 20000 },
+    { name: "Filtro de cabina", km: 20000 },
+    { name: "Rotación de llantas", km: 10000 },
+    { name: "Líquido de frenos", km: 40000 },
+    { name: "Bujías", km: 60000 },
+    { name: "Anticongelante", km: 80000 },
   ]
 };
+
+import { getAIPlanForCar } from "../../lib/gemini";
+
+// Base de datos de conocimientos... (resto de la base omitida por brevedad en el prompt, pero se mantiene en el archivo)
 
 export async function discoverMaintenancePlan(userCarId: string) {
   try {
@@ -94,57 +146,75 @@ export async function discoverMaintenancePlan(userCarId: string) {
 
     const brandName = userCar.catalogCar.model.brand.name.toLowerCase();
     const modelName = userCar.catalogCar.model.name.toLowerCase();
+    const year = userCar.catalogCar.year;
     const fullKey = `${brandName} ${modelName}`;
     
-    // 1. Intentar buscar en la nueva Enciclopedia Profesional (Base de Datos)
+    let plan: { name: string, km: number }[] | null = null;
+    let source = "";
+
+    // 1. Intentar buscar en la Base de Datos Local primero (Catálogo editado)
     let catalogEntry = await prisma.maintenanceCatalog.findUnique({
       where: { key: fullKey }
     });
 
-    // Búsqueda difusa si no es exacta (ej. "Nissan Versa 2025" -> "nissan versa")
-    if (!catalogEntry) {
-      catalogEntry = await prisma.maintenanceCatalog.findFirst({
-        where: {
-          OR: [
-            { key: { contains: modelName } },
-            { key: { contains: brandName } }
-          ]
-        }
-      });
-    }
-
-    let plan: { name: string, km: number }[] | null = null;
-
     if (catalogEntry) {
       plan = JSON.parse(catalogEntry.tasksJson);
+      source = "la base de datos local";
     } else {
-      // Fallback a la base de conocimientos antigua si no está en la DB
-      plan = AI_KNOWLEDGE_BASE[fullKey] || 
-             Object.entries(AI_KNOWLEDGE_BASE).find(([key]) => fullKey.includes(key))?.[1] || null;
+      // 2. Intentar con la IA de Gemini (Búsqueda en tiempo real)
+      console.log("GOOGLE_API_KEY presente:", !!process.env.GOOGLE_API_KEY);
+      
+      if (process.env.GOOGLE_API_KEY) {
+        try {
+          console.log(`Buscando plan con Gemini para: ${fullKey} ${year}`);
+          plan = await getAIPlanForCar(brandName, modelName, year);
+          
+          // Guardar en la DB para futuras consultas (Cache)
+          if (plan) {
+            await prisma.maintenanceCatalog.create({
+              data: {
+                key: fullKey,
+                tasksJson: JSON.stringify(plan)
+              }
+            });
+            source = "Inteligencia Artificial (Gemini)";
+          }
+        } catch (aiError) {
+          console.error("Gemini falló, usando base estática:", aiError);
+        }
+      }
+
+      // 3. Fallback a la base de conocimientos estática si Gemini falla o no hay API KEY
+      if (!plan) {
+        plan = AI_KNOWLEDGE_BASE[fullKey] || 
+               Object.entries(AI_KNOWLEDGE_BASE).find(([key]) => fullKey.includes(key))?.[1] || 
+               AI_KNOWLEDGE_BASE["generic"];
+        source = "el catálogo estático de respaldo";
+      }
     }
 
     if (!plan) {
       return { error: `La IA aún no tiene el plan específico para ${brandName} ${modelName}.` };
     }
 
-    // Limpiar tareas existentes
+    // Limpiar tareas existentes para este AUTO específico
     await prisma.maintenanceTask.deleteMany({
-      where: { catalogCarId: userCar.catalogCarId }
+      where: { userCarId: userCarId }
     });
 
-    // Crear las nuevas tareas
+    // Crear las nuevas tareas vinculadas al AUTO del usuario
     await Promise.all(plan.map(task => 
       prisma.maintenanceTask.create({
         data: {
           name: task.name,
           frequencyKm: task.km,
-          catalogCarId: userCar.catalogCarId
+          userCarId: userCarId
         }
       })
     ));
 
     revalidatePath("/plan");
-    return { success: true, message: `Plan para ${brandName} ${modelName} generado exitosamente desde el catálogo.` };
+    return { success: true, message: `Plan para ${brandName} ${modelName} generado exitosamente desde ${source}.` };
   } catch (error) {
     console.error(error);
     return { error: "Error durante el descubrimiento por IA." };

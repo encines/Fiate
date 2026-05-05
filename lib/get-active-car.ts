@@ -11,6 +11,7 @@ export async function getActiveCarData() {
     include: {
       cars: {
         include: {
+          tasks: true,
           catalogCar: {
             include: {
               model: {
@@ -18,11 +19,12 @@ export async function getActiveCarData() {
               },
             },
           },
-          history: {
-            orderBy: {
-              date: "desc",
+            history: {
+              orderBy: {
+                date: "desc",
+              },
             },
-          },
+            maintenanceChecks: true,
         },
       },
     },

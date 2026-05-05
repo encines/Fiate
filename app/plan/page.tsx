@@ -22,9 +22,9 @@ export default async function PlanPage() {
           catalogCar: {
             include: {
               model: { include: { brand: true } },
-              tasks: true,
             },
           },
+          tasks: true,
           history: {
             include: { task: true },
             orderBy: { date: "desc" },
@@ -58,8 +58,8 @@ export default async function PlanPage() {
         </div>
       ) : (
         <MaintenancePlanTable 
-          tasks={car.catalogCar.tasks || []} 
-          history={(car as any).maintenanceChecks || []} 
+          tasks={car.tasks || []} 
+          history={[...(car.history || []), ...(car.maintenanceChecks || [])] as any} 
           currentKm={car.currentKm} 
           userCarId={car.id} 
         />

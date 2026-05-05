@@ -58,39 +58,7 @@ async function main() {
     data: { year: 2015, engine: '1.8L', modelId: corolla.id },
   })
 
-  // Crear Tareas de Mantenimiento genéricas por auto (simulado de manual)
-  
-  const bmwTasks = await Promise.all([
-    prisma.maintenanceTask.create({ data: { name: 'Cambio de aceite', frequencyKm: 10000, catalogCarId: bmwCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Alineación y balanceo', frequencyKm: 15000, catalogCarId: bmwCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Llantas', frequencyKm: 40000, catalogCarId: bmwCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Frenos', frequencyKm: 30000, catalogCarId: bmwCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Cambio de filtros', frequencyKm: 20000, catalogCarId: bmwCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Afinación', frequencyKm: 25000, catalogCarId: bmwCatalog.id } }),
-  ])
-
-  const fiatTasks = await Promise.all([
-    prisma.maintenanceTask.create({ data: { name: 'Cambio de aceite y filtro de aceite', frequencyKm: 10000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Sustitución de filtro de aire', frequencyKm: 10000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Control de alineado y rotación', frequencyKm: 10000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Sustitución de filtro antipolen', frequencyKm: 20000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Sustitución de bujías', frequencyKm: 40000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Sustitución de filtro de combustible', frequencyKm: 40000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Correa de distribución', frequencyKm: 60000, catalogCarId: fiatCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Sustitución de líquido de frenos', frequencyKm: 60000, catalogCarId: fiatCatalog.id } }),
-  ])
-
-  // Nuevas Tareas para Nissan March
-  await Promise.all([
-    prisma.maintenanceTask.create({ data: { name: 'Cambio de aceite', frequencyKm: 10000, catalogCarId: nissanCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Afinación', frequencyKm: 20000, catalogCarId: nissanCatalog.id } }),
-  ])
-
-  // Nuevas Tareas para Toyota Corolla
-  await Promise.all([
-    prisma.maintenanceTask.create({ data: { name: 'Cambio de aceite sintético', frequencyKm: 15000, catalogCarId: toyotaCatalog.id } }),
-    prisma.maintenanceTask.create({ data: { name: 'Revisión General', frequencyKm: 30000, catalogCarId: toyotaCatalog.id } }),
-  ])
+  // Tareas de mantenimiento removidas del seed porque ahora se asocian a UserCar y el usuario no tiene autos por defecto.
 
   // * Ya no asignamos vehículos al usuario por defecto para que comience con el garaje vacío *
 

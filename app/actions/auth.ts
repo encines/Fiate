@@ -16,7 +16,7 @@ export async function authenticate(
 
   const parsed = LoginSchema.safeParse(rawData);
   if (!parsed.success) {
-    return parsed.error.errors[0].message;
+    return parsed.error.issues[0].message;
   }
 
   try {

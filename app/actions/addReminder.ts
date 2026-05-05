@@ -20,7 +20,7 @@ export async function addReminder(prevState: any, formData: FormData) {
 
   const parsed = ReminderSchema.safeParse(rawData);
   if (!parsed.success) {
-    const errorMessage = parsed.error.errors[0]?.message || "Datos del recordatorio inválidos.";
+    const errorMessage = parsed.error.issues[0]?.message || "Datos del recordatorio inválidos.";
     return { error: errorMessage };
   }
 

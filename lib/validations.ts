@@ -45,3 +45,18 @@ export const ReminderSchema = z.object({
   detail: z.string().optional(),
 });
 
+export const EditServiceSchema = z.object({
+  serviceId: z.string().min(1, "ID de servicio inválido."),
+  customName: z.string().min(2, "El nombre del servicio debe tener al menos 2 caracteres."),
+  kmAtService: z.coerce.number().int().min(0, "El kilometraje no puede ser negativo."),
+  cost: z.coerce.number().min(0, "El costo no puede ser negativo.").optional().default(0),
+  date: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const AddMaintenanceTaskSchema = z.object({
+  userCarId: z.string().min(1, "ID de vehículo inválido."),
+  name: z.string().min(2, "El nombre de la tarea debe tener al menos 2 caracteres."),
+  frequencyKm: z.coerce.number().int().min(1000, "La frecuencia mínima es de 1,000 km."),
+});
+

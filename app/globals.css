@@ -11,11 +11,20 @@
   --font-sans: var(--font-outfit), Arial, sans-serif;
 }
 
+@custom-variant dark (&:is(.dark *));
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Ignorar el prefer scheme nativo para confiar en la clase .dark de next-themes */
+}
+
+:root {
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #09090b; /* zinc-950 */
+}
+
+.dark {
+  --background: #09090b; /* zinc-950 */
+  --foreground: #fafafa; /* zinc-50 */
 }
 
 body {
@@ -31,14 +40,14 @@ body {
 
 @layer utilities {
   .view-shell {
-    @apply mx-auto w-full max-w-[1320px] p-6 sm:p-8;
+    @apply mx-auto w-full max-w-[1320px] p-6 sm:p-8 transition-colors;
   }
 
   .glass-panel {
-    @apply rounded-3xl border border-zinc-700/80 bg-zinc-900/80 shadow-xl shadow-black/30 backdrop-blur;
+    @apply rounded-3xl border border-zinc-200 dark:border-zinc-700/80 bg-white/60 dark:bg-zinc-900/80 shadow-xl shadow-zinc-200/50 dark:shadow-black/30 backdrop-blur transition-colors;
   }
 
   .soft-card {
-    @apply rounded-2xl border border-zinc-700/80 bg-zinc-950/65 transition-all hover:-translate-y-0.5 hover:border-indigo-400/40;
+    @apply rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50/80 dark:bg-zinc-950/65 transition-all hover:-translate-y-0.5 hover:border-indigo-300 dark:hover:border-indigo-400/40;
   }
 }

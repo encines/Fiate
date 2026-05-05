@@ -18,7 +18,7 @@ export async function editVehicle(prevState: any, formData: FormData) {
 
   const parsed = EditVehicleSchema.safeParse(rawData);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const { userCarId, color } = parsed.data;

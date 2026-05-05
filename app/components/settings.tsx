@@ -13,9 +13,10 @@ const preferences = [
 
 interface SettingsProps {
   cars?: any[];
+  car?: any;
 }
 
-export default function Settings({ cars = [] }: SettingsProps) {
+export default function Settings({ cars = [], car }: SettingsProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [carToDelete, setCarToDelete] = useState<{ id: string, name: string } | null>(null);

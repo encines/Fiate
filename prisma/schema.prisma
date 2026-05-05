@@ -78,7 +78,6 @@ model CatalogCar {
   trim     String?           // e.g., M Sport
   modelId  String
   model    CarModel          @relation(fields: [modelId], references: [id])
-  tasks    MaintenanceTask[]
   userCars UserCar[]
 
   @@unique([modelId, year])
@@ -89,8 +88,8 @@ model MaintenanceTask {
   name         String           // e.g., Cambio de aceite, Afinación
   frequencyKm  Int?             // e.g., 10000
   frequencyMo  Int?             // e.g., 6 (months)
-  catalogCarId String
-  catalogCar   CatalogCar       @relation(fields: [catalogCarId], references: [id])
+  userCarId    String
+  userCar      UserCar          @relation(fields: [userCarId], references: [id], onDelete: Cascade)
   history      ServiceHistory[]
   maintenanceChecks MaintenanceCheck[]
 }
@@ -107,6 +106,7 @@ model UserCar {
   vin          String?
   currentKm    Int              @default(0)
   
+  tasks        MaintenanceTask[]
   history      ServiceHistory[]
   reminders    Reminder[]
   maintenanceChecks MaintenanceCheck[]
