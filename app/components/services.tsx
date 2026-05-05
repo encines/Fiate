@@ -11,9 +11,10 @@ export default function Services({ history = [] }: { history?: any[] }) {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [activeFilter, setActiveFilter] = useState("Todos");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   
   const itemsPerPage = 5;
-  const totalPages = Math.ceil(history.length / itemsPerPage);
   
   // Calcular métricas
   const currentYear = new Date().getFullYear();
@@ -25,11 +26,6 @@ export default function Services({ history = [] }: { history?: any[] }) {
 
   const totalSpendThisYear = thisYearServices.reduce((sum, item) => sum + (item.cost || 0), 0);
 
-  // Obtener items de la página actual
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = history.slice(indexOfFirstItem, indexOfLastItem);
-
   // Análisis de Gastos por Categoría
   const categories = [
     { name: "Motor", keywords: ["aceite", "filtro", "bujía", "bujia", "anticongelante", "motor"], color: "bg-indigo-500" },
@@ -37,6 +33,24 @@ export default function Services({ history = [] }: { history?: any[] }) {
     { name: "Llantas", keywords: ["llanta", "neumatico", "rotacion", "alineacion", "balanceo"], color: "bg-emerald-500" },
     { name: "Otros", keywords: [], color: "bg-zinc-500" },
   ];
+
+  const filteredHistory = history.filter(item => {
+    if (activeFilter === "Todos") return true;
+    const name = (item.customName || "").toLowerCase();
+    if (activeFilter === "Otros") {
+       return !categories.slice(0, 3).some(c => c.keywords.some(k => name.includes(k)));
+    }
+    const cat = categories.find(c => c.name === activeFilter);
+    if (!cat) return true;
+    return cat.keywords.some(k => name.includes(k));
+  });
+
+  const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
+
+  // Obtener items de la página actual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredHistory.slice(indexOfFirstItem, indexOfLastItem);
 
   const expenseBreakdown = categories.map(cat => {
     const total = history
@@ -61,11 +75,36 @@ export default function Services({ history = [] }: { history?: any[] }) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-            Filtrar
-          </button>
-          <button className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+          <div className="relative">
+            <button 
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              {activeFilter === "Todos" ? "Filtrar" : activeFilter}
+            </button>
+            {showFilterMenu && (
+              <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50">
+                {["Todos", ...categories.map(c => c.name)].map((filterOption) => (
+                  <button
+                    key={filterOption}
+                    onClick={() => {
+                      setActiveFilter(filterOption);
+                      setCurrentPage(1);
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
+                  >
+                    {filterOption}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
             Exportar PDF
           </button>
@@ -138,7 +177,6 @@ export default function Services({ history = [] }: { history?: any[] }) {
                   <p className="font-bold text-zinc-900 dark:text-white">
                     {new Date(item.date).toLocaleDateString('es-ES', { month: 'short', day: '2-digit', year: 'numeric' })}
                   </p>
-                  <p className="text-sm text-zinc-500">Auto #{item.userCarId.slice(-4)}</p>
                 </div>
 
                 {/* Service Type */}
@@ -171,9 +209,6 @@ export default function Services({ history = [] }: { history?: any[] }) {
 
                 {/* Actions */}
                 <div className="flex justify-end items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
-                  </div>
                   <button 
                     onClick={() => setSelectedService(item)}
                     className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-2 text-sm font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"

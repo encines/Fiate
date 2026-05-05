@@ -27,8 +27,8 @@ export default async function Reminders({ activeCar }: RemindersProps) {
     <div className="view-shell text-zinc-100 space-y-6">
       <section className="glass-panel p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Recordatorios</h1>
-          <p className="mt-2 text-zinc-400">
+          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-white">Recordatorios</h1>
+          <p className="mt-2 text-zinc-500 dark:text-zinc-500">
             Mantén al día trámites, pagos y tareas importantes de tu auto.
           </p>
         </div>

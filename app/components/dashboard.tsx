@@ -7,20 +7,23 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
   
   // Lógica de Health Score Premium
   const calculateHealth = () => {
-    if (!activeCar || !activeCar.catalogCar?.tasks) return 100;
+    if (!activeCar || !activeCar.tasks || activeCar.tasks.length === 0) return 100;
     
-    const tasks = activeCar.catalogCar.tasks;
+    const tasks = activeCar.tasks;
     const checks = activeCar.maintenanceChecks || [];
     const currentKm = activeCar.currentKm;
     
-    // Tareas que ya deberían estar hechas
-    const dueTasks = tasks.filter((t: any) => t.frequencyKm && t.frequencyKm <= currentKm);
-    if (dueTasks.length === 0) return 100;
+    let totalExpectedChecks = 0;
+    tasks.forEach((t: any) => {
+      if (t.frequencyKm && t.frequencyKm > 0) {
+        totalExpectedChecks += Math.floor(currentKm / t.frequencyKm);
+      }
+    });
+
+    if (totalExpectedChecks === 0) return 100;
     
-    // Tareas completadas (únicas por hito)
     const completedCount = checks.length;
-    // Estimación: tareas vencidas vs completadas
-    const score = Math.max(0, Math.min(100, Math.round((completedCount / dueTasks.length) * 100)));
+    const score = Math.max(0, Math.min(100, Math.round((completedCount / totalExpectedChecks) * 100)));
     return score;
   };
 
@@ -54,7 +57,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
     },
     {
       label: "Próximo Servicio",
-      value: activeCar?.catalogCar?.tasks?.[0] ? `${activeCar.catalogCar.tasks[0].frequencyKm.toLocaleString()} km` : "N/A",
+      value: activeCar?.tasks?.[0] ? `${activeCar.tasks[0].frequencyKm?.toLocaleString()} km` : "N/A",
       meta: "estimado",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
       color: "text-amber-400",
@@ -115,7 +118,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
               <div className="absolute inset-0 bg-indigo-500/5 rounded-[40px] blur-2xl"></div>
               <div className="relative h-full w-full rounded-[32px] bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 flex items-center justify-center">
                 <Image
-                  src="/march.png"
+                  src={activeCar?.imageUrl || "/march.png"}
                   alt="Vehículo"
                   width={400}
                   height={250}

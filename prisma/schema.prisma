@@ -105,11 +105,36 @@ model UserCar {
   licensePlate String?
   vin          String?
   currentKm    Int              @default(0)
+  imageUrl     String?
   
   tasks        MaintenanceTask[]
   history      ServiceHistory[]
   reminders    Reminder[]
   maintenanceChecks MaintenanceCheck[]
+  documents    CarDocument[]
+  fuelLogs     FuelLog[]
+}
+
+model CarDocument {
+  id           String   @id @default(cuid())
+  userCarId    String
+  userCar      UserCar  @relation(fields: [userCarId], references: [id], onDelete: Cascade)
+  type         String   // Seguro, Tarjeta, Verificación, Factura, Otros
+  name         String
+  imageUrl     String?  @default("") // Base64
+  expiryDate   DateTime?
+  createdAt    DateTime @default(now())
+}
+
+model FuelLog {
+  id           String   @id @default(cuid())
+  userCarId    String
+  userCar      UserCar  @relation(fields: [userCarId], references: [id], onDelete: Cascade)
+  date         DateTime @default(now())
+  km           Int
+  liters       Float
+  totalCost    Float
+  createdAt    DateTime @default(now())
 }
 
 model ServiceHistory {

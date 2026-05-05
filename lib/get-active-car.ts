@@ -58,6 +58,8 @@ export async function getActiveCarData() {
     model: c.catalogCar.model.name,
     brand: c.catalogCar.model.brand.name,
     year: c.catalogCar.year,
+    imageUrl: c.imageUrl,
+    licensePlate: c.licensePlate,
   }));
 
   return {

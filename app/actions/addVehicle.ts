@@ -71,12 +71,27 @@ export async function addVehicle(prevState: any, formData: FormData) {
       },
     });
 
+    // Lógica para imagen (Base64)
+    const imageFile = formData.get("image") as File;
+    let imageUrl = null;
+    
+    if (imageFile && imageFile.size > 0) {
+      try {
+        const buffer = await imageFile.arrayBuffer();
+        const base64Image = Buffer.from(buffer).toString('base64');
+        imageUrl = `data:${imageFile.type};base64,${base64Image}`;
+      } catch (e) {
+        console.error("Error al procesar la imagen:", e);
+      }
+    }
+
     // 4. Crear el Auto del Usuario
     const newCar = await prisma.userCar.create({
       data: {
         userId: user.id,
         catalogCarId: catalogCar.id,
         currentKm,
+        imageUrl,
       },
     });
 
