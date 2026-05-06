@@ -81,10 +81,10 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
     <aside className="w-64 h-full border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white flex-shrink-0 flex flex-col transition-colors">
       <div className="sticky top-0 p-6 flex flex-col h-screen">
         <div className="mb-8 flex items-center gap-3 px-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-transparent overflow-hidden">
+            <img src="/screen.png" alt="Fiate Logo" className="h-full w-full object-contain" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Fiate</span>
+          <span className="text-2xl font-black tracking-tighter text-zinc-900 dark:text-white">Fiate</span>
         </div>
 
         <div className="space-y-6">

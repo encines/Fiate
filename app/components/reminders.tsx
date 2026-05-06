@@ -24,11 +24,11 @@ export default async function Reminders({ activeCar }: RemindersProps) {
   });
 
   return (
-    <div className="view-shell text-zinc-100 space-y-6">
-      <section className="glass-panel p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="view-shell space-y-6">
+      <section className="glass-panel p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 rounded-[24px]">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-white">Recordatorios</h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-500">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Recordatorios</h1>
+          <p className="mt-1 text-zinc-500 dark:text-zinc-400">
             Mantén al día trámites, pagos y tareas importantes de tu auto.
           </p>
         </div>
@@ -36,7 +36,7 @@ export default async function Reminders({ activeCar }: RemindersProps) {
       </section>
 
       {reminders.length === 0 ? (
-        <div className="glass-panel p-12 text-center">
+        <div className="glass-panel p-12 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-[24px]">
           <p className="text-zinc-400 italic">No tienes recordatorios activos.</p>
           <p className="text-sm text-zinc-500 mt-2">Crea uno nuevo para no olvidar trámites importantes.</p>
         </div>
@@ -48,21 +48,23 @@ export default async function Reminders({ activeCar }: RemindersProps) {
             return (
               <article
                 key={item.id}
-                className="glass-panel rounded-3xl p-5 group relative overflow-hidden"
+                className="glass-panel rounded-[24px] p-6 group relative overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-md"
               >
-                <div className="flex items-center justify-between">
-                  <h2 className="font-medium">{item.title}</h2>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    isNear ? "bg-rose-500/15 text-rose-300" : "bg-indigo-500/15 text-indigo-300"
+                <div className="flex items-center justify-between gap-4">
+                  <h2 className="font-bold text-lg text-zinc-900 dark:text-white truncate">{item.title}</h2>
+                  <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                    isNear 
+                      ? "bg-rose-500/10 text-rose-500" 
+                      : "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400"
                   }`}>
                     {isNear ? "Urgente" : "Pendiente"}
                   </span>
                 </div>
-                <p className="mt-4 text-sm text-zinc-300 flex items-center gap-2">
-                  <span className="text-zinc-500">Vence:</span> {formatDate(item.date)}
+                <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
+                  <span className="font-semibold text-zinc-400 uppercase text-[10px] tracking-widest">Vence:</span> {formatDate(item.date)}
                 </p>
                 {item.detail && (
-                  <p className="mt-2 text-sm text-zinc-400">{item.detail}</p>
+                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500 italic line-clamp-2">{item.detail}</p>
                 )}
                 
                 <form 

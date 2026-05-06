@@ -14,7 +14,7 @@ export default async function SettingsPage() {
       catalogCars={data?.catalogCars || []}
       userEmail={session?.user?.email || "Usuario"}
     >
-      <Settings car={data?.activeCar} />
+      <Settings cars={data?.cars || []} car={data?.activeCar} />
     </ResponsiveLayout>
   );
 }

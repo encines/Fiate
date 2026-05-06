@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { deleteService } from "../actions/deleteService";
 import { editService } from "../actions/editService";
 
-export default function Services({ history = [] }: { history?: any[] }) {
+export default function Services({ car }: { car: any }) {
+  const history = car?.history || [];
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -13,16 +14,18 @@ export default function Services({ history = [] }: { history?: any[] }) {
   const [isPending, startTransition] = useTransition();
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [showLightbox, setShowLightbox] = useState<string | null>(null);
   
   const itemsPerPage = 5;
   
   // Calcular métricas
   const currentYear = new Date().getFullYear();
   
-  const thisYearServices = history.filter(item => {
+  const thisYearServices = useMemo(() => history.filter(item => {
     const d = new Date(item.date);
     return d.getFullYear() === currentYear;
-  });
+  }), [history, currentYear]);
+  console.log('Memoized thisYearServices:', thisYearServices);
 
   const totalSpendThisYear = thisYearServices.reduce((sum, item) => sum + (item.cost || 0), 0);
 
@@ -52,7 +55,7 @@ export default function Services({ history = [] }: { history?: any[] }) {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredHistory.slice(indexOfFirstItem, indexOfLastItem);
 
-  const expenseBreakdown = categories.map(cat => {
+  const expenseBreakdown = useMemo(() => categories.map(cat => {
     const total = history
       .filter(item => {
         const name = (item.customName || "").toLowerCase();
@@ -60,56 +63,68 @@ export default function Services({ history = [] }: { history?: any[] }) {
       })
       .reduce((sum, item) => sum + (item.cost || 0), 0);
     return { ...cat, total };
-  }).filter(c => c.total > 0);
+  }).filter(c => c.total > 0), [categories, history]);
+  console.log('Memoized expenseBreakdown:', expenseBreakdown);
 
   const maxExpense = Math.max(...expenseBreakdown.map(c => c.total), 1);
 
+  const handlePrintReport = () => {
+    document.body.classList.add('printing-report');
+    window.print();
+    // Un pequeño delay para asegurar que el diálogo de impresión capturó el estado
+    setTimeout(() => {
+      document.body.classList.remove('printing-report');
+    }, 500);
+  };
+
   return (
     <div className="view-shell text-zinc-900 dark:text-zinc-100 space-y-8 p-8 transition-colors">
-      {/* Header with Title and Global Actions */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Historial de Servicios</h1>
-          <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-            Revisa mantenimientos pasados y reparaciones de tu flota.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <button 
-              onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-              {activeFilter === "Todos" ? "Filtrar" : activeFilter}
-            </button>
-            {showFilterMenu && (
-              <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50">
-                {["Todos", ...categories.map(c => c.name)].map((filterOption) => (
-                  <button
-                    key={filterOption}
-                    onClick={() => {
-                      setActiveFilter(filterOption);
-                      setCurrentPage(1);
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
-                  >
-                    {filterOption}
-                  </button>
-                ))}
-              </div>
-            )}
+      <div className="no-print space-y-8">
+        {/* Header with Title and Global Actions */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Historial de Servicios</h1>
+            <p className="mt-1 text-zinc-500 dark:text-zinc-400">
+              Revisa mantenimientos pasados y reparaciones de tu flota.
+            </p>
           </div>
-          <button 
-            onClick={() => window.print()}
-            className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 px-4 py-2 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-            Exportar PDF
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setShowFilterMenu(!showFilterMenu)}
+                className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 px-4 py-2.5 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                {activeFilter === "Todos" ? "Filtrar" : activeFilter}
+              </button>
+              {showFilterMenu && (
+                <div className="absolute left-0 mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50">
+                  {["Todos", ...categories.map(c => c.name)].map((filterOption) => (
+                    <button
+                      key={filterOption}
+                      onClick={() => {
+                        setActiveFilter(filterOption);
+                        setCurrentPage(1);
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
+                    >
+                      {filterOption}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={handlePrintReport}
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-indigo-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              Exportar Reporte Pro
+            </button>
+          </div>
         </div>
-      </div>
+
 
       {/* Analytics & Metrics Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -175,7 +190,7 @@ export default function Services({ history = [] }: { history?: any[] }) {
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">FECHA</p>
                   <p className="font-bold text-zinc-900 dark:text-white">
-                    {new Date(item.date).toLocaleDateString('es-ES', { month: 'short', day: '2-digit', year: 'numeric' })}
+                    {new Date(item.date).toLocaleDateString('es-MX', { month: 'short', day: '2-digit', year: 'numeric' })}
                   </p>
                 </div>
 
@@ -307,7 +322,7 @@ export default function Services({ history = [] }: { history?: any[] }) {
                     <div className="space-y-1">
                       <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">FECHA</p>
                       <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                        {new Date(selectedService.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })}
+                        {new Date(selectedService.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -336,7 +351,8 @@ export default function Services({ history = [] }: { history?: any[] }) {
                         <img 
                           src={selectedService.imageUrl} 
                           alt="Comprobante de servicio" 
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          onClick={() => setShowLightbox(selectedService.imageUrl)}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-zoom-in"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                           <p className="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Evidencia Adjunta</p>
@@ -465,6 +481,95 @@ export default function Services({ history = [] }: { history?: any[] }) {
         </div>,
         document.body
       )}
+      {/* Lightbox Modal */}
+      {showLightbox && createPortal(
+        <div 
+          className="fixed inset-0 z-[20000] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-12 animate-in fade-in duration-300"
+          onClick={() => setShowLightbox(null)}
+        >
+          <button 
+            className="absolute right-8 top-8 text-white/50 hover:text-white transition-colors p-2"
+            onClick={() => setShowLightbox(null)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+          </button>
+          <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
+            <img 
+              src={showLightbox} 
+              alt="Preview" 
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-in zoom-in-95 duration-300"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
+      </div>
+
+      {/* Reporte de Impresión (Solo visible al imprimir el reporte pro) */}
+      <div className="hidden printable-area">
+        <div className="flex items-center justify-between border-b-4 border-indigo-500 pb-8 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <img src="/screen.png" alt="Fiate" className="h-10 w-10 object-contain" />
+              <h1 className="text-4xl font-black tracking-tighter text-indigo-600">FIATE</h1>
+            </div>
+            <p className="text-zinc-500 font-bold uppercase tracking-[0.3em] text-[10px]">Reporte de Mantenimiento Certificado</p>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-black uppercase">{car?.catalogCar?.model?.brand?.name} {car?.catalogCar?.model?.name}</p>
+            <p className="text-zinc-500 font-bold tracking-widest">{car?.catalogCar?.year} · {car?.licensePlate} · {car?.currentKm.toLocaleString()} KM</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6 mb-12">
+          <div className="p-6 bg-zinc-50 rounded-3xl border border-zinc-200">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Servicios Totales</p>
+            <p className="text-2xl font-black text-zinc-900">{history.length}</p>
+          </div>
+          <div className="p-6 bg-zinc-50 rounded-3xl border border-zinc-200">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Inversión Estimada</p>
+            <p className="text-2xl font-black text-indigo-600">${history.reduce((acc: any, curr: any) => acc + (curr.cost || 0), 0).toLocaleString()}</p>
+          </div>
+          <div className="p-6 bg-zinc-50 rounded-3xl border border-zinc-200">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Fecha de Emisión</p>
+            <p className="text-2xl font-black text-zinc-900">{new Date().toLocaleDateString('es-MX')}</p>
+          </div>
+        </div>
+
+        <h3 className="text-lg font-black uppercase tracking-widest mb-6 border-l-4 border-indigo-500 pl-4">Historial Detallado</h3>
+        <table className="w-full text-left text-sm mb-12">
+          <thead>
+            <tr className="border-b-2 border-zinc-900 bg-zinc-50">
+              <th className="py-4 px-4 font-black uppercase tracking-widest text-[10px]">Fecha</th>
+              <th className="py-4 px-4 font-black uppercase tracking-widest text-[10px]">Descripción del Servicio</th>
+              <th className="py-4 px-4 font-black uppercase tracking-widest text-[10px] text-right">Kilometraje</th>
+              <th className="py-4 px-4 font-black uppercase tracking-widest text-[10px] text-right">Notas</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-200">
+            {history.map((item: any) => (
+              <tr key={item.id} className="break-inside-avoid">
+                <td className="py-4 px-4 font-medium text-zinc-600">{new Date(item.date).toLocaleDateString('es-MX')}</td>
+                <td className="py-4 px-4 font-bold text-zinc-900">{item.customName || "Mantenimiento General"}</td>
+                <td className="py-4 px-4 text-right font-black text-zinc-900">{item.kmAtService.toLocaleString()} KM</td>
+                <td className="py-4 px-4 text-right text-zinc-500 italic max-w-xs leading-relaxed">{item.notes || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-auto pt-12 border-t border-zinc-200 text-center">
+          <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-[0.4em] mb-2">Este documento es una copia fiel de los registros digitales en Fiate</p>
+          <div className="flex justify-center gap-8 text-[9px] text-zinc-300 font-bold uppercase tracking-widest">
+            <span>Seguridad</span>
+            <span>·</span>
+            <span>Transparencia</span>
+            <span>·</span>
+            <span>Confianza</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default async function ServicesPage() {
       catalogCars={data?.catalogCars || []}
       userEmail={session?.user?.email || "Usuario"}
     >
-      <Services history={data?.activeCar?.history} />
+      <Services car={data?.activeCar} />
     </ResponsiveLayout>
   );
 }

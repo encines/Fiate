@@ -19,12 +19,18 @@ export async function getActiveCarData() {
               },
             },
           },
-            history: {
-              orderBy: {
-                date: "desc",
-              },
-            },
+history: {
+               orderBy: {
+                 date: "desc",
+               },
+               take: 50, // Limit history records
+             },
             maintenanceChecks: true,
+            reminders: {
+              orderBy: {
+                date: 'asc'
+              }
+            },
         },
       },
     },

@@ -12,11 +12,11 @@ export default function Header() {
     <header className="relative w-full bg-transparent text-white">
       <div className="flex items-center justify-between px-4 py-4">
         <Image
-          src="/logo.png"
-          alt="logo"
+          src="/screen.png"
+          alt="Fiate Logo"
           width={100}
           height={100}
-          className="h-20 w-auto"
+          className="h-14 w-auto object-contain"
         />
         <nav className="">
           <div className="hidden lg:flex gap-4 items-center">

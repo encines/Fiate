@@ -33,7 +33,7 @@ export default function ResponsiveLayout({
 
       {/* Sidebar - Oculto en móvil por defecto, visible en LG */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        fixed inset-y-0 left-0 z-[100] w-64 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         <SiderBar 
@@ -57,9 +57,12 @@ export default function ResponsiveLayout({
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
               </button>
               
-              <div className="flex flex-col">
-                <h1 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">AutoLedger</h1>
-                <span className="text-sm font-semibold text-zinc-900 dark:text-white">Dashboard</span>
+              <div className="flex items-center gap-2">
+                <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
+                <div className="flex flex-col">
+                  <h1 className="text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em] leading-none">Fiate</h1>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-white">Dashboard</span>
+                </div>
               </div>
             </div>
 

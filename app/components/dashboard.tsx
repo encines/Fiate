@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useMemo } from "react";
 import Image from "next/image";
 
 export default function Dashboard({ activeCar }: { activeCar: any }) {
@@ -27,8 +28,8 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
     return score;
   };
 
-  const healthScore = calculateHealth();
-  const totalSpent = activeCar?.history?.reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0;
+  const healthScore = useMemo(() => calculateHealth(), [activeCar]);
+  const totalSpent = useMemo(() => activeCar?.history?.reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0, [activeCar?.history]);
 
   const stats = [
     {
@@ -272,27 +273,44 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/30 p-8 backdrop-blur-sm flex flex-col">
+          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/30 p-8 backdrop-blur-sm flex flex-col h-full">
             <div className="flex items-center justify-between gap-4 mb-8">
               <div>
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Próximos</h2>
-                <p className="mt-1 text-sm text-zinc-500">Mantenimientos programados.</p>
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Recordatorios</h2>
+                <p className="mt-1 text-sm text-zinc-500">Próximos eventos importantes.</p>
               </div>
               <Link
-                href="/services"
+                href="/reminders"
                 className="text-xs font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"
               >
-                Ver detalles
+                Gestionar
               </Link>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/20">
-              <div className="h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 dark:text-zinc-600 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
-              <p className="text-sm text-zinc-500 leading-relaxed">
-                Todo al día. No hay mantenimientos programados para los próximos kilómetros.
-              </p>
+            <div className="flex-1 space-y-4">
+              {activeCar?.reminders?.length > 0 ? (
+                activeCar.reminders.slice(0, 3).map((reminder: any) => (
+                  <div key={reminder.id} className="group relative flex items-center gap-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/20 p-4 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 transition-all">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{reminder.title}</p>
+                      <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
+                        {new Date(reminder.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long' })}
+                      </p>
+                    </div>
+                    <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/20">
+                  <div className="h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 dark:text-zinc-600 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  </div>
+                  <p className="text-sm text-zinc-500 px-4">No tienes recordatorios próximos.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

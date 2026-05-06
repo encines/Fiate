@@ -76,11 +76,30 @@ export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelL
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50">
                 {fuelLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                    <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 font-medium">{new Date(log.date).toLocaleDateString()}</td>
+                  <tr key={log.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                    <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 font-medium">
+                      {new Date(log.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
                     <td className="px-6 py-4 text-zinc-900 dark:text-white font-bold">{log.km.toLocaleString()} km</td>
                     <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">{log.liters} L</td>
-                    <td className="px-6 py-4 text-zinc-900 dark:text-white font-black text-right">${log.totalCost.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-zinc-900 dark:text-white font-black text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <span>${log.totalCost.toLocaleString()}</span>
+                        <button 
+                          onClick={async () => {
+                            if (confirm("¿Seguro que quieres eliminar este registro?")) {
+                              const { deleteFuelLog } = await import("../actions/deleteFuelLog");
+                              const res = await deleteFuelLog(log.id);
+                              if (res.error) alert(res.error);
+                            }
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
+                          title="Eliminar registro"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
