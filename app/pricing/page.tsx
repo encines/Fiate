@@ -3,6 +3,7 @@ import { auth } from "../../auth";
 import { prisma } from "../../lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
   const session = await auth();
