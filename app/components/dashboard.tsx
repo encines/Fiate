@@ -66,7 +66,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
     },
   ];
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 p-6 sm:p-8 custom-scrollbar overflow-y-auto transition-colors">
+    <div className="text-zinc-900 dark:text-zinc-100 p-6 sm:p-8 transition-colors">
       <section className="space-y-8 max-w-7xl mx-auto">
         {/* Main Hero Card */}
         <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 p-6 sm:p-8 backdrop-blur-md overflow-hidden relative group transition-colors">

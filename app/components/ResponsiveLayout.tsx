@@ -48,7 +48,7 @@ export default function ResponsiveLayout({
 
       {/* Contenido Principal */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <header className="no-print sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-950/95 px-4 py-4 backdrop-blur-sm sm:px-6 transition-colors">
+        <header className="no-print sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-950/95 px-4 py-4 sm:px-6 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Botón Hamburguesa */}

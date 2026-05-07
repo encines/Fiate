@@ -32,13 +32,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  /* background-attachment: fixed is extremely expensive for the browser. 
-     Instead, we use a single gradient or a more performant background approach. */
-  background-image:
-    radial-gradient(circle at 12% 12%, rgba(129, 140, 248, 0.08), transparent 44%),
-    radial-gradient(circle at 86% 0%, rgba(45, 212, 191, 0.05), transparent 36%);
-  background-repeat: no-repeat;
-  background-size: cover;
+  /* Eliminamos gradientes complejos para descartar cuello de botella de renderizado */
+  background-color: var(--background);
 }
 
 @layer utilities {
@@ -47,11 +42,12 @@ body {
   }
 
   .glass-panel {
-    @apply rounded-3xl border border-zinc-200 dark:border-zinc-700/80 bg-white/60 dark:bg-zinc-900/80 shadow-xl shadow-zinc-200/50 dark:shadow-black/30 backdrop-blur transition-colors;
+    /* Eliminamos backdrop-blur para ganar performance crítico */
+    @apply rounded-3xl border border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 shadow-xl shadow-zinc-200/50 dark:shadow-black/30 transition-colors;
   }
 
   .soft-card {
-    @apply rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50/80 dark:bg-zinc-950/65 transition-all hover:-translate-y-0.5 hover:border-indigo-300 dark:hover:border-indigo-400/40;
+    @apply rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50/80 dark:bg-zinc-950/65 transition-[transform,background-color,border-color] hover:-translate-y-0.5 hover:border-indigo-300 dark:hover:border-indigo-400/40;
   }
 }
 
@@ -115,28 +111,5 @@ body {
   animation: bounce-slow 6s ease-in-out infinite;
 }
 
-/* Scrollbar Customization */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(161, 161, 170, 0.3); /* zinc-400 with opacity */
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(161, 161, 170, 0.5);
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(63, 63, 70, 0.5); /* zinc-700 with opacity */
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(82, 82, 91, 0.7);
-}
+/* Scrollbar Customization - Disabled for performance testing */
+/* .custom-scrollbar::-webkit-scrollbar { ... } */
