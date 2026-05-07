@@ -7,9 +7,10 @@ import { addCustomService } from "../actions/addCustomService";
 interface AddServiceModalProps {
   cars: any[];
   activeCarId: string | null;
+  buttonClass?: string;
 }
 
-export default function AddServiceModal({ cars, activeCarId }: AddServiceModalProps) {
+export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddServiceModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const DEFAULT_TASKS = [
@@ -65,7 +66,7 @@ export default function AddServiceModal({ cars, activeCarId }: AddServiceModalPr
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-200 transition-colors hover:border-zinc-200 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/70"
+        className={buttonClass || "flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-200 transition-colors hover:border-zinc-200 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/70"}
       >
         <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-500 dark:text-indigo-400">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
@@ -74,14 +75,14 @@ export default function AddServiceModal({ cars, activeCarId }: AddServiceModalPr
       </button>
 
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-5xl max-h-[95vh] rounded-[32px] border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden flex flex-col transition-colors">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4">
+          <div className="relative w-full h-full sm:h-auto max-w-5xl sm:max-h-[90vh] sm:rounded-[32px] border-0 sm:border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden flex flex-col transition-colors">
             {/* Header - Fixed */}
             <div className="p-6 md:p-8 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">Nuevo Registro de Servicio</h2>
-                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Completa los detalles para mantener el historial de tu flota impecable.</p>
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Completa los detalles para mantener el historial de tu auto impecable.</p>
                 </div>
                 <button 
                   onClick={() => setIsOpen(false)}
@@ -131,7 +132,7 @@ export default function AddServiceModal({ cars, activeCarId }: AddServiceModalPr
                             type="date" 
                             name="date"
                             defaultValue={new Date().toISOString().split('T')[0]}
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-2">
@@ -142,7 +143,7 @@ export default function AddServiceModal({ cars, activeCarId }: AddServiceModalPr
                               name="kmAtService"
                               required
                               placeholder="Ej: 45,000"
-                              className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all pr-12"
+                              className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all pr-12"
                             />
                             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-bold">KM</span>
                           </div>
@@ -219,7 +220,7 @@ export default function AddServiceModal({ cars, activeCarId }: AddServiceModalPr
                             name="cost"
                             step="0.01"
                             placeholder="0.00"
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pl-8 pr-4 py-3 text-right text-2xl font-bold text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pl-8 pr-4 py-3 text-right text-2xl font-bold text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
                           />
                         </div>
                       </div>

@@ -14,6 +14,10 @@ export async function editVehicle(prevState: any, formData: FormData) {
   const rawData = {
     userCarId: formData.get("userCarId"),
     color: formData.get("color") || undefined,
+    brand: formData.get("brand") || undefined,
+    model: formData.get("model") || undefined,
+    year: formData.get("year") || undefined,
+    licensePlate: formData.get("licensePlate") || undefined,
   };
 
   const parsed = EditVehicleSchema.safeParse(rawData);
@@ -21,22 +25,75 @@ export async function editVehicle(prevState: any, formData: FormData) {
     return { error: parsed.error.issues[0].message };
   }
 
-  const { userCarId, color } = parsed.data;
+  const { userCarId, color, brand, model, year, licensePlate } = parsed.data;
 
   try {
     const userCar = await prisma.userCar.findUnique({
       where: { id: userCarId },
-      include: { user: true }
+      include: { 
+        user: true,
+        catalogCar: {
+          include: {
+            model: { include: { brand: true } }
+          }
+        }
+      }
     });
 
     if (!userCar || userCar.user.email !== session.user.email) {
       return { error: "Vehículo no encontrado o no te pertenece." };
     }
 
+    let finalCatalogCarId = userCar.catalogCarId;
+
+    // Si cambió marca, modelo o año, necesitamos buscar/crear el CatalogCar
+    if (brand || model || year) {
+      const finalBrand = brand || userCar.catalogCar.model.brand.name;
+      const finalModel = model || userCar.catalogCar.model.name;
+      const finalYear = year || userCar.catalogCar.year;
+
+      const brandEntity = await prisma.brand.upsert({
+        where: { name: finalBrand },
+        update: {},
+        create: { name: finalBrand },
+      });
+
+      const modelEntity = await prisma.carModel.upsert({
+        where: { name_brandId: { name: finalModel, brandId: brandEntity.id } },
+        update: {},
+        create: { name: finalModel, brandId: brandEntity.id },
+      });
+
+      const catalogCar = await prisma.catalogCar.upsert({
+        where: { modelId_year: { modelId: modelEntity.id, year: finalYear } },
+        update: {},
+        create: { modelId: modelEntity.id, year: finalYear },
+      });
+
+      finalCatalogCarId = catalogCar.id;
+    }
+
+    // Lógica para imagen (Base64)
+    const imageFile = formData.get("image") as File;
+    let finalImageUrl = userCar.imageUrl;
+    
+    if (imageFile && imageFile.size > 0) {
+      try {
+        const buffer = await imageFile.arrayBuffer();
+        const base64Image = Buffer.from(buffer).toString('base64');
+        finalImageUrl = `data:${imageFile.type};base64,${base64Image}`;
+      } catch (e) {
+        console.error("Error al procesar la imagen:", e);
+      }
+    }
+
     await prisma.userCar.update({
       where: { id: userCarId },
       data: {
-        color: color || null,
+        color: color ?? userCar.color,
+        licensePlate: licensePlate ?? userCar.licensePlate,
+        catalogCarId: finalCatalogCarId,
+        imageUrl: finalImageUrl,
       },
     });
 

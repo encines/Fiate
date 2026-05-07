@@ -139,11 +139,15 @@ export async function discoverMaintenancePlan(userCarId: string) {
   try {
     const userCar = await prisma.userCar.findUnique({
       where: { id: userCarId },
-      include: { catalogCar: { include: { model: { include: { brand: true } } } } }
+      include: { 
+        user: true,
+        catalogCar: { include: { model: { include: { brand: true } } } } 
+      }
     });
 
     if (!userCar) return { error: "Vehículo no encontrado." };
 
+    const isPro = userCar.user.plan === "PRO";
     const brandName = userCar.catalogCar.model.brand.name.toLowerCase();
     const modelName = userCar.catalogCar.model.name.toLowerCase();
     const year = userCar.catalogCar.year;
@@ -161,10 +165,8 @@ export async function discoverMaintenancePlan(userCarId: string) {
       plan = JSON.parse(catalogEntry.tasksJson);
       source = "la base de datos local";
     } else {
-      // 2. Intentar con la IA de Gemini (Búsqueda en tiempo real)
-      console.log("GOOGLE_API_KEY presente:", !!process.env.GOOGLE_API_KEY);
-      
-      if (process.env.GOOGLE_API_KEY) {
+      // 2. Intentar con la IA de Gemini (Búsqueda en tiempo real) - SOLO PRO
+      if (isPro && process.env.GOOGLE_API_KEY) {
         try {
           console.log(`Buscando plan con Gemini para: ${fullKey} ${year}`);
           plan = await getAIPlanForCar(brandName, modelName, year);
@@ -184,12 +186,12 @@ export async function discoverMaintenancePlan(userCarId: string) {
         }
       }
 
-      // 3. Fallback a la base de conocimientos estática si Gemini falla o no hay API KEY
+      // 3. Fallback a la base de conocimientos estática si Gemini falla, no hay API KEY o no es PRO
       if (!plan) {
         plan = AI_KNOWLEDGE_BASE[fullKey] || 
                Object.entries(AI_KNOWLEDGE_BASE).find(([key]) => fullKey.includes(key))?.[1] || 
                AI_KNOWLEDGE_BASE["generic"];
-        source = "el catálogo estático de respaldo";
+        source = isPro ? "el catálogo estático de respaldo" : "el catálogo estándar (Pásate a PRO para usar Inteligencia Artificial)";
       }
     }
 

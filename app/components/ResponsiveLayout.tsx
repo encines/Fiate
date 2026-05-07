@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import SiderBar from "./sidebar";
+import dynamic from "next/dynamic";
+
+const SiderBar = dynamic(() => import("./sidebar"), { ssr: false });
 import HeaderIn from "./headerIn";
 
 interface ResponsiveLayoutProps {
@@ -33,7 +35,7 @@ export default function ResponsiveLayout({
 
       {/* Sidebar - Oculto en móvil por defecto, visible en LG */}
       <div className={`
-        fixed inset-y-0 left-0 z-[100] w-64 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        no-print fixed inset-y-0 left-0 z-[100] w-64 h-[100dvh] transform transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         <SiderBar 
@@ -46,7 +48,7 @@ export default function ResponsiveLayout({
 
       {/* Contenido Principal */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        <header className="sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-950/90 px-4 py-4 backdrop-blur sm:px-6 transition-colors">
+        <header className="no-print sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-950/95 px-4 py-4 backdrop-blur-sm sm:px-6 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Botón Hamburguesa */}
@@ -75,7 +77,7 @@ export default function ResponsiveLayout({
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar [will-change:transform] transform-gpu">
           {children}
         </main>
       </div>

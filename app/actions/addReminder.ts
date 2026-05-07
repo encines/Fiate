@@ -40,7 +40,7 @@ export async function addReminder(prevState: any, formData: FormData) {
       data: {
         userCarId,
         title,
-        date: new Date(date),
+        date: date,
         detail,
       }
     });

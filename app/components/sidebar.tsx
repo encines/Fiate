@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import CarSelector from "./CarSelector";
-import AddVehicleModal from "./AddVehicleModal";
-import AddServiceModal from "./AddServiceModal";
+import dynamic from "next/dynamic";
 import { ThemeToggle } from "./ThemeToggle";
+
+const AddVehicleModal = dynamic(() => import("./AddVehicleModal"), { ssr: false });
 
 const navItems = [
   { 
@@ -65,6 +66,13 @@ const navItems = [
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
     )
   },
+  { 
+    label: "Mejorar Plan", 
+    href: "/pricing",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+    )
+  },
 ];
 
 interface SidebarProps {
@@ -78,22 +86,26 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-full border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white flex-shrink-0 flex flex-col transition-colors">
-      <div className="sticky top-0 p-6 flex flex-col h-screen">
-        <div className="mb-8 flex items-center gap-3 px-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-transparent overflow-hidden">
-            <img src="/screen.png" alt="Fiate Logo" className="h-full w-full object-contain" />
+    <aside className="w-64 h-[100dvh] border-r border-zinc-200/50 dark:border-zinc-800/50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl text-zinc-900 dark:text-white flex-shrink-0 flex flex-col transition-all overflow-hidden">
+      <div className="p-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
+        <div className="mb-10 flex items-center gap-3 px-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 overflow-hidden ring-1 ring-indigo-500/20">
+            <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
           </div>
-          <span className="text-2xl font-black tracking-tighter text-zinc-900 dark:text-white">Fiate</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black tracking-tighter text-zinc-900 dark:text-white leading-none">Fiate</span>
+            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Control Total</span>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="px-2">
+        <div className="space-y-8 flex-1">
+          <div className="px-1">
             <CarSelector cars={cars} activeCarId={activeCarId} />
           </div>
 
           <nav>
-            <ul className="space-y-1.5">
+            <p className="px-4 mb-4 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em]">Menú Principal</p>
+            <ul className="space-y-1">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -101,38 +113,39 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
                     <Link
                       href={item.href}
                       onClick={onClose}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+                      className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all group ${
                         isActive
-                          ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-r-2 border-indigo-500 rounded-r-none"
-                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white"
+                          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-indigo-500/50"
+                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-white"
                       }`}
                     >
-                      {item.icon}
+                      <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-white" : "text-zinc-400 dark:text-zinc-500 group-hover:text-indigo-500"}`}>
+                        {item.icon}
+                      </span>
                       {item.label}
                     </Link>
                   </li>
                 );
               })}
-              <li>
-                <AddServiceModal cars={cars} activeCarId={activeCarId} />
-              </li>
+
             </ul>
           </nav>
         </div>
 
-        <div className="mt-auto pb-6 space-y-4">
-          <div className="px-2">
+        <div className="mt-8 pt-8 border-t border-zinc-200/50 dark:border-zinc-800/50 space-y-4 pb-4">
+          <div className="px-1">
             <ThemeToggle />
           </div>
-          <div className="px-2">
+          
+          <div className="px-1">
             <AddVehicleModal catalogCars={catalogCars} />
           </div>
           
           <button 
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white transition-all"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all group"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            <svg className="transition-transform group-hover:-translate-x-1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
             Cerrar Sesión
           </button>
         </div>

@@ -32,11 +32,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  /* background-attachment: fixed is extremely expensive for the browser. 
+     Instead, we use a single gradient or a more performant background approach. */
   background-image:
-    radial-gradient(circle at 12% 12%, rgba(129, 140, 248, 0.16), transparent 44%),
-    radial-gradient(circle at 86% 0%, rgba(45, 212, 191, 0.1), transparent 36%),
-    radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.1), transparent 38%);
-  background-attachment: fixed;
+    radial-gradient(circle at 12% 12%, rgba(129, 140, 248, 0.08), transparent 44%),
+    radial-gradient(circle at 86% 0%, rgba(45, 212, 191, 0.05), transparent 36%);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 @layer utilities {
@@ -55,25 +57,51 @@ body {
 
 /* Estilos de Impresión Pro - Solo activos durante el comando de reporte */
 @media print {
-  .printing-report .no-print {
+  /* Forzar fondo blanco absoluto en TODO */
+  *, *::before, *::after {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body, .dark, .dark body, [class*="bg-zinc-"], [class*="bg-slate-"] {
+    background-color: white !important;
+  }
+
+  /* Ocultar elementos marcados como no-print */
+  .no-print {
     display: none !important;
   }
 
-  .printing-report .printable-area {
+  /* El área del reporte debe ser blanca y visible */
+  .printable-area {
     display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: white !important;
-    color: black !important;
-    z-index: 9999;
+    background-color: white !important;
+    position: relative !important;
+    width: 100% !important;
   }
 
-  /* Forzar colores para que salgan las barras y fondos claros */
-  .printing-report * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Mantener colores específicos para el diseño del reporte */
+  .bg-indigo-500, .bg-indigo-600, .bg-indigo-400 {
+    background-color: #6366f1 !important;
+    color: white !important;
+  }
+
+  .text-indigo-600, .text-indigo-400 {
+    color: #4f46e5 !important;
+  }
+
+  .border-indigo-500 {
+    border-color: #6366f1 !important;
+  }
+
+  /* Fondo gris claro para las tarjetas del reporte */
+  .bg-zinc-50, .bg-zinc-100 {
+    background-color: #f8fafc !important;
   }
 }
 
@@ -85,4 +113,30 @@ body {
 
 .animate-bounce-slow {
   animation: bounce-slow 6s ease-in-out infinite;
+}
+
+/* Scrollbar Customization */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.3); /* zinc-400 with opacity */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(161, 161, 170, 0.5);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.5); /* zinc-700 with opacity */
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(82, 82, 91, 0.7);
 }

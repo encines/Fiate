@@ -37,7 +37,7 @@ export async function addCustomService(prevState: any, formData: FormData) {
       return { error: "Vehículo no encontrado o no te pertenece." };
     }
 
-    const serviceDate = date ? new Date(date) : new Date();
+    const serviceDate = date || new Date();
 
     // Lógica para imagen (Base64 para demostración local)
     const imageFile = formData.get("image") as File;

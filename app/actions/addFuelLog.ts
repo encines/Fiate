@@ -4,21 +4,28 @@ import { prisma } from "../../lib/prisma";
 import { auth } from "../../auth";
 import { revalidatePath } from "next/cache";
 
+import { FuelLogSchema } from "../../lib/validations";
+
 export async function addFuelLog(prevState: any, formData: FormData) {
   const session = await auth();
   if (!session?.user?.email) {
     return { error: "No autorizado." };
   }
 
-  const userCarId = formData.get("userCarId") as string;
-  const km = parseInt(formData.get("km") as string);
-  const liters = parseFloat(formData.get("liters") as string);
-  const totalCost = parseFloat(formData.get("totalCost") as string);
-  const date = formData.get("date") as string;
+  const rawData = {
+    userCarId: formData.get("userCarId"),
+    km: formData.get("km"),
+    liters: formData.get("liters"),
+    cost: formData.get("totalCost"),
+    date: formData.get("date") || undefined,
+  };
 
-  if (!userCarId || isNaN(km) || isNaN(liters) || isNaN(totalCost)) {
-    return { error: "Todos los campos numéricos son obligatorios." };
+  const parsed = FuelLogSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
   }
+
+  const { userCarId, km, liters, cost, date } = parsed.data;
 
   try {
     const userCar = await prisma.userCar.findUnique({
@@ -35,8 +42,8 @@ export async function addFuelLog(prevState: any, formData: FormData) {
         userCarId,
         km,
         liters,
-        totalCost,
-        date: date ? new Date(date) : new Date(),
+        totalCost: cost,
+        date: date,
       }
     });
 

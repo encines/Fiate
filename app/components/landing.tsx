@@ -11,9 +11,9 @@ export default function Landing() {
            style={{ backgroundImage: `linear-gradient(to right, #808080 1px, transparent 1px), linear-gradient(to bottom, #808080 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
 
       {/* Dynamic Light Sources */}
-      <div className="absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full bg-indigo-600/10 blur-[120px] animate-pulse" />
-      <div className="absolute top-[20%] -right-[5%] h-[500px] w-[500px] rounded-full bg-teal-500/5 blur-[140px]" />
-      <div className="absolute bottom-[-10%] left-[20%] h-[400px] w-[800px] rounded-full bg-indigo-500/5 blur-[120px]" />
+      <div className="absolute -top-[10%] -left-[10%] h-[600px] w-[600px] rounded-full bg-indigo-600/10 blur-[120px] animate-pulse transform-gpu" />
+      <div className="absolute top-[20%] -right-[5%] h-[500px] w-[500px] rounded-full bg-teal-500/5 blur-[140px] transform-gpu" />
+      <div className="absolute bottom-[-10%] left-[20%] h-[400px] w-[800px] rounded-full bg-indigo-500/5 blur-[120px] transform-gpu" />
 
       {/* Hero Section */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-48 lg:px-12 lg:pt-48">
@@ -51,7 +51,7 @@ export default function Landing() {
             {/* Main Preview Card */}
             <div className="relative rounded-[48px] border border-white/10 bg-zinc-900/40 p-8 shadow-2xl backdrop-blur-3xl transition-transform duration-1000 hover:rotate-1 hover:scale-[1.02]">
               <div className="relative aspect-[1.5/1] w-full overflow-hidden rounded-[32px] bg-black/40 border border-white/5 p-6 mb-8">
-                <Image src="/march.png" alt="Fiate Preview" fill className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
+                <Image src="/march.png" alt="Fiate Preview" fill priority className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
               </div>
               
               <div className="space-y-6">

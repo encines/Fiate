@@ -30,9 +30,21 @@ export async function addVehicle(prevState: any, formData: FormData) {
   try {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
+      include: {
+        _count: {
+          select: { cars: true }
+        }
+      }
     });
 
     if (!user) return { error: "Usuario no encontrado." };
+
+    // Verificación de Plan
+    if (user.plan === "STANDARD" && user._count.cars >= 1) {
+      return { 
+        error: "Has alcanzado el límite de 1 vehículo para el plan Estándar. ¡Pásate a PRO para agregar vehículos ilimitados!" 
+      };
+    }
 
     // 1. Encontrar o crear la Marca
     const brand = await prisma.brand.upsert({

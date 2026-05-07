@@ -34,6 +34,16 @@ export async function addTask(prevState: any, formData: FormData) {
       return { error: "Vehículo no encontrado o no autorizado." };
     }
 
+    const tasksCount = await prisma.maintenanceTask.count({
+      where: { userCarId }
+    });
+
+    if (userCar.user.plan === "STANDARD" && tasksCount >= 6) {
+      return { 
+        error: "Has alcanzado el límite de 6 tareas para el plan STANDARD. ¡Mejora a PRO para agregar tareas ilimitadas!" 
+      };
+    }
+
     await prisma.maintenanceTask.create({
       data: {
         name,

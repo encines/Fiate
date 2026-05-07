@@ -36,33 +36,33 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
       label: "Salud del Auto",
       value: `${healthScore}%`,
       meta: healthScore > 90 ? "Excelente" : healthScore > 70 ? "Regular" : "Crítico",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
-      color: healthScore > 90 ? "text-emerald-400" : healthScore > 70 ? "text-amber-400" : "text-rose-400",
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+      color: healthScore > 90 ? "text-emerald-500" : healthScore > 70 ? "text-amber-500" : "text-rose-500",
       bg: healthScore > 90 ? "bg-emerald-500/10" : healthScore > 70 ? "bg-amber-500/10" : "bg-rose-500/10"
     },
     {
       label: "Inversión Total",
       value: `$${totalSpent.toLocaleString()}`,
       meta: "en mantenimientos",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>,
-      color: "text-indigo-400",
-      bg: "bg-indigo-500/10"
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>,
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10"
     },
     {
       label: "Kilometraje",
       value: activeCar ? `${activeCar.currentKm.toLocaleString()} km` : "0 km",
       meta: "recorridos",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>,
-      color: "text-teal-400",
-      bg: "bg-teal-500/10"
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10"
     },
     {
       label: "Próximo Servicio",
       value: activeCar?.tasks?.[0] ? `${activeCar.tasks[0].frequencyKm?.toLocaleString()} km` : "N/A",
       meta: "estimado",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-      color: "text-amber-400",
-      bg: "bg-amber-500/10"
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+      color: "text-indigo-500",
+      bg: "bg-indigo-500/10"
     },
   ];
   return (
@@ -70,7 +70,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
       <section className="space-y-8 max-w-7xl mx-auto">
         {/* Main Hero Card */}
         <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 p-6 sm:p-8 backdrop-blur-md overflow-hidden relative group transition-colors">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-[100px] group-hover:bg-indigo-500/20 transition-colors duration-700"></div>
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-zinc-500/5 blur-[100px] group-hover:bg-zinc-500/10 transition-colors duration-700"></div>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
             <div className="max-w-2xl space-y-6 w-full">
               <div className="flex items-center gap-2">
@@ -94,13 +94,13 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
                 <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Kilometraje</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                     {activeCar?.currentKm.toLocaleString() || 0} <span className="text-sm font-medium text-zinc-500">KM</span>
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Último servicio</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
+                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                     {activeCar?.history?.[0]?.date 
                       ? new Date(activeCar.history[0].date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
                       : "N/A"}
@@ -108,7 +108,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
                 </div>
                 <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Servicios</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
+                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                     {activeCar?.history?.length || 0} <span className="text-sm font-medium text-zinc-500">REG</span>
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
             </div>
 
             <div className="relative aspect-video w-full lg:max-w-md">
-              <div className="absolute inset-0 bg-indigo-500/5 rounded-[40px] blur-2xl"></div>
+              <div className="absolute inset-0 bg-zinc-500/5 rounded-[40px] blur-2xl"></div>
               <div className="relative h-full w-full rounded-[32px] bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 flex items-center justify-center">
                 <Image
                   src={activeCar?.imageUrl || "/march.png"}
@@ -146,7 +146,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
               <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                 {stat.label}
               </p>
-              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+              <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                 {stat.value}
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
               <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Confianza de Mercado</p>
               <h3 className="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Valor de Reventa</h3>
               <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-3xl font-black text-indigo-500 dark:text-indigo-400">
+                <span className="text-3xl font-black text-zinc-900 dark:text-white">
                   +{healthScore > 80 ? "15" : healthScore > 50 ? "8" : "3"}%
                 </span>
                 <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">sobre el valor base</span>

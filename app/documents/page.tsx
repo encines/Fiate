@@ -23,6 +23,11 @@ export default async function DocumentsPage() {
     orderBy: { createdAt: "desc" }
   });
 
+  const user = await prisma.user.findUnique({
+    where: { email: session?.user?.email! },
+    select: { plan: true }
+  });
+
   return (
     <ResponsiveLayout 
       cars={data?.cars || []} 
@@ -31,7 +36,11 @@ export default async function DocumentsPage() {
       userEmail={session?.user?.email || "Usuario"}
     >
       <div className="p-8">
-        <DocumentManager documents={documents as any} activeCarId={data.activeCarId} />
+        <DocumentManager 
+          documents={documents as any} 
+          activeCarId={data.activeCarId} 
+          userPlan={user?.plan || "STANDARD"}
+        />
       </div>
     </ResponsiveLayout>
   );

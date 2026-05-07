@@ -1,48 +1,99 @@
+import Link from "next/link";
+import Image from "next/image";
+
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white">
-      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-6 lg:py-12">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="text-center md:text-left">
-            <span className="text-sm md:text-base">Copyright 2025. Fiate</span>
+    <footer className="relative bg-zinc-950 pt-24 pb-12 overflow-hidden border-t border-white/5">
+      {/* Subtle Background Glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-64 w-[80%] bg-indigo-500/5 blur-[120px]" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12">
+        <div className="grid gap-16 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          {/* Brand Column */}
+          <div className="space-y-8">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/screen.png"
+                alt="Fiate Logo"
+                width={60}
+                height={60}
+                className="h-10 w-auto object-contain brightness-110"
+              />
+              <span className="text-xl font-black uppercase tracking-tighter">Fiate</span>
+            </Link>
+            <p className="max-w-xs text-sm font-medium leading-relaxed text-zinc-500">
+              Elevando el estándar de la gestión automotriz personal. Tecnología de precisión para conductores exigentes.
+            </p>
           </div>
 
-          <nav className="text-center md:text-right">
-            <ul className="flex flex-col gap-3 md:flex-row md:gap-6">
-              <li>
-                <a
-                  href="/privacy-policy"
-                  className="text-gray-300 hover:text-orange-400 transition-colors text-sm md:text-base"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/terms-of-service"
-                  className="text-gray-300 hover:text-orange-400 transition-colors text-sm md:text-base"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact-support"
-                  className="text-gray-300 hover:text-orange-400 transition-colors text-sm md:text-base"
-                >
-                  Contact Support
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/api-documentation"
-                  className="text-gray-300 hover:text-orange-400 transition-colors text-sm md:text-base"
-                >
-                  API Documentation
-                </a>
-              </li>
-            </ul>
-          </nav>
+          {/* Links Columns */}
+          {[
+            {
+              title: "Plataforma",
+              links: [
+                { name: "Características", href: "#" },
+                { name: "Seguridad", href: "#" },
+                { name: "Planes", href: "#" },
+                { name: "Empresas", href: "#" },
+              ],
+            },
+            {
+              title: "Recursos",
+              links: [
+                { name: "Documentación", href: "/api-documentation" },
+                { name: "Soporte", href: "/contact-support" },
+                { name: "Blog", href: "#" },
+                { name: "Comunidad", href: "#" },
+              ],
+            },
+            {
+              title: "Legal",
+              links: [
+                { name: "Privacidad", href: "/privacy-policy" },
+                { name: "Términos", href: "/terms-of-service" },
+                { name: "Cookies", href: "#" },
+                { name: "Licencia", href: "#" },
+              ],
+            },
+          ].map((column) => (
+            <div key={column.title} className="space-y-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
+                {column.title}
+              </h4>
+              <ul className="space-y-4">
+                {column.links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-sm font-medium text-zinc-500 transition-colors hover:text-white"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-24 flex flex-col items-center justify-between gap-8 border-t border-white/5 pt-12 md:flex-row">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
+            © {currentYear} Fiate Engineering. Todos los derechos reservados.
+          </p>
+          <div className="flex items-center gap-8">
+            {["Twitter", "LinkedIn", "Instagram"].map((social) => (
+              <Link 
+                key={social} 
+                href="#" 
+                className="text-[10px] font-black uppercase tracking-widest text-zinc-600 transition-colors hover:text-zinc-200"
+              >
+                {social}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

@@ -72,7 +72,7 @@ export default async function Reminders({ activeCar }: RemindersProps) {
                     "use server";
                     await deleteReminder(item.id);
                   }}
-                  className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute bottom-4 right-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
                 >
                   <button 
                     type="submit"

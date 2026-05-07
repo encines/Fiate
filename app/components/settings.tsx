@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 const preferences = [
   { label: "Notificaciones por correo", value: "Activadas" },
@@ -60,7 +61,9 @@ export default function Settings({ cars = [], car }: SettingsProps) {
     startTransition(async () => {
       const result = await deleteVehicle(carToDelete.id);
       if (result.error) {
-        alert(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success("Vehículo eliminado correctamente.");
       }
       setShowDeleteModal(false);
       setCarToDelete(null);
@@ -88,13 +91,13 @@ export default function Settings({ cars = [], car }: SettingsProps) {
       </section>
 
       {/* Gestión de Vehículos */}
-      <section className="glass-panel p-8 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 rounded-[32px] backdrop-blur-md">
+      <section className="glass-panel p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 rounded-[32px] backdrop-blur-md">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Mis Vehículos</h2>
             <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1">Gestiona los autos registrados en tu flota.</p>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400">
+          <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 8-2 2-5-5 2-2"/><path d="M11 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M7 15h0"/><path d="M12 15h0"/><path d="M17 15h0"/></svg>
           </div>
         </div>
@@ -104,29 +107,29 @@ export default function Settings({ cars = [], car }: SettingsProps) {
             cars.map((car) => (
               <div 
                 key={car.id} 
-                className="group flex items-center justify-between p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300"
+                className="group flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 gap-4"
               >
-                <div className="flex items-center gap-6">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                     {car.imageUrl ? (
                       <img src={car.imageUrl} alt={car.model} className="h-full w-full object-cover" />
                     ) : (
                       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg>
                     )}
                   </div>
-                  <div>
-                    <p className="font-bold text-xl text-zinc-900 dark:text-white">{car.brand} {car.model}</p>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-zinc-500 dark:text-zinc-500">
+                  <div className="min-w-0">
+                    <p className="font-bold text-lg sm:text-xl text-zinc-900 dark:text-white truncate">{car.brand} {car.model}</p>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-500">
                       <span>{car.year}</span>
                       <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-                      <span>{car.licensePlate || "Sin placas asignadas"}</span>
+                      <span className="truncate">{car.licensePlate || "Sin placas"}</span>
                     </div>
                   </div>
                 </div>
                 <button 
                   onClick={() => openDeleteModal(car.id, `${car.brand} ${car.model}`)}
                   disabled={isPending}
-                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all disabled:opacity-50 active:scale-95"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 text-sm font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all disabled:opacity-50 active:scale-95 border border-rose-500/10 sm:border-0"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                   Eliminar
@@ -135,50 +138,50 @@ export default function Settings({ cars = [], car }: SettingsProps) {
             ))
           ) : (
             <div className="flex flex-col items-center justify-center py-12 rounded-[24px] border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/10">
-              <p className="text-zinc-500 dark:text-zinc-500 font-medium">No tienes vehículos registrados en tu garaje.</p>
+              <p className="text-zinc-500 dark:text-zinc-500 font-medium px-4 text-center">No tienes vehículos registrados en tu garaje.</p>
             </div>
           )}
         </div>
       </section>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <section className="glass-panel p-8 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 rounded-[32px] backdrop-blur-md">
+      <div className="grid gap-8 lg:grid-cols-2">
+        <section className="glass-panel p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 rounded-[32px] backdrop-blur-md">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-900 dark:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Preferencias
           </h2>
           <div className="divide-y divide-zinc-200 dark:divide-zinc-800 rounded-[24px] border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-colors">
             {/* Notificaciones */}
-            <div className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors gap-2">
               <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Notificaciones por correo</span>
               <select 
                 value={userPrefs.notifications}
                 onChange={(e) => updatePref("notifications", e.target.value)}
-                className="bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer text-right"
+                className="appearance-none bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer sm:text-right"
               >
                 <option className="bg-white dark:bg-zinc-900" value="Activadas">Activadas</option>
                 <option className="bg-white dark:bg-zinc-900" value="Desactivadas">Desactivadas</option>
               </select>
             </div>
             {/* Unidad */}
-            <div className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors gap-2">
               <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Unidad de distancia</span>
               <select 
                 value={userPrefs.unit}
                 onChange={(e) => updatePref("unit", e.target.value)}
-                className="bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer text-right"
+                className="appearance-none bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer sm:text-right"
               >
                 <option className="bg-white dark:bg-zinc-900" value="Kilómetros (km)">Kilómetros (km)</option>
                 <option className="bg-white dark:bg-zinc-900" value="Millas (mi)">Millas (mi)</option>
               </select>
             </div>
             {/* Moneda */}
-            <div className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors gap-2">
               <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Moneda</span>
               <select 
                 value={userPrefs.currency}
                 onChange={(e) => updatePref("currency", e.target.value)}
-                className="bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer text-right"
+                className="appearance-none bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer sm:text-right"
               >
                 <option className="bg-white dark:bg-zinc-900" value="MXN">MXN</option>
                 <option className="bg-white dark:bg-zinc-900" value="USD">USD</option>
@@ -186,12 +189,12 @@ export default function Settings({ cars = [], car }: SettingsProps) {
               </select>
             </div>
             {/* Tema */}
-            <div className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors gap-2">
               <span className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Tema</span>
               <select 
                 value={userPrefs.theme}
                 onChange={(e) => updatePref("theme", e.target.value)}
-                className="bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer text-right"
+                className="appearance-none bg-transparent text-zinc-900 dark:text-white text-sm font-bold focus:outline-none cursor-pointer sm:text-right"
               >
                 <option className="bg-white dark:bg-zinc-900" value="Oscuro">Oscuro</option>
                 <option className="bg-white dark:bg-zinc-900" value="Claro">Claro</option>
@@ -211,7 +214,7 @@ export default function Settings({ cars = [], car }: SettingsProps) {
           </p>
           <div className="space-y-4">
             <button 
-              onClick={() => alert("Para cambiar tu contraseña, cierra sesión e ingresa mediante el flujo de recuperación o gestiona tu acceso desde tu proveedor de correo si usas Google/GitHub.")}
+              onClick={() => toast.info("Para cambiar tu contraseña, cierra sesión e ingresa mediante el flujo de recuperación o gestiona tu acceso desde tu proveedor de correo si usas Google/GitHub.")}
               className="w-full rounded-[18px] bg-indigo-500 px-6 py-4 text-sm font-bold text-white hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
             >
               Cambiar contraseña

@@ -14,6 +14,8 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?   // Para login con Credentials
+  plan          String    @default("STANDARD") // STANDARD, PRO
+  stripeCustomerId String? @unique
   createdAt     DateTime  @default(now())
   cars          UserCar[]
   accounts      Account[]

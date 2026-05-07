@@ -26,6 +26,8 @@ history: {
                take: 50, // Limit history records
              },
             maintenanceChecks: true,
+            documents: true,
+            fuelLogs: true,
             reminders: {
               orderBy: {
                 date: 'asc'

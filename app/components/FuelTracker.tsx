@@ -3,6 +3,8 @@
 import { useState, useActionState, useEffect } from "react";
 import { addFuelLog } from "../actions/addFuelLog";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
+import ConfirmModal from "./ConfirmModal";
 
 interface FuelLog {
   id: string;
@@ -15,9 +17,16 @@ interface FuelLog {
 export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelLog[], activeCarId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(addFuelLog, undefined);
+  const [confirmOpen, setConfirmOpen] = useState<{ title: string, message: string, onConfirm: () => void } | null>(null);
 
   useEffect(() => {
-    if (state?.success) setIsOpen(false);
+    if (state?.success) {
+      setIsOpen(false);
+      toast.success("Carga de combustible registrada.");
+    }
+    if (state?.error) {
+      toast.error(state.error);
+    }
   }, [state]);
 
   // Calcular eficiencia (km/l) entre los dos últimos registros
@@ -86,14 +95,19 @@ export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelL
                       <div className="flex items-center justify-end gap-4">
                         <span>${log.totalCost.toLocaleString()}</span>
                         <button 
-                          onClick={async () => {
-                            if (confirm("¿Seguro que quieres eliminar este registro?")) {
-                              const { deleteFuelLog } = await import("../actions/deleteFuelLog");
-                              const res = await deleteFuelLog(log.id);
-                              if (res.error) alert(res.error);
-                            }
+                          onClick={() => {
+                            setConfirmOpen({
+                              title: "Eliminar Registro",
+                              message: "¿Seguro que quieres eliminar este registro de combustible?",
+                              onConfirm: async () => {
+                                const { deleteFuelLog } = await import("../actions/deleteFuelLog");
+                                const res = await deleteFuelLog(log.id);
+                                if (res.success) toast.success("Registro eliminado.");
+                                else toast.error(res.error || "Error al eliminar");
+                              }
+                            });
                           }}
-                          className="opacity-0 group-hover:opacity-100 p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
+                          className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
                           title="Eliminar registro"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
@@ -118,19 +132,19 @@ export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelL
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Fecha</label>
-                  <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
+                  <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Kilometraje</label>
-                  <input type="number" name="km" required placeholder="Ej: 50200" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
+                  <input type="number" name="km" required placeholder="Ej: 50200" className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Litros</label>
-                  <input type="number" step="0.01" name="liters" required placeholder="Ej: 40.5" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
+                  <input type="number" step="0.01" name="liters" required placeholder="Ej: 40.5" className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Costo Total ($)</label>
-                  <input type="number" step="0.01" name="totalCost" required placeholder="Ej: 950.00" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
+                  <input type="number" step="0.01" name="totalCost" required placeholder="Ej: 950.00" className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white" />
                 </div>
               </div>
 
@@ -146,6 +160,19 @@ export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelL
           </div>
         </div>,
         document.body
+      )}
+
+      {confirmOpen && (
+        <ConfirmModal 
+          isOpen={!!confirmOpen}
+          title={confirmOpen.title}
+          message={confirmOpen.message}
+          onConfirm={() => {
+            confirmOpen.onConfirm();
+            setConfirmOpen(null);
+          }}
+          onCancel={() => setConfirmOpen(null)}
+        />
       )}
     </div>
   );

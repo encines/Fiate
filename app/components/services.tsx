@@ -4,46 +4,95 @@ import { useState, useTransition, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { deleteService } from "../actions/deleteService";
 import { editService } from "../actions/editService";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-export default function Services({ car }: { car: any }) {
-  const history = car?.history || [];
-  // Paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedService, setSelectedService] = useState<any>(null);
+const AddServiceModal = dynamic(() => import("./AddServiceModal"), { ssr: false });
+const ConfirmModal = dynamic(() => import("./ConfirmModal"), { ssr: false });
+
+const CATEGORIES = [
+  { name: "Motor", keywords: ["aceite", "filtro", "bujía", "bujia", "anticongelante", "motor"], color: "bg-indigo-500" },
+  { name: "Frenos", keywords: ["freno", "balata", "disco", "liquido de frenos"], color: "bg-rose-500" },
+  { name: "Llantas", keywords: ["llanta", "neumatico", "rotacion", "alineacion", "balanceo"], color: "bg-emerald-500" },
+  { name: "Otros", keywords: [], color: "bg-zinc-500" },
+];
+
+interface Service {
+  id: string;
+  date: string | Date;
+  cost: number | null;
+  kmAtService: number;
+  customName: string | null;
+  notes: string | null;
+  imageUrl: string | null;
+}
+
+export default function Services({ 
+  car, 
+  cars = [], 
+  activeCarId = null,
+  userPlan,
+  initialFilter = "Todos",
+  initialPage = 1
+}: { 
+  car: any, 
+  cars?: any[], 
+  activeCarId?: string | null,
+  userPlan: string,
+  initialFilter?: string,
+  initialPage?: number
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isPro = userPlan === "PRO";
+  const history: Service[] = car?.history || [];
+  
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [activeFilter, setActiveFilter] = useState("Todos");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showLightbox, setShowLightbox] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState<{ title: string, message: string, onConfirm: () => void } | null>(null);
+
+  const activeFilter = searchParams.get("filter") || initialFilter;
+  const currentPage = Number(searchParams.get("page")) || initialPage;
+
+  const updateUrl = (params: { page?: number; filter?: string }) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    if (params.page !== undefined) newParams.set("page", params.page.toString());
+    if (params.filter !== undefined) newParams.set("filter", params.filter);
+    router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const itemsPerPage = 5;
   
   // Calcular métricas
   const currentYear = new Date().getFullYear();
   
-  const thisYearServices = useMemo(() => history.filter(item => {
+  const thisYearServices = useMemo(() => history.filter((item: Service) => {
     const d = new Date(item.date);
     return d.getFullYear() === currentYear;
   }), [history, currentYear]);
-  console.log('Memoized thisYearServices:', thisYearServices);
 
-  const totalSpendThisYear = thisYearServices.reduce((sum, item) => sum + (item.cost || 0), 0);
+  const totalSpendThisYear = thisYearServices.reduce((sum: number, item: Service) => sum + (item.cost || 0), 0);
 
-  // Análisis de Gastos por Categoría
-  const categories = [
-    { name: "Motor", keywords: ["aceite", "filtro", "bujía", "bujia", "anticongelante", "motor"], color: "bg-indigo-500" },
-    { name: "Frenos", keywords: ["freno", "balata", "disco", "liquido de frenos"], color: "bg-rose-500" },
-    { name: "Llantas", keywords: ["llanta", "neumatico", "rotacion", "alineacion", "balanceo"], color: "bg-emerald-500" },
-    { name: "Otros", keywords: [], color: "bg-zinc-500" },
-  ];
 
-  const filteredHistory = history.filter(item => {
+  const filteredHistory = history.filter((item: Service) => {
     if (activeFilter === "Todos") return true;
     const name = (item.customName || "").toLowerCase();
     if (activeFilter === "Otros") {
-       return !categories.slice(0, 3).some(c => c.keywords.some(k => name.includes(k)));
+       return !CATEGORIES.slice(0, 3).some(c => c.keywords.some(k => name.includes(k)));
     }
-    const cat = categories.find(c => c.name === activeFilter);
+    const cat = CATEGORIES.find(c => c.name === activeFilter);
     if (!cat) return true;
     return cat.keywords.some(k => name.includes(k));
   });
@@ -55,16 +104,15 @@ export default function Services({ car }: { car: any }) {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredHistory.slice(indexOfFirstItem, indexOfLastItem);
 
-  const expenseBreakdown = useMemo(() => categories.map(cat => {
+  const expenseBreakdown = useMemo(() => CATEGORIES.map(cat => {
     const total = history
-      .filter(item => {
+      .filter((item: Service) => {
         const name = (item.customName || "").toLowerCase();
-        return cat.keywords.some(k => name.includes(k)) || (cat.name === "Otros" && !categories.slice(0, 3).some(c => c.keywords.some(k => name.includes(k))));
+        return cat.keywords.some(k => name.includes(k)) || (cat.name === "Otros" && !CATEGORIES.slice(0, 3).some(c => c.keywords.some(k => name.includes(k))));
       })
       .reduce((sum, item) => sum + (item.cost || 0), 0);
     return { ...cat, total };
-  }).filter(c => c.total > 0), [categories, history]);
-  console.log('Memoized expenseBreakdown:', expenseBreakdown);
+  }).filter(c => c.total > 0), [history]);
 
   const maxExpense = Math.max(...expenseBreakdown.map(c => c.total), 1);
 
@@ -85,26 +133,25 @@ export default function Services({ car }: { car: any }) {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Historial de Servicios</h1>
             <p className="mt-1 text-zinc-500 dark:text-zinc-400">
-              Revisa mantenimientos pasados y reparaciones de tu flota.
+              Revisa mantenimientos pasados y reparaciones de tu auto.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="relative flex-1 sm:flex-initial">
               <button
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 px-4 py-2.5 text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 px-4 py-3 sm:py-2.5 text-xs sm:text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                 {activeFilter === "Todos" ? "Filtrar" : activeFilter}
               </button>
               {showFilterMenu && (
-                <div className="absolute left-0 mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50">
-                  {["Todos", ...categories.map(c => c.name)].map((filterOption) => (
+                <div className="absolute left-0 sm:right-0 top-full mt-2 w-48 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2 shadow-xl z-50">
+                  {["Todos", ...CATEGORIES.map(c => c.name)].map((filterOption) => (
                     <button
                       key={filterOption}
                       onClick={() => {
-                        setActiveFilter(filterOption);
-                        setCurrentPage(1);
+                        updateUrl({ filter: filterOption, page: 1 });
                         setShowFilterMenu(false);
                       }}
                       className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
@@ -115,12 +162,35 @@ export default function Services({ car }: { car: any }) {
                 </div>
               )}
             </div>
+            
+            <div className="flex-1 sm:flex-initial">
+              <AddServiceModal 
+                cars={cars} 
+                activeCarId={activeCarId} 
+                buttonClass="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 px-4 py-3 sm:py-2.5 text-xs sm:text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all"
+              />
+            </div>
+
             <button 
-              onClick={handlePrintReport}
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-indigo-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition-all"
+              onClick={() => {
+                if (!isPro) {
+                  toast.info("La generación de reportes PDF certificados es una función exclusiva de Fiate PRO. ¡Mejora tu plan para exportar tu historial!");
+                  return;
+                }
+                handlePrintReport();
+              }}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl border px-4 py-3 sm:py-2.5 text-xs sm:text-sm font-bold transition-all ${
+                isPro 
+                  ? "border-indigo-500 bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/20" 
+                  : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
+              }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-              Exportar Reporte Pro
+              {isPro ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              )}
+              <span className="whitespace-nowrap">{isPro ? "Reporte" : "Reporte PRO"}</span>
             </button>
           </div>
         </div>
@@ -129,30 +199,30 @@ export default function Services({ car }: { car: any }) {
       {/* Analytics & Metrics Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Metric Cards Column */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-6 flex flex-col justify-between h-32 transition-colors">
+        <div className="lg:col-span-1 grid grid-cols-2 lg:grid-cols-1 gap-6">
+          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-5 sm:p-6 flex flex-col justify-between min-h-[110px] sm:h-32 transition-colors">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Servicios Totales</span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+              <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-wider">Servicios Totales</span>
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
               </div>
             </div>
-            <p className="text-3xl font-bold text-zinc-900 dark:text-white">{history.length}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">{history.length}</p>
           </div>
 
-          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-6 flex flex-col justify-between h-32 transition-colors">
+          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-5 sm:p-6 flex flex-col justify-between min-h-[110px] sm:h-32 transition-colors">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Inversión {currentYear}</span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400">
+              <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-wider">Inversión {currentYear}</span>
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
               </div>
             </div>
-            <p className="text-3xl font-bold text-zinc-900 dark:text-white">${totalSpendThisYear.toLocaleString()}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">${mounted ? totalSpendThisYear.toLocaleString() : "0"}</p>
           </div>
         </div>
 
         {/* Category Breakdown Card */}
-        <div className="lg:col-span-2 rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-8 backdrop-blur-md transition-colors">
+        <div className="lg:col-span-2 rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-6 sm:p-8 backdrop-blur-md transition-colors">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Análisis por Categoría</h3>
             <span className="text-xs text-zinc-500 dark:text-zinc-400">Distribución de gastos</span>
@@ -162,7 +232,7 @@ export default function Services({ car }: { car: any }) {
               <div key={cat.name} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-700 dark:text-zinc-300 font-medium">{cat.name}</span>
-                  <span className="text-zinc-900 dark:text-white font-bold">${cat.total.toLocaleString()}</span>
+                  <span className="text-zinc-900 dark:text-white font-bold">${mounted ? cat.total.toLocaleString() : "0"}</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-zinc-200 dark:bg-zinc-900 overflow-hidden">
                   <div 
@@ -208,14 +278,14 @@ export default function Services({ car }: { car: any }) {
                 {/* Mileage */}
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">KILOMETRAJE</p>
-                  <p className="font-bold text-zinc-900 dark:text-white">{item.kmAtService.toLocaleString()} km</p>
+                  <p className="font-bold text-zinc-900 dark:text-white">{mounted ? item.kmAtService.toLocaleString() : item.kmAtService} km</p>
                 </div>
 
                 {/* Cost & Status */}
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">COSTO / ESTADO</p>
                   <div className="flex items-center gap-3">
-                    <p className="font-bold text-zinc-900 dark:text-white">${item.cost?.toLocaleString() || "0.00"}</p>
+                    <p className="font-bold text-zinc-900 dark:text-white">${mounted ? item.cost?.toLocaleString() : "0"}</p>
                     <span className="inline-flex items-center rounded-full bg-teal-500/10 px-2.5 py-0.5 text-xs font-medium text-teal-400">
                       Completado
                     </span>
@@ -244,10 +314,10 @@ export default function Services({ car }: { car: any }) {
       {/* Pagination */}
       <div className="flex items-center justify-between pt-8 border-t border-zinc-200 dark:border-zinc-800">
         <button 
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          onClick={() => updateUrl({ page: Math.max(currentPage - 1, 1) })}
           disabled={currentPage === 1}
           className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-            currentPage === 1 ? "text-zinc-700 cursor-not-allowed" : "text-zinc-500 hover:text-white"
+            currentPage === 1 ? "text-zinc-700 cursor-not-allowed" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
           }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -264,7 +334,7 @@ export default function Services({ car }: { car: any }) {
               return (
                 <button
                   key={page}
-                  onClick={() => setCurrentPage(page)}
+                  onClick={() => updateUrl({ page })}
                   className={`h-10 w-10 rounded-xl text-sm font-bold transition-all ${
                     currentPage === page
                       ? "bg-indigo-500 text-white"
@@ -285,10 +355,10 @@ export default function Services({ car }: { car: any }) {
         </div>
 
         <button 
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          onClick={() => updateUrl({ page: Math.min(currentPage + 1, totalPages) })}
           disabled={currentPage === totalPages || totalPages === 0}
           className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-            currentPage === totalPages || totalPages === 0 ? "text-zinc-700 cursor-not-allowed" : "text-zinc-500 hover:text-white"
+            currentPage === totalPages || totalPages === 0 ? "text-zinc-700 cursor-not-allowed" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
           }`}
         >
           Siguiente
@@ -297,7 +367,7 @@ export default function Services({ car }: { car: any }) {
       </div>
 
       {/* Detail Modal */}
-      {selectedService && createPortal(
+      {mounted && selectedService && createPortal(
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="relative w-full max-w-2xl rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
             <button 
@@ -371,16 +441,21 @@ export default function Services({ car }: { car: any }) {
                     <button 
                       disabled={isPending}
                       onClick={() => {
-                        if (confirm("¿Seguro que deseas eliminar este servicio? Esto recalculará tus gastos totales.")) {
-                          startTransition(async () => {
-                            const res = await deleteService(selectedService.id);
-                            if (res.success) {
-                              setSelectedService(null);
-                            } else {
-                              alert(res.error);
-                            }
-                          });
-                        }
+                        setConfirmOpen({
+                          title: "Eliminar Servicio",
+                          message: "¿Seguro que deseas eliminar este servicio? Esto recalculará tus gastos totales.",
+                          onConfirm: () => {
+                            startTransition(async () => {
+                              const res = await deleteService(selectedService.id);
+                              if (res.success) {
+                                setSelectedService(null);
+                                toast.success("Servicio eliminado correctamente.");
+                              } else {
+                                toast.error(res.error || "Error al eliminar");
+                              }
+                            });
+                          }
+                        });
                       }}
                       className="flex-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 py-3 text-sm font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
                     >
@@ -393,13 +468,14 @@ export default function Services({ car }: { car: any }) {
                   action={(formData) => {
                     formData.append("serviceId", selectedService.id);
                     startTransition(async () => {
-                      const res = await editService(null, formData);
-                      if (res.success) {
-                        setIsEditing(false);
-                        setSelectedService(null);
-                      } else {
-                        alert(res.error);
-                      }
+                        const res = await editService(null, formData);
+                        if (res.success) {
+                          setIsEditing(false);
+                          setSelectedService(null);
+                          toast.success("Servicio actualizado correctamente.");
+                        } else {
+                          toast.error(res.error || "Error al actualizar");
+                        }
                     });
                   }} 
                   className="space-y-6"
@@ -414,7 +490,7 @@ export default function Services({ car }: { car: any }) {
                       <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Nombre del Servicio</label>
                       <input 
                         name="customName" 
-                        defaultValue={selectedService.customName}
+                        defaultValue={selectedService.customName ?? ""}
                         required 
                         className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
                       />
@@ -435,7 +511,7 @@ export default function Services({ car }: { car: any }) {
                         name="cost" 
                         type="number" 
                         step="0.01"
-                        defaultValue={selectedService.cost}
+                        defaultValue={selectedService.cost ?? ""}
                         className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
                       />
                     </div>
@@ -482,7 +558,7 @@ export default function Services({ car }: { car: any }) {
         document.body
       )}
       {/* Lightbox Modal */}
-      {showLightbox && createPortal(
+      {mounted && showLightbox && createPortal(
         <div 
           className="fixed inset-0 z-[20000] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-12 animate-in fade-in duration-300"
           onClick={() => setShowLightbox(null)}
@@ -529,7 +605,7 @@ export default function Services({ car }: { car: any }) {
           </div>
           <div className="p-6 bg-zinc-50 rounded-3xl border border-zinc-200">
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Inversión Estimada</p>
-            <p className="text-2xl font-black text-indigo-600">${history.reduce((acc: any, curr: any) => acc + (curr.cost || 0), 0).toLocaleString()}</p>
+            <p className="text-2xl font-black text-indigo-600">${mounted ? history.reduce((acc: number, curr: Service) => acc + (curr.cost || 0), 0).toLocaleString() : "0"}</p>
           </div>
           <div className="p-6 bg-zinc-50 rounded-3xl border border-zinc-200">
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Fecha de Emisión</p>
@@ -548,11 +624,11 @@ export default function Services({ car }: { car: any }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200">
-            {history.map((item: any) => (
+            {history.map((item: Service) => (
               <tr key={item.id} className="break-inside-avoid">
                 <td className="py-4 px-4 font-medium text-zinc-600">{new Date(item.date).toLocaleDateString('es-MX')}</td>
                 <td className="py-4 px-4 font-bold text-zinc-900">{item.customName || "Mantenimiento General"}</td>
-                <td className="py-4 px-4 text-right font-black text-zinc-900">{item.kmAtService.toLocaleString()} KM</td>
+                <td className="py-4 px-4 text-right font-black text-zinc-900">{mounted ? item.kmAtService.toLocaleString() : item.kmAtService} KM</td>
                 <td className="py-4 px-4 text-right text-zinc-500 italic max-w-xs leading-relaxed">{item.notes || "-"}</td>
               </tr>
             ))}
@@ -570,6 +646,24 @@ export default function Services({ car }: { car: any }) {
           </div>
         </div>
       </div>
+      <ServicesConfirmWrapper confirmOpen={confirmOpen} setConfirmOpen={setConfirmOpen} />
     </div>
+  );
+}
+
+// Separate component for the confirm modal to avoid nesting issues with createPortal
+function ServicesConfirmWrapper({ confirmOpen, setConfirmOpen }: any) {
+  if (!confirmOpen) return null;
+  return (
+    <ConfirmModal 
+      isOpen={!!confirmOpen}
+      title={confirmOpen.title}
+      message={confirmOpen.message}
+      onConfirm={() => {
+        confirmOpen.onConfirm();
+        setConfirmOpen(null);
+      }}
+      onCancel={() => setConfirmOpen(null)}
+    />
   );
 }

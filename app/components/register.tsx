@@ -12,93 +12,107 @@ export default function Register() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700">
-      <div className="flex min-h-full flex-col w-full sm:w-1/3 justify-center px-6 py-12 lg:px-8 bg-slate-950/90 rounded-3xl shadow-2xl shadow-black/20 backdrop-blur-xl m-4">
-        <Link href="/" className="text-indigo-400 hover:text-indigo-300">
-          Regresar
+    <div className="relative flex min-h-screen overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
+      {/* Visual Side (Hidden on mobile) */}
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden border-r border-white/5">
+        <div className="absolute inset-0 z-0 opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" 
+             style={{ backgroundImage: `linear-gradient(to right, #808080 1px, transparent 1px), linear-gradient(to bottom, #808080 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
+        <div className="absolute top-[20%] -right-[10%] h-[600px] w-[600px] rounded-full bg-teal-500/10 blur-[120px]" />
+        
+        <Link href="/" className="relative z-10 flex items-center gap-2 transition-transform hover:scale-105 active:scale-95">
+          <Image src="/screen.png" alt="Fiate" width={60} height={60} className="h-10 w-auto object-contain brightness-110" />
+          <span className="text-xl font-black uppercase tracking-tighter text-white">Fiate</span>
         </Link>
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
-          <Image
-            src="/logo.png"
-            alt="Fiate"
-            width={420}
-            height={420}
-            className="mx-auto h-25 w-auto"
-            priority
-          />
-          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
-            Crea tu cuenta
+
+        <div className="relative z-10 space-y-6">
+          <h2 className="text-6xl font-medium tracking-tighter text-white leading-tight">
+            Eleva el estándar <br /> <span className="text-teal-400">de tu mantenimiento.</span>
           </h2>
+          <p className="max-w-md text-lg text-zinc-500">
+            Únete a la plataforma que está cambiando la forma en que los dueños de autos cuidan su inversión.
+          </p>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="h-12 w-1 rounded-full bg-teal-500" />
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Join the Elite Garage</p>
+        </div>
+      </div>
+
+      {/* Form Side */}
+      <div className="relative flex w-full flex-col items-center justify-center p-8 lg:w-1/2">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-teal-500/5 blur-[120px]" />
+        
+        <div className="relative z-10 w-full max-w-sm space-y-10">
+          <div className="space-y-2 text-center lg:text-left">
+            <h3 className="text-4xl font-black tracking-tight text-white uppercase">Nuevo Miembro</h3>
+            <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest">Completa tus datos para empezar</p>
+          </div>
+
           <form action={formAction} className="space-y-6">
-            <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                Nombre
-              </label>
-              <div className="mt-2">
+            <div className="space-y-4">
+              <div className="group space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-focus-within:text-teal-400 transition-colors">
+                  Nombre Completo
+                </label>
                 <input
                   id="name"
                   type="text"
                   name="name"
                   required
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  placeholder="John Doe"
+                  className="block h-14 w-full rounded-2xl border border-white/5 bg-white/[0.03] px-6 text-sm font-medium text-white transition-all focus:border-teal-500/50 focus:bg-white/[0.05] focus:outline-none focus:ring-4 focus:ring-teal-500/10 placeholder:text-zinc-700"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                Correo electrónico
-              </label>
-              <div className="mt-2">
+              <div className="group space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-focus-within:text-teal-400 transition-colors">
+                  Correo Electrónico
+                </label>
                 <input
                   id="email"
                   type="email"
                   name="email"
                   required
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  placeholder="name@domain.com"
+                  className="block h-14 w-full rounded-2xl border border-white/5 bg-white/[0.03] px-6 text-sm font-medium text-white transition-all focus:border-teal-500/50 focus:bg-white/[0.05] focus:outline-none focus:ring-4 focus:ring-teal-500/10 placeholder:text-zinc-700"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                Contraseña
-              </label>
-              <div className="mt-2">
+              <div className="group space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-focus-within:text-teal-400 transition-colors">
+                  Contraseña
+                </label>
                 <input
                   id="password"
                   type="password"
                   name="password"
                   required
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  placeholder="••••••••"
+                  className="block h-14 w-full rounded-2xl border border-white/5 bg-white/[0.03] px-6 text-sm font-medium text-white transition-all focus:border-teal-500/50 focus:bg-white/[0.05] focus:outline-none focus:ring-4 focus:ring-teal-500/10 placeholder:text-zinc-700"
                 />
               </div>
             </div>
 
             {state?.error && (
-              <p className="text-sm text-red-500">{state.error}</p>
+              <div className="flex items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-xs font-bold text-rose-500 uppercase tracking-widest">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                {state.error}
+              </div>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={isPending}
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:bg-indigo-500/50"
-              >
-                {isPending ? "Registrando..." : "Registrarse"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="group relative flex h-16 w-full items-center justify-center overflow-hidden rounded-2xl bg-teal-600 text-xs font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-teal-500 hover:shadow-[0_20px_40px_rgba(20,184,166,0.3)] disabled:bg-zinc-800 disabled:text-zinc-500"
+            >
+              {isPending ? "Creando Cuenta..." : "Registrarse en Fiate"}
+            </button>
           </form>
 
-          <p className="mt-10 text-center text-sm/6 text-gray-400">
-            ¿Ya tienes una cuenta?{" "}
-            <Link
-              href="/login"
-              className="font-semibold text-indigo-400 hover:text-indigo-300"
-            >
+          <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-zinc-600">
+            ¿Ya eres miembro?{" "}
+            <Link href="/login" className="text-white hover:text-teal-400 transition-colors">
               Inicia sesión aquí
             </Link>
           </p>
