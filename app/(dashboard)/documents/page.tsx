@@ -27,7 +27,8 @@ export default async function DocumentsPage() {
     try {
       const paths = JSON.parse(doc.imageUrl || "[]");
       if (Array.isArray(paths)) {
-        urls = await Promise.all(paths.map(path => getSignedUrl(path)));
+        const signedUrls = await Promise.all(paths.map(path => getSignedUrl(path)));
+        urls = signedUrls.filter((url): url is string => url !== null);
       } else if (typeof paths === 'string' && paths.startsWith('data:image')) {
         // Fallback para datos antiguos en Base64 (migración incremental)
         urls = [paths];
