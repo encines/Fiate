@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const preferences = [
   { label: "Notificaciones por correo", value: "Activadas" },
@@ -213,12 +214,7 @@ export default function Settings({ cars = [], car }: SettingsProps) {
             Mantén tu cuenta protegida cambiando tu contraseña periódicamente y cerrando sesiones activas en otros dispositivos.
           </p>
           <div className="space-y-4">
-            <button 
-              onClick={() => toast.info("Para cambiar tu contraseña, cierra sesión e ingresa mediante el flujo de recuperación o gestiona tu acceso desde tu proveedor de correo si usas Google/GitHub.")}
-              className="w-full rounded-[18px] bg-indigo-500 px-6 py-4 text-sm font-bold text-white hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
-            >
-              Cambiar contraseña
-            </button>
+            <ChangePasswordModal />
             <button 
               onClick={() => signOut({ callbackUrl: "/" })}
               className="w-full rounded-[18px] border border-zinc-200 dark:border-zinc-800 px-6 py-4 text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-[0.98]"

@@ -6,11 +6,13 @@ import dynamic from "next/dynamic";
 const SiderBar = dynamic(() => import("./sidebar"), { ssr: false });
 import HeaderIn from "./headerIn";
 
+import { SimplifiedCar, CatalogCar } from "../../lib/types";
+
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
-  cars: any[];
+  cars: SimplifiedCar[];
   activeCarId: string | null | undefined;
-  catalogCars: any[];
+  catalogCars: CatalogCar[];
   userEmail: string;
 }
 

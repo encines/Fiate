@@ -3,7 +3,7 @@
 import { prisma } from "../../lib/prisma";
 import { auth } from "../../auth";
 import { revalidatePath } from "next/cache";
-
+import { supabaseAdmin } from "../../lib/supabase";
 import { DocumentSchema } from "../../lib/validations";
 
 export async function addDocument(prevState: any, formData: FormData) {
@@ -37,23 +37,53 @@ export async function addDocument(prevState: any, formData: FormData) {
     }
  
     const isPro = userCar.user.plan === "PRO";
-    let imagesData: string[] = [];
     const allImages = formData.getAll("image").filter(item => 
-      (item instanceof File && item.size > 0) || (typeof item === "string" && item.startsWith("data:image"))
-    );
+      item instanceof File && item.size > 0
+    ) as File[];
 
     if (!isPro && allImages.length > 1) {
       return { error: "El plan Estándar solo permite 1 foto por documento. Actualiza a PRO para subir múltiples fotos." };
     }
     
-    for (const item of allImages) {
-      if (typeof item === "string") {
-        imagesData.push(item);
-      } else if (item instanceof File) {
+    const uploadedPaths: string[] = [];
+    const allItems = formData.getAll("image");
+
+    for (const item of allItems) {
+      let fileBuffer: Buffer;
+      let contentType: string;
+      let fileExt: string;
+
+      if (item instanceof File && item.size > 0) {
         const buffer = await item.arrayBuffer();
-        const base64Image = Buffer.from(buffer).toString('base64');
-        imagesData.push(`data:${item.type};base64,${base64Image}`);
+        fileBuffer = Buffer.from(buffer);
+        contentType = item.type;
+        fileExt = item.name.split('.').pop() || 'jpg';
+      } else if (typeof item === "string" && item.startsWith("data:image")) {
+        // Manejar Base64 (de la compresión en cliente)
+        const [meta, data] = item.split(",");
+        contentType = meta.split(":")[1].split(";")[0];
+        fileBuffer = Buffer.from(data, "base64");
+        fileExt = contentType.split("/")[1] || 'jpg';
+      } else {
+        continue;
       }
+
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `user_${userCar.userId}/car_${userCarId}/${fileName}`;
+
+      const { data, error: uploadError } = await supabaseAdmin.storage
+        .from('documents')
+        .upload(filePath, fileBuffer, {
+          contentType: contentType,
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error("Error al subir a Supabase:", uploadError);
+        continue;
+      }
+
+      uploadedPaths.push(data.path);
     }
  
     await prisma.carDocument.create({
@@ -61,7 +91,8 @@ export async function addDocument(prevState: any, formData: FormData) {
         userCarId,
         type,
         name,
-        imageUrl: JSON.stringify(imagesData),
+        // Guardamos los paths en lugar de Base64
+        imageUrl: JSON.stringify(uploadedPaths),
         expiryDate: expiryDate || null,
       }
     });

@@ -3,6 +3,7 @@
 import { prisma } from "../../lib/prisma";
 import { auth } from "../../auth";
 import { revalidatePath } from "next/cache";
+import { supabaseAdmin } from "../../lib/supabase";
 import { AddVehicleSchema } from "../../lib/validations";
 import { discoverMaintenancePlan } from "./discoverMaintenancePlan";
 
@@ -83,15 +84,28 @@ export async function addVehicle(prevState: any, formData: FormData) {
       },
     });
 
-    // Lógica para imagen (Base64)
+    // Lógica para imagen (Supabase Storage)
     const imageFile = formData.get("image") as File;
     let imageUrl = null;
     
     if (imageFile && imageFile.size > 0) {
       try {
-        const buffer = await imageFile.arrayBuffer();
-        const base64Image = Buffer.from(buffer).toString('base64');
-        imageUrl = `data:${imageFile.type};base64,${base64Image}`;
+        const fileExt = imageFile.name.split('.').pop() || 'jpg';
+        const fileName = `car_${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `user_${user.id}/${fileName}`;
+
+        const { data, error: uploadError } = await supabaseAdmin.storage
+          .from('vehicles')
+          .upload(filePath, imageFile, {
+            contentType: imageFile.type,
+            upsert: true
+          });
+
+        if (uploadError) {
+          console.error("Error al subir imagen de vehículo:", uploadError);
+        } else {
+          imageUrl = data.path;
+        }
       } catch (e) {
         console.error("Error al procesar la imagen:", e);
       }
@@ -103,7 +117,7 @@ export async function addVehicle(prevState: any, formData: FormData) {
         userId: user.id,
         catalogCarId: catalogCar.id,
         currentKm,
-        imageUrl,
+        imageUrl, // Ahora guarda el path de Supabase
       },
     });
 

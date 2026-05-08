@@ -1,68 +1,78 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  // Limpiar base de datos
-  await prisma.serviceHistory.deleteMany()
-  await prisma.userCar.deleteMany()
-  await prisma.maintenanceTask.deleteMany()
-  await prisma.catalogCar.deleteMany()
-  await prisma.carModel.deleteMany()
-  await prisma.brand.deleteMany()
-  await prisma.user.deleteMany()
+  console.log('Iniciando seed de catálogo...')
 
-  // Crear Usuario
-  const hashedPassword = await bcrypt.hash('123456', 10)
-  
-  const user = await prisma.user.create({
-    data: {
-      name: 'Carlos',
-      email: 'carlos@example.com',
-      password: hashedPassword,
-    },
-  })
+  // Marcas
+  const marcas = ['Fiat', 'BMW', 'Nissan', 'Toyota']
+  for (const nombre of marcas) {
+    await prisma.brand.upsert({
+      where: { name: nombre },
+      update: {},
+      create: { name: nombre },
+    })
+  }
 
-  // Crear Marcas
-  const fiat = await prisma.brand.create({ data: { name: 'Fiat' } })
-  const bmw = await prisma.brand.create({ data: { name: 'BMW' } })
-  const nissan = await prisma.brand.create({ data: { name: 'Nissan' } })
-  const toyota = await prisma.brand.create({ data: { name: 'Toyota' } })
+  // Modelos y Catálogos
+  const fiat = await prisma.brand.findUnique({ where: { name: 'Fiat' } })
+  if (fiat) {
+    const unoWay = await prisma.carModel.upsert({
+      where: { name_brandId: { name: 'Uno Way', brandId: fiat.id } },
+      update: {},
+      create: { name: 'Uno Way', brandId: fiat.id },
+    })
+    await prisma.catalogCar.upsert({
+      where: { modelId_year: { modelId: unoWay.id, year: 2017 } },
+      update: {},
+      create: { year: 2017, engine: '1.4L', modelId: unoWay.id },
+    })
+  }
 
-  // Crear Modelos
-  const unoWay = await prisma.carModel.create({
-    data: { name: 'Uno Way', brandId: fiat.id },
-  })
-  const serie7 = await prisma.carModel.create({
-    data: { name: 'Serie 7', brandId: bmw.id },
-  })
-  const march = await prisma.carModel.create({
-    data: { name: 'March', brandId: nissan.id },
-  })
-  const corolla = await prisma.carModel.create({
-    data: { name: 'Corolla', brandId: toyota.id },
-  })
+  const bmw = await prisma.brand.findUnique({ where: { name: 'BMW' } })
+  if (bmw) {
+    const serie7 = await prisma.carModel.upsert({
+      where: { name_brandId: { name: 'Serie 7', brandId: bmw.id } },
+      update: {},
+      create: { name: 'Serie 7', brandId: bmw.id },
+    })
+    await prisma.catalogCar.upsert({
+      where: { modelId_year: { modelId: serie7.id, year: 2022 } },
+      update: {},
+      create: { year: 2022, trim: '740i M Sport', modelId: serie7.id },
+    })
+  }
 
-  // Crear Autos de Catálogo
-  const fiatCatalog = await prisma.catalogCar.create({
-    data: { year: 2017, engine: '1.4L', modelId: unoWay.id },
-  })
-  const bmwCatalog = await prisma.catalogCar.create({
-    data: { year: 2022, trim: '740i M Sport', modelId: serie7.id },
-  })
-  const nissanCatalog = await prisma.catalogCar.create({
-    data: { year: 2016, engine: '1.6L', modelId: march.id },
-  })
-  const toyotaCatalog = await prisma.catalogCar.create({
-    data: { year: 2015, engine: '1.8L', modelId: corolla.id },
-  })
+  const nissan = await prisma.brand.findUnique({ where: { name: 'Nissan' } })
+  if (nissan) {
+    const march = await prisma.carModel.upsert({
+      where: { name_brandId: { name: 'March', brandId: nissan.id } },
+      update: {},
+      create: { name: 'March', brandId: nissan.id },
+    })
+    await prisma.catalogCar.upsert({
+      where: { modelId_year: { modelId: march.id, year: 2016 } },
+      update: {},
+      create: { year: 2016, engine: '1.6L', modelId: march.id },
+    })
+  }
 
-  // Tareas de mantenimiento removidas del seed porque ahora se asocian a UserCar y el usuario no tiene autos por defecto.
+  const toyota = await prisma.brand.findUnique({ where: { name: 'Toyota' } })
+  if (toyota) {
+    const corolla = await prisma.carModel.upsert({
+      where: { name_brandId: { name: 'Corolla', brandId: toyota.id } },
+      update: {},
+      create: { name: 'Corolla', brandId: toyota.id },
+    })
+    await prisma.catalogCar.upsert({
+      where: { modelId_year: { modelId: corolla.id, year: 2015 } },
+      update: {},
+      create: { year: 2015, engine: '1.8L', modelId: corolla.id },
+    })
+  }
 
-  // * Ya no asignamos vehículos al usuario por defecto para que comience con el garaje vacío *
-
-  console.log('Semilla insertada correctamente ✅')
+  console.log('Catálogo actualizado correctamente ✅ (Sin borrar datos de usuario)')
 }
 
 main()

@@ -75,10 +75,12 @@ const navItems = [
   },
 ];
 
+import { SimplifiedCar, CatalogCar } from "../../lib/types";
+
 interface SidebarProps {
-  cars?: any[];
+  cars?: SimplifiedCar[];
   activeCarId?: string | null;
-  catalogCars?: any[];
+  catalogCars?: CatalogCar[];
   onClose?: () => void;
 }
 

@@ -3,13 +3,10 @@
 import { useTransition } from "react";
 import { setActiveCar } from "../actions/setActiveCar";
 
+import { SimplifiedCar } from "../../lib/types";
+
 interface CarSelectorProps {
-  cars: {
-    id: string;
-    model: string;
-    brand: string;
-    year: number;
-  }[];
+  cars: SimplifiedCar[];
   activeCarId: string | null;
 }
 

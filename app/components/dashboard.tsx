@@ -69,7 +69,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
     <div className="text-zinc-900 dark:text-zinc-100 p-6 sm:p-8 transition-colors">
       <section className="space-y-8 max-w-7xl mx-auto">
         {/* Main Hero Card */}
-        <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 p-6 sm:p-8 backdrop-blur-md overflow-hidden relative group transition-colors">
+        <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-6 sm:p-8 overflow-hidden relative group transition-colors">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-zinc-500/5 blur-[100px] group-hover:bg-zinc-500/10 transition-colors duration-700"></div>
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between relative z-10">
             <div className="max-w-2xl space-y-6 w-full">
@@ -156,7 +156,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
         {/* Premium Analytics Row */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Health Gauge Card */}
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 p-8 backdrop-blur-md flex items-center gap-8 group">
+          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 flex items-center gap-8 group">
             <div className="relative h-32 w-32 flex-shrink-0">
               <svg className="h-full w-full" viewBox="0 0 36 36">
                 <path
@@ -192,7 +192,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
           </div>
 
           {/* Resale Value Card */}
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/40 p-8 backdrop-blur-md relative overflow-hidden group">
+          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 relative overflow-hidden group">
             <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>
             </div>
@@ -206,7 +206,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
                 <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">sobre el valor base</span>
               </div>
               <p className="mt-2 text-xs text-zinc-500">
-                Basado en tu historial impecable y mantenimientos certificados.
+                Basado en tu historial y mantenimientos.
               </p>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
 
         {/* History and Upcoming Grid */}
         <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/30 p-6 sm:p-8 backdrop-blur-sm overflow-hidden">
+          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-6 sm:p-8 overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Servicios Recientes</h2>
@@ -273,7 +273,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/30 p-8 backdrop-blur-sm flex flex-col h-full">
+          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 flex flex-col h-full">
             <div className="flex items-center justify-between gap-4 mb-8">
               <div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Recordatorios</h2>

@@ -10,6 +10,7 @@ export async function registerUser(prevState: any, formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
   };
 
   const parsed = RegisterSchema.safeParse(rawData);

@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Monitorea y agenda los mantenimientos de tu vehículo basado en su kilometraje.",
 };
 
+import SmoothScroll from "./components/SmoothScroll";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,12 +23,14 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${outfit.variable} h-full antialiased`}
+      className={`${outfit.variable} min-h-screen antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="dark"> 
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
           <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
       </body>

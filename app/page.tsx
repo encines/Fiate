@@ -4,10 +4,10 @@ import Footer from "./components/footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <main className="min-h-screen">
       <Header />
       <Landing />
       <Footer />
-    </div>
+    </main>
   );
 }

@@ -12,7 +12,7 @@ export default function Register() {
   );
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
+    <div className="relative flex min-h-screen overflow-x-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
       {/* Visual Side (Hidden on mobile) */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 z-0 opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" 
@@ -87,6 +87,20 @@ export default function Register() {
                   id="password"
                   type="password"
                   name="password"
+                  required
+                  placeholder="••••••••"
+                  className="block h-14 w-full rounded-2xl border border-white/5 bg-white/[0.03] px-6 text-sm font-medium text-white transition-all focus:border-teal-500/50 focus:bg-white/[0.05] focus:outline-none focus:ring-4 focus:ring-teal-500/10 placeholder:text-zinc-700"
+                />
+              </div>
+
+              <div className="group space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-focus-within:text-teal-400 transition-colors">
+                  Repetir Contraseña
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
                   required
                   placeholder="••••••••"
                   className="block h-14 w-full rounded-2xl border border-white/5 bg-white/[0.03] px-6 text-sm font-medium text-white transition-all focus:border-teal-500/50 focus:bg-white/[0.05] focus:outline-none focus:ring-4 focus:ring-teal-500/10 placeholder:text-zinc-700"

@@ -10,6 +10,7 @@ interface CarDocument {
   type: string;
   name: string;
   imageUrl?: string | null;
+  displayUrls?: string[]; // URLs firmadas desde el servidor
   expiryDate?: Date | null;
 }
 
@@ -142,7 +143,9 @@ export default function DocumentManager({
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {documents.map((doc) => {
           const status = getStatus(doc.expiryDate);
-          const images = parseImages(doc.imageUrl);
+          const images = doc.displayUrls && doc.displayUrls.length > 0 
+            ? doc.displayUrls 
+            : parseImages(doc.imageUrl);
           return (
             <div key={doc.id} className="group relative rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-5 hover:border-indigo-500/50 transition-all overflow-hidden backdrop-blur-sm">
               <div 
