@@ -5,7 +5,7 @@ const { auth } = NextAuth(authConfig)
 
 import { NextResponse } from "next/server"
 
-export const proxy = auth((req) => {
+export default auth((req) => {
   const isLoggedIn = !!req.auth
   const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard') || req.nextUrl.pathname.startsWith('/mycar')
   
