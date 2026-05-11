@@ -20,9 +20,7 @@ export async function markServiceDone(userCarId: string, taskId: string, current
       return { error: "No tienes permiso para modificar este vehículo" };
     }
 
-    // Insert a ServiceHistory record so the UI can immediately detect the
-    // completion for a given kilometraje (the frontend looks at history.kmAtService
-    // and history.kmMilestone to decide if a task at a given km is done).
+    // Insert a ServiceHistory record so the UI detects the completion.
     const { error: insertError } = await supabase
       .from('ServiceHistory')
       .insert({
@@ -32,14 +30,6 @@ export async function markServiceDone(userCarId: string, taskId: string, current
         cost: 0,
         date: new Date().toISOString(),
       });
-
-    // Also update the UserCar currentKm if the checked km is greater.
-    if (!insertError) {
-      await supabase
-        .from('UserCar')
-        .update({ currentKm })
-        .eq('id', userCarId);
-    }
 
     if (insertError) throw insertError;
 
