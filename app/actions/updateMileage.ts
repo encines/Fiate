@@ -1,13 +1,15 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { auth } from "../../auth";
 import { UpdateMileageSchema } from "../../lib/validations";
+import { verifyCarOwnership } from "../../lib/verify-ownership";
 
 export async function updateMileage(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) return { error: "No autorizado." };
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) return { error: "No autorizado." };
 
   const rawData = {
     userCarId: formData.get("userCarId"),
@@ -22,23 +24,31 @@ export async function updateMileage(prevState: any, formData: FormData) {
   const { userCarId, newKm } = parsed.data;
 
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true },
-    });
-
-    if (!userCar || userCar.user.email !== session.user.email) {
-      return { error: "Vehículo no pertenece al usuario." };
+    const ownership = await verifyCarOwnership(userCarId, sbUser.id);
+    if (!ownership.valid) {
+      return { error: ownership.error };
     }
 
-    if (newKm < userCar.currentKm) {
+    const { data: userCar, error: fetchError } = await supabase
+      .from('UserCar')
+      .select('id, currentKm')
+      .eq('id', userCarId)
+      .single();
+
+    if (fetchError || !userCar) {
+      return { error: "Vehículo no encontrado." };
+    }
+
+    if (newKm < (userCar.currentKm || 0)) {
       return { error: "El nuevo kilometraje no puede ser menor al actual." };
     }
 
-    await prisma.userCar.update({
-      where: { id: userCarId },
-      data: { currentKm: newKm },
-    });
+    const { error: updateError } = await supabase
+      .from('UserCar')
+      .update({ currentKm: newKm })
+      .eq('id', userCarId);
+
+    if (updateError) throw updateError;
 
     revalidatePath("/dashboard");
     revalidatePath("/mycar");

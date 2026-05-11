@@ -1,14 +1,14 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
-
 import { FuelLogSchema } from "../../lib/validations";
 
 export async function addFuelLog(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) {
     return { error: "No autorizado." };
   }
 
@@ -28,38 +28,41 @@ export async function addFuelLog(prevState: any, formData: FormData) {
   const { userCarId, km, liters, cost, date } = parsed.data;
 
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true }
-    });
+    const { data: userCar, error: carError } = await supabase
+      .from('UserCar')
+      .select('id, currentKm')
+      .eq('id', userCarId)
+      .eq('userId', authUser.id)
+      .single();
 
-    if (!userCar || userCar.user.email !== session.user.email) {
+    if (carError || !userCar) {
       return { error: "Vehículo no encontrado." };
     }
 
-    await prisma.fuelLog.create({
-      data: {
+    const { error: insertError } = await supabase
+      .from('FuelLog')
+      .insert({
         userCarId,
         km,
         liters,
         totalCost: cost,
-        date: date,
-      }
-    });
-
-    // Actualizar kilometraje actual del auto si el registro es mayor
-    if (km > userCar.currentKm) {
-      await prisma.userCar.update({
-        where: { id: userCarId },
-        data: { currentKm: km },
+        date: date || new Date().toISOString(),
       });
+
+    if (insertError) throw insertError;
+
+    if (km > (userCar.currentKm || 0)) {
+      await supabase
+        .from('UserCar')
+        .update({ currentKm: km })
+        .eq('id', userCarId);
     }
 
     revalidatePath("/fuel");
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error(error);
+    console.error("Error al registrar combustible:", error);
     return { error: "Error al registrar combustible." };
   }
 }

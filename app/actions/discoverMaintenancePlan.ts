@@ -1,10 +1,10 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getAIPlanForCar } from "../../lib/gemini";
 
 // Base de datos de conocimientos de la IA para modelos comunes
-// En una fase posterior, esto usaría una búsqueda web real + LLM
 const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
   "fiat uno": [
     { name: "Cambio de aceite y filtro", km: 10000 },
@@ -131,54 +131,72 @@ const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
   ]
 };
 
-import { getAIPlanForCar } from "../../lib/gemini";
-
-// Base de datos de conocimientos... (resto de la base omitida por brevedad en el prompt, pero se mantiene en el archivo)
-
 export async function discoverMaintenancePlan(userCarId: string) {
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser) return { error: "No autorizado." };
+
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { 
-        user: true,
-        catalogCar: { include: { model: { include: { brand: true } } } } 
-      }
-    });
+    // 1. Obtener datos del vehículo usando Supabase
+    const { data: userCar, error: carError } = await supabase
+      .from('UserCar')
+      .select(`
+        id, userId, brand, model, year,
+        User(plan),
+        catalogCar:CatalogCar (
+          year,
+          model:CarModel (
+            name,
+            brand:Brand (name)
+          )
+        )
+      `)
+      .eq('id', userCarId)
+      .single();
 
-    if (!userCar) return { error: "Vehículo no encontrado." };
+    if (carError || !userCar) return { error: "Vehículo no encontrado." };
 
-    const isPro = userCar.user.plan === "PRO";
-    const brandName = userCar.catalogCar.model.brand.name.toLowerCase();
-    const modelName = userCar.catalogCar.model.name.toLowerCase();
-    const year = userCar.catalogCar.year;
+    const isPro = (userCar.User as any).plan === "PRO";
+    const catalogCar = (userCar as any).catalogCar;
+    const brandName = catalogCar
+      ? (catalogCar as any).model.brand.name.toLowerCase()
+      : (userCar as any).brand.toLowerCase();
+    const modelName = catalogCar
+      ? (catalogCar as any).model.name.toLowerCase()
+      : (userCar as any).model.toLowerCase();
+    const year = catalogCar
+      ? (catalogCar as any).year
+      : (userCar as any).year;
     const fullKey = `${brandName} ${modelName}`;
     
     let plan: { name: string, km: number }[] | null = null;
     let source = "";
 
-    // 1. Intentar buscar en la Base de Datos Local primero (Catálogo editado)
-    let catalogEntry = await prisma.maintenanceCatalog.findUnique({
-      where: { key: fullKey }
-    });
+    // 2. Buscar en la Base de Datos Local primero
+    const { data: catalogEntry } = await supabase
+      .from('MaintenanceCatalog')
+      .select('tasksJson')
+      .eq('key', fullKey)
+      .single();
 
     if (catalogEntry) {
       plan = JSON.parse(catalogEntry.tasksJson);
       source = "la base de datos local";
     } else {
-      // 2. Intentar con la IA de Gemini (Búsqueda en tiempo real) - SOLO PRO
+      // 3. Gemini IA para PRO
       if (isPro && process.env.GOOGLE_API_KEY) {
         try {
           console.log(`Buscando plan con Gemini para: ${fullKey} ${year}`);
           plan = await getAIPlanForCar(brandName, modelName, year);
           
-          // Guardar en la DB para futuras consultas (Cache)
           if (plan) {
-            await prisma.maintenanceCatalog.create({
-              data: {
+            await supabase
+              .from('MaintenanceCatalog')
+              .insert({
                 key: fullKey,
                 tasksJson: JSON.stringify(plan)
-              }
-            });
+              });
             source = "Inteligencia Artificial (Gemini)";
           }
         } catch (aiError) {
@@ -186,7 +204,7 @@ export async function discoverMaintenancePlan(userCarId: string) {
         }
       }
 
-      // 3. Fallback a la base de conocimientos estática si Gemini falla, no hay API KEY o no es PRO
+      // 4. Fallback estático
       if (!plan) {
         plan = AI_KNOWLEDGE_BASE[fullKey] || 
                Object.entries(AI_KNOWLEDGE_BASE).find(([key]) => fullKey.includes(key))?.[1] || 
@@ -195,25 +213,26 @@ export async function discoverMaintenancePlan(userCarId: string) {
       }
     }
 
-    if (!plan) {
-      return { error: `La IA aún no tiene el plan específico para ${brandName} ${modelName}.` };
+    if (!plan || plan.length === 0) {
+      return { error: `No se pudo generar un plan de mantenimiento para ${brandName} ${modelName}.` };
     }
 
-    // Limpiar tareas existentes para este AUTO específico
-    await prisma.maintenanceTask.deleteMany({
-      where: { userCarId: userCarId }
-    });
+    // 5. Limpiar tareas existentes
+    await supabase
+      .from('MaintenanceTask')
+      .delete()
+      .eq('userCarId', userCarId);
 
-    // Crear las nuevas tareas vinculadas al AUTO del usuario
-    await Promise.all(plan.map(task => 
-      prisma.maintenanceTask.create({
-        data: {
-          name: task.name,
-          frequencyKm: task.km,
-          userCarId: userCarId
-        }
-      })
-    ));
+    // 6. Crear las nuevas tareas
+    const { error: insertError } = await supabase
+      .from('MaintenanceTask')
+      .insert(plan.map(task => ({
+        name: task.name,
+        frequencyKm: task.km,
+        userCarId: userCarId
+      })));
+
+    if (insertError) throw insertError;
 
     revalidatePath("/plan");
     return { success: true, message: `Plan para ${brandName} ${modelName} generado exitosamente desde ${source}.` };

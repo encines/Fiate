@@ -1,38 +1,38 @@
 import Image from "next/image";
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import EditVehicleModal from "./EditVehicleModal";
 import AddVehicleModal from "./AddVehicleModal";
-import MaintenancePlanTable from "./MaintenancePlanTable";
 import UpdateMileageModal from "./UpdateMileageModal";
-const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat("es-MX", { day: "2-digit", month: "short", year: "numeric" }).format(date);
 
 interface MyCarProps {
   car: any;
 }
 
 export default async function MyCar({ car }: MyCarProps) {
-  const session = await auth();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!session?.user?.email) {
+  if (!user?.email) {
     return <div className="p-8 text-zinc-900 dark:text-white">Sesión no válida o expirada. Por favor inicia sesión nuevamente.</div>;
   }
 
   if (!car) {
-    const catalogCars = await prisma.catalogCar.findMany({
-      include: {
-        model: {
-          include: { brand: true },
-        },
-      },
-    });
+    // Consulta directa a Supabase en lugar de Prisma
+    const { data: catalogCars } = await supabase
+      .from('CatalogCar')
+      .select(`
+        *,
+        model:CarModel (
+          *,
+          brand:Brand (*)
+        )
+      `);
 
     return (
       <div className="flex h-full flex-col items-center justify-center p-8 text-center text-zinc-900 dark:text-white">
         <h2 className="mb-4 text-2xl font-bold">Mi Auto</h2>
         <p className="mb-8 text-zinc-500 dark:text-zinc-400">Aún no tienes vehículos registrados en tu garaje.</p>
-        <AddVehicleModal catalogCars={catalogCars} />
+        <AddVehicleModal catalogCars={(catalogCars || []) as any} />
       </div>
     );
   }
@@ -72,9 +72,9 @@ export default async function MyCar({ car }: MyCarProps) {
   ];
 
   const specs = [
-    { label: "Marca", value: catalogCar.model.brand.name },
-    { label: "Modelo", value: catalogCar.model.name },
-    { label: "Año", value: catalogCar.year.toString() },
+    { label: "Marca", value: catalogCar?.model?.brand?.name || car.brand || "Genérico" },
+    { label: "Modelo", value: catalogCar?.model?.name || car.model || "Vehículo" },
+    { label: "Año", value: (catalogCar?.year || car.year || "").toString() },
     { label: "Color", value: car.color || "No especificado" },
   ];
 
@@ -98,10 +98,10 @@ export default async function MyCar({ car }: MyCarProps) {
                   <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">ID: {car.id.slice(-6)}</span>
                 </div>
                 <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl leading-none">
-                  {catalogCar.model.brand.name} <span className="text-indigo-500 dark:text-indigo-400">{catalogCar.model.name}</span>
+                  {catalogCar?.model?.brand?.name || car.brand || "Genérico"} <span className="text-indigo-500 dark:text-indigo-400">{catalogCar?.model?.name || car.model || "Vehículo"}</span>
                 </h1>
                 <p className="max-w-md text-lg text-zinc-500 dark:text-zinc-400 font-medium">
-                  Modelo {catalogCar.year} · {car.licensePlate || "Sin Placas"}
+                  Modelo {catalogCar?.year || car.year || ""} · {car.licensePlate || "Sin Placas"}
                 </p>
               </div>
 
@@ -112,7 +112,7 @@ export default async function MyCar({ car }: MyCarProps) {
 
             <div className="relative aspect-[2/1] w-full max-w-2xl group cursor-pointer">
               <div className="absolute inset-0 bg-gradient-to-tr from-zinc-500/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <Image src={car.imageUrl || "/march.png"} alt="My Car" fill className="object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-transform duration-700 group-hover:scale-105" />
+              <Image src={car.imageUrl || "/march.png"} alt="My Car" fill sizes="(max-width: 672px) 100vw, 672px" className="object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-transform duration-700 group-hover:scale-105" />
             </div>
           </div>
         </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase";
+import { useState } from "react";
+import { createClient } from "../../lib/supabase/client";
+
+const supabase = createClient();
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Image from "next/image";
-import { resetPasswordAction } from "../actions/resetPassword";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -28,20 +28,13 @@ export default function ResetPassword() {
         return toast.error("La sesión de recuperación ha expirado. Solicita un nuevo correo.");
       }
 
-      // 2. Actualizar en Prisma (Fuente de verdad para el Login)
-      const prismaResult = await resetPasswordAction(user.email, password);
-      
-      if (prismaResult.error) {
-        return toast.error(prismaResult.error);
-      }
-
-      // 3. Actualizar en Supabase Auth (Para consistencia)
+      // 2. Actualizar en Supabase Auth
       const { error: authError } = await supabase.auth.updateUser({ password });
       
       if (authError) {
-        toast.error("Error en Supabase: " + authError.message);
+        toast.error("Error al actualizar contraseña: " + authError.message);
       } else {
-        toast.success("Contraseña actualizada con éxito en todo el sistema.");
+        toast.success("Contraseña actualizada con éxito.");
         router.push("/login");
       }
     } catch (err) {

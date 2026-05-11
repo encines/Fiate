@@ -37,7 +37,7 @@ export default function Footer() {
               links: [
                 { name: "Funcionalidades", href: "/#features" },
                 { name: "Seguridad", href: "/#security" },
-                { name: "Planes y Precios", href: "/pricing" },
+                { name: "Planes y Precios", href: "/#elige-tu-plan" },
               ],
             },
             {
@@ -45,7 +45,6 @@ export default function Footer() {
               links: [
                 { name: "Centro de Ayuda", href: "mailto:soporte@fiate.com" },
                 { name: "Contacto Directo", href: "https://wa.me/526671361586" },
-                { name: "Estado del Sistema", href: "#" },
               ],
             },
             {
@@ -64,12 +63,30 @@ export default function Footer() {
               <ul className="space-y-4">
                 {column.links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
-                    >
-                      {link.name}
-                    </Link>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : link.href.startsWith("mailto:") ? (
+                      <a
+                        href={link.href}
+                        className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

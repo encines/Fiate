@@ -1,14 +1,13 @@
 import Stripe from "stripe";
 
-let instance: Stripe | null = null;
-export const stripe = new Proxy({} as Stripe, {
-  get(_, prop) {
-    if (!instance) {
-      const key = process.env.STRIPE_SECRET_KEY || "";
-      instance = new Stripe(key, {
-        apiVersion: "2026-04-22.dahlia" as any,
-      });
-    }
-    return (instance as any)[prop];
+function createStripeInstance() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error("STRIPE_SECRET_KEY no configurada.");
   }
-});
+  return new Stripe(key, {
+    apiVersion: Stripe.API_VERSION as any,
+  });
+}
+
+export const stripe = createStripeInstance();

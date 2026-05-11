@@ -37,7 +37,6 @@ export const EditVehicleSchema = z.object({
   model: z.string().min(1, "El modelo es requerido.").optional(),
   year: z.coerce.number().int().min(1900).max(new Date().getFullYear() + 1).optional(),
   licensePlate: z.string().max(20, "La placa es demasiado larga.").optional(),
-  imageUrl: z.string().optional(),
 });
 
 export const AddCustomServiceSchema = z.object({
@@ -53,7 +52,7 @@ export const ReminderSchema = z.object({
   userCarId: z.string().min(1, "ID de vehículo inválido."),
   title: z.string().min(2, "El título debe tener al menos 2 caracteres."),
   date: z.coerce.date().min(new Date(), "El recordatorio debe ser para una fecha futura."),
-  detail: z.string().max(200, "El detalle es demasiado largo.").optional(),
+  detail: z.string().max(500, "El detalle es demasiado largo.").optional(),
 });
 
 export const EditServiceSchema = z.object({

@@ -42,8 +42,9 @@ export async function getAIPlanForCar(brand: string, modelName: string, year: nu
     const cleanJson = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanJson);
 
-  } catch (error: any) {
-    console.error("DETALLE DEL ERROR FINAL:", error.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error desconocido";
+    console.error("DETALLE DEL ERROR FINAL:", message);
     throw new Error("No se pudo obtener el plan de la IA.");
   }
 }

@@ -1,13 +1,14 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { EditServiceSchema } from "../../lib/validations";
 
 export async function editService(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) {
     return { error: "No autorizado." };
   }
 
@@ -28,34 +29,36 @@ export async function editService(prevState: any, formData: FormData) {
   const { serviceId, customName, kmAtService, cost, date, notes } = parsed.data;
 
   try {
-    const service = await prisma.serviceHistory.findUnique({
-      where: { id: serviceId },
-      include: { userCar: { include: { user: true } } }
-    });
+    const { data: service, error: fetchError } = await supabase
+      .from('ServiceHistory')
+      .select('id, userCarId, UserCar(userId, currentKm)')
+      .eq('id', serviceId)
+      .single();
 
-    if (!service || service.userCar.user.email !== session.user.email) {
+    if (fetchError || !service || (service.UserCar as any).userId !== sbUser.id) {
       return { error: "Servicio no encontrado o no te pertenece." };
     }
 
-    const serviceDate = date ? new Date(date) : service.date;
+    const serviceDate = date ? new Date(date).toISOString() : null;
 
-    await prisma.serviceHistory.update({
-      where: { id: serviceId },
-      data: {
+    const { error: updateError } = await supabase
+      .from('ServiceHistory')
+      .update({
         customName,
         kmAtService,
         cost,
-        date: serviceDate,
+        date: serviceDate || undefined,
         notes,
-      }
-    });
+      })
+      .eq('id', serviceId);
 
-    // Opcional: Actualizar el kilometraje actual si el servicio se reporta a un km mayor
-    if (kmAtService > service.userCar.currentKm) {
-      await prisma.userCar.update({
-        where: { id: service.userCarId },
-        data: { currentKm: kmAtService },
-      });
+    if (updateError) throw updateError;
+
+    if (kmAtService > ((service.UserCar as any).currentKm || 0)) {
+      await supabase
+        .from('UserCar')
+        .update({ currentKm: kmAtService })
+        .eq('id', service.userCarId);
     }
 
     revalidatePath("/dashboard");

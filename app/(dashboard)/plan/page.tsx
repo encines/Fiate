@@ -1,42 +1,37 @@
-import { auth } from "../../../auth";
-import { prisma } from "../../../lib/prisma";
+import { createClient } from "../../../lib/supabase/server";
 import MaintenancePlanTable from "../../components/MaintenancePlanTable";
 import { getActiveCarData } from "../../../lib/get-active-car";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function PlanPage() {
-  const session = await auth();
+  const supabase = await createClient();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
 
-  if (!session?.user?.email) {
-    return <div className="p-8 text-zinc-900 dark:text-white">Sesión no válida o expirada. Por favor inicia sesión nuevamente.</div>;
+  if (!authUser) {
+    redirect("/login");
   }
 
+  // Obtenemos los datos del coche activo usando nuestra utilidad de Supabase
   const data = await getActiveCarData();
   
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: {
-      cars: {
-        include: {
-          catalogCar: {
-            include: {
-              model: { include: { brand: true } },
-            },
-          },
-          tasks: true,
-          history: {
-            include: { task: true },
-            orderBy: { date: "desc" },
-          },
-          maintenanceChecks: true,
-        },
-      },
-    },
-  });
+  if (!data?.activeCarId) {
+    return (
+      <>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">Plan de Mantenimiento</h1>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Consulta el programa de servicios y mantenimientos recomendados por el fabricante.</p>
+        </div>
+        <div className="flex h-64 flex-col items-center justify-center glass-panel p-8 text-center">
+          <p className="text-zinc-600 dark:text-zinc-400 font-medium">Aún no tienes vehículos registrados.</p>
+          <p className="mt-2 text-sm text-zinc-500">Agrega un vehículo en Inicio para ver su plan de mantenimiento.</p>
+        </div>
+      </>
+    );
+  }
 
-  const cookieStore = await cookies();
-  const activeCarId = cookieStore.get("fiate_active_car")?.value;
-  const car = user?.cars.find(c => c.id === activeCarId) || user?.cars[0];
+  // El activeCar ya viene con history, tasks y checks de getActiveCarData
+  const car = data.activeCar;
 
   return (
     <>
@@ -45,20 +40,13 @@ export default async function PlanPage() {
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">Consulta el programa de servicios y mantenimientos recomendados por el fabricante.</p>
       </div>
 
-      {!car ? (
-        <div className="flex h-64 flex-col items-center justify-center glass-panel p-8 text-center">
-          <p className="text-zinc-600 dark:text-zinc-400 font-medium">Aún no tienes vehículos registrados.</p>
-          <p className="mt-2 text-sm text-zinc-500">Agrega un vehículo en Inicio para ver su plan de mantenimiento.</p>
-        </div>
-      ) : (
-        <MaintenancePlanTable 
-          tasks={car.tasks || []} 
-          history={[...(car.history || []), ...(car.maintenanceChecks || [])] as any} 
-          currentKm={car.currentKm} 
-          userCarId={car.id} 
-          userPlan={user?.plan || "STANDARD"}
-        />
-      )}
+      <MaintenancePlanTable 
+        tasks={car.tasks || []} 
+        history={[...(car.history || []), ...(car.maintenanceChecks || [])] as any} 
+        currentKm={car.currentKm} 
+        userCarId={car.id} 
+        userPlan={data.user?.plan || "STANDARD"}
+      />
     </>
   );
 }

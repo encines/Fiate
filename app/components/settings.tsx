@@ -3,11 +3,11 @@
 import { useState, useTransition, useEffect } from "react";
 import { deleteVehicle } from "../actions/deleteVehicle";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { useTheme } from "next-themes";
-import { signOut } from "next-auth/react";
+import { logout } from "../actions/logout";
 import { toast } from "sonner";
 import ChangePasswordModal from "./ChangePasswordModal";
+import { updateProfile } from "../actions/updateProfile";
 
 const preferences = [
   { label: "Notificaciones por correo", value: "Activadas" },
@@ -19,9 +19,10 @@ const preferences = [
 interface SettingsProps {
   cars?: any[];
   car?: any;
+  user?: any;
 }
 
-export default function Settings({ cars = [], car }: SettingsProps) {
+export default function Settings({ cars = [], car, user }: SettingsProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [carToDelete, setCarToDelete] = useState<{ id: string, name: string } | null>(null);
@@ -36,8 +37,14 @@ export default function Settings({ cars = [], car }: SettingsProps) {
     theme: theme === "system" ? "Sistema" : theme === "dark" ? "Oscuro" : "Claro"
   });
 
+  const [userName, setUserName] = useState("");
+  const [editingName, setEditingName] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+    if (user?.name) {
+      setUserName(user.name);
+    }
     const savedNotifications = localStorage.getItem("fiate_notifications");
     const savedUnit = localStorage.getItem("fiate_unit");
     const savedCurrency = localStorage.getItem("fiate_currency");
@@ -49,7 +56,23 @@ export default function Settings({ cars = [], car }: SettingsProps) {
       currency: savedCurrency || prev.currency,
       theme: theme === "system" ? "Sistema" : theme === "dark" ? "Oscuro" : "Claro"
     }));
+
+    // Find current user's name from car context or initial session if possible
+    // For now, we'll let the user set it if it's missing
   }, [theme]);
+
+  const handleSaveName = () => {
+    if (!userName.trim()) return;
+    startTransition(async () => {
+      const res = await updateProfile(userName);
+      if (res.success) {
+        toast.success("Nombre actualizado");
+        setEditingName(false);
+      } else {
+        toast.error(res.error || "Error al guardar");
+      }
+    });
+  };
 
   const openDeleteModal = (id: string, name: string) => {
     setCarToDelete({ id, name });
@@ -89,6 +112,57 @@ export default function Settings({ cars = [], car }: SettingsProps) {
         <p className="mt-2 text-zinc-500 dark:text-zinc-400 text-lg">
           Administra tu garaje y las preferencias de tu cuenta profesional.
         </p>
+      </section>
+
+      {/* Perfil */}
+      <section className="glass-panel p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 rounded-[32px] backdrop-blur-md">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-900 dark:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Mi Perfil
+        </h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 font-bold text-2xl">
+            {userName ? userName[0].toUpperCase() : "U"}
+          </div>
+          <div className="flex-1 space-y-1">
+            {editingName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Escribe tu nombre"
+                  autoFocus
+                />
+                <button 
+                  onClick={handleSaveName}
+                  disabled={isPending}
+                  className="p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </button>
+                <button 
+                  onClick={() => setEditingName(false)}
+                  className="p-2 text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold">{userName || "Sin nombre"}</h3>
+                <button 
+                  onClick={() => setEditingName(true)}
+                  className="text-zinc-400 hover:text-indigo-500 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                </button>
+              </div>
+            )}
+            <p className="text-sm text-zinc-500">Configura tu identidad pública en Fiate.</p>
+          </div>
+        </div>
       </section>
 
       {/* Gestión de Vehículos */}
@@ -216,7 +290,7 @@ export default function Settings({ cars = [], car }: SettingsProps) {
           <div className="space-y-4">
             <ChangePasswordModal />
             <button 
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => logout()}
               className="w-full rounded-[18px] border border-zinc-200 dark:border-zinc-800 px-6 py-4 text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all active:scale-[0.98]"
             >
               Cerrar todas las sesiones
@@ -227,7 +301,7 @@ export default function Settings({ cars = [], car }: SettingsProps) {
 
       {/* Premium Delete Confirmation Modal */}
       {showDeleteModal && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 transition-all">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 transition-all" role="dialog" aria-modal="true" aria-label="Eliminar vehículo">
           <div className="relative w-full max-w-md rounded-[32px] border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-900 p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 mb-6">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>

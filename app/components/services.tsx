@@ -72,6 +72,21 @@ export default function Services({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // SCROLL LOCK: Bloquear scroll del fondo cuando el modal de detalles está abierto
+  useEffect(() => {
+    if (selectedService) {
+      document.body.classList.add("lock-scroll");
+      document.documentElement.classList.add("lock-scroll");
+    } else {
+      document.body.classList.remove("lock-scroll");
+      document.documentElement.classList.remove("lock-scroll");
+    }
+    return () => {
+      document.body.classList.remove("lock-scroll");
+      document.documentElement.classList.remove("lock-scroll");
+    };
+  }, [selectedService]);
   
   const itemsPerPage = 5;
   
@@ -366,15 +381,18 @@ export default function Services({
         </button>
       </div>
 
-      {/* Detail Modal */}
       {mounted && selectedService && createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-2xl rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="Detalles del servicio">
+          <div 
+            data-lenis-prevent
+            className="relative w-full max-w-2xl rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-2xl animate-in fade-in zoom-in duration-200"
+          >
             <button 
               onClick={() => {
                 setSelectedService(null);
                 setIsEditing(false);
               }}
+              aria-label="Cerrar"
               className="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               ✕
@@ -529,6 +547,7 @@ export default function Services({
                     <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Notas (Opcional)</label>
                     <textarea 
                       name="notes" 
+                      maxLength={500}
                       defaultValue={selectedService.notes || ""}
                       className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all min-h-[100px]"
                     />

@@ -1,38 +1,41 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function deleteFuelLog(logId: string) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return { error: "No autorizado." };
-  }
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) return { error: "No autorizado" };
 
   try {
-    const log = await prisma.fuelLog.findUnique({
-      where: { id: logId },
-      include: { 
-        userCar: {
-          include: { user: true }
-        }
-      }
-    });
+    // 1. Verificar propiedad usando Supabase join
+    const { data: log, error: logError } = await supabase
+      .from('FuelLog')
+      .select('id, UserCar(userId)')
+      .eq('id', logId)
+      .single();
 
-    if (!log || log.userCar.user.email !== session.user.email) {
-      return { error: "Registro no encontrado." };
+    if (logError || !log || (log.UserCar as any).userId !== sbUser.id) {
+      return { error: "Registro no encontrado o no autorizado" };
     }
 
-    await prisma.fuelLog.delete({
-      where: { id: logId }
-    });
+    // 2. Eliminar en Supabase
+    const { error: deleteError } = await supabase
+      .from('FuelLog')
+      .delete()
+      .eq('id', logId);
+
+    if (deleteError) throw deleteError;
 
     revalidatePath("/fuel");
     revalidatePath("/dashboard");
+    revalidatePath("/mycar");
+    
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { error: "Error al eliminar el registro." };
+    return { error: "Error al eliminar el registro" };
   }
 }

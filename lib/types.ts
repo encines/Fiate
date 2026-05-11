@@ -2,7 +2,7 @@ export interface SimplifiedCar {
   id: string;
   model: string;
   brand: string;
-  year: number;
+  year?: number | null;
   imageUrl: string | null;
   licensePlate: string | null;
 }
@@ -26,7 +26,7 @@ export interface UserSessionData {
 
 export interface DashboardData {
   user: UserSessionData;
-  activeCar: any; // Mantener como any temporalmente hasta que se definan todas las relaciones
+  activeCar: Record<string, unknown> | null;
   cars: SimplifiedCar[];
   activeCarId: string | null;
   catalogCars: CatalogCar[];

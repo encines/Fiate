@@ -1,53 +1,54 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function markServiceDone(userCarId: string, taskId: string, kmMilestone: number) {
-  const session = await auth();
-  if (!session?.user?.email) return { error: "No autorizado." };
+export async function markServiceDone(userCarId: string, taskId: string, currentKm: number) {
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) return { error: "No autorizado" };
 
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true },
-    });
+    const { data: userCar, error: fetchError } = await supabase
+      .from('UserCar')
+      .select('id, userId')
+      .eq('id', userCarId)
+      .single();
 
-    if (!userCar || userCar.user.email !== session.user.email) {
-      return { error: "Vehículo no pertenece al usuario." };
+    if (fetchError || !userCar || userCar.userId !== sbUser.id) {
+      return { error: "No tienes permiso para modificar este vehículo" };
     }
 
-    // Verificar si ya existe este hito exacto en la tabla de marcas del manual
-    const existing = await prisma.maintenanceCheck.findFirst({
-      where: {
+    // Insert a ServiceHistory record so the UI can immediately detect the
+    // completion for a given kilometraje (the frontend looks at history.kmAtService
+    // and history.kmMilestone to decide if a task at a given km is done).
+    const { error: insertError } = await supabase
+      .from('ServiceHistory')
+      .insert({
         userCarId,
         taskId,
-        kmMilestone,
-      },
-    });
+        kmAtService: currentKm,
+        cost: 0,
+        date: new Date().toISOString(),
+      });
 
-    if (existing) {
-      // Si ya existía, lo borramos (Toggle)
-      await prisma.maintenanceCheck.delete({
-        where: { id: existing.id },
-      });
-    } else {
-      // Crear nueva marca en el manual (SIN afectar al historial de servicios)
-      await prisma.maintenanceCheck.create({
-        data: {
-          userCarId,
-          taskId,
-          kmMilestone,
-        },
-      });
+    // Also update the UserCar currentKm if the checked km is greater.
+    if (!insertError) {
+      await supabase
+        .from('UserCar')
+        .update({ currentKm })
+        .eq('id', userCarId);
     }
 
-    revalidatePath("/mycar");
+    if (insertError) throw insertError;
+
+    revalidatePath("/plan");
     revalidatePath("/dashboard");
+    
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { error: "Error al actualizar el servicio." };
+    return { error: "Error al registrar el servicio" };
   }
 }

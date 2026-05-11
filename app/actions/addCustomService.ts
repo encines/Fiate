@@ -1,13 +1,14 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { AddCustomServiceSchema } from "../../lib/validations";
 
 export async function addCustomService(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) {
     return { error: "No autorizado." };
   }
 
@@ -28,33 +29,47 @@ export async function addCustomService(prevState: any, formData: FormData) {
   const { userCarId, customName, kmAtService, cost, date, notes } = parsed.data;
 
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true }
-    });
+    // 1. Verificar propiedad del coche
+    const { data: userCar, error: carError } = await supabase
+      .from('UserCar')
+      .select('id, currentKm, userId')
+      .eq('id', userCarId)
+      .eq('userId', authUser.id)
+      .single();
 
-    if (!userCar || userCar.user.email !== session.user.email) {
+    if (carError || !userCar) {
       return { error: "Vehículo no encontrado o no te pertenece." };
     }
 
-    const serviceDate = date || new Date();
+    const serviceDate = date || new Date().toISOString();
 
-    // Lógica para imagen (Base64 para demostración local)
+    // 2. Subir imagen a Supabase Storage si existe
     const imageFile = formData.get("image") as File;
     let imageUrl = null;
     
     if (imageFile && imageFile.size > 0) {
-      try {
-        const buffer = await imageFile.arrayBuffer();
-        const base64Image = Buffer.from(buffer).toString('base64');
-        imageUrl = `data:${imageFile.type};base64,${base64Image}`;
-      } catch (e) {
-        console.error("Error al procesar la imagen:", e);
+      if (!imageFile.type.startsWith('image/')) {
+        return { error: "El archivo debe ser una imagen válida." };
+      }
+      if (imageFile.size > 10 * 1024 * 1024) {
+        return { error: "La imagen no debe superar los 10 MB." };
+      }
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${authUser.id}/${userCarId}/${Date.now()}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('services')
+        .upload(fileName, imageFile);
+      
+      if (!uploadError) {
+        imageUrl = uploadData.path;
       }
     }
 
-    await prisma.serviceHistory.create({
-      data: {
+    // 3. Crear registro en ServiceHistory
+    const { error: insertError } = await supabase
+      .from('ServiceHistory')
+      .insert({
         userCarId,
         customName,
         kmAtService,
@@ -62,24 +77,24 @@ export async function addCustomService(prevState: any, formData: FormData) {
         date: serviceDate,
         notes,
         imageUrl,
-      }
-    });
-
-    // Opcional: Actualizar el kilometraje actual si el servicio se reporta a un km mayor
-    if (kmAtService > userCar.currentKm) {
-      await prisma.userCar.update({
-        where: { id: userCarId },
-        data: { currentKm: kmAtService },
       });
+
+    if (insertError) throw insertError;
+
+    // 4. Actualizar el kilometraje del coche si es mayor
+    if (kmAtService > (userCar.currentKm || 0)) {
+      await supabase
+        .from('UserCar')
+        .update({ currentKm: kmAtService })
+        .eq('id', userCarId);
     }
 
     revalidatePath("/dashboard");
-    revalidatePath("/mycar");
-    revalidatePath("/plan");
+    revalidatePath("/services");
     
     return { success: true };
   } catch (error) {
-    console.error(error);
+    console.error("Error al registrar servicio:", error);
     return { error: "Error al registrar la reparación." };
   }
 }

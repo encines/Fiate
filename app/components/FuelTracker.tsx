@@ -123,7 +123,7 @@ export default function FuelTracker({ fuelLogs, activeCarId }: { fuelLogs: FuelL
       </div>
 
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Nueva carga de gasolina">
           <div className="w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 shadow-2xl">
             <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6">Nueva Carga de Gasolina</h3>
             <form action={formAction} className="space-y-4">

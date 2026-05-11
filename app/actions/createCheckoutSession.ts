@@ -1,21 +1,25 @@
 "use server";
 
 import { stripe } from "../../lib/stripe";
-import { auth } from "../../auth";
-import { prisma } from "../../lib/prisma";
+import { createClient } from "../../lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function createCheckoutSession() {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) {
     throw new Error("No autorizado");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
+  // Consulta directa a Supabase en lugar de Prisma
+  const { data: user, error: userError } = await supabase
+    .from('User')
+    .select('id, email, name, stripeCustomerId')
+    .eq('id', sbUser.id)
+    .single();
 
-  if (!user) throw new Error("Usuario no encontrado");
+  if (userError || !user) throw new Error("Usuario no encontrado");
 
   let customerId = user.stripeCustomerId;
 
@@ -25,10 +29,12 @@ export async function createCheckoutSession() {
       name: user.name || undefined,
     });
     customerId = customer.id;
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { stripeCustomerId: customerId },
-    });
+    
+    // Actualizar en Supabase
+    await supabase
+      .from('User')
+      .update({ stripeCustomerId: customerId })
+      .eq('id', user.id);
   }
 
   const stripeSession = await stripe.checkout.sessions.create({
@@ -37,7 +43,7 @@ export async function createCheckoutSession() {
     payment_method_types: ["card"],
     line_items: [
       {
-        price: process.env.STRIPE_PRO_PRICE_ID, // Debes configurar esto en tu dashboard de Stripe
+        price: process.env.STRIPE_PRO_PRICE_ID,
         quantity: 1,
       },
     ],

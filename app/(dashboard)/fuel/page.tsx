@@ -1,11 +1,17 @@
 import FuelTracker from "../../components/FuelTracker";
 import { getActiveCarData } from "../../../lib/get-active-car";
-import { auth } from "../../../auth";
-import { prisma } from "../../../lib/prisma";
+import { createClient } from "../../../lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function FuelPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   const data = await getActiveCarData();
-  const session = await auth();
 
   if (!data?.activeCarId) {
     return (
@@ -15,14 +21,20 @@ export default async function FuelPage() {
     );
   }
 
-  const fuelLogs = await prisma.fuelLog.findMany({
-    where: { userCarId: data.activeCarId },
-    orderBy: { date: "desc" }
-  });
+  // Consulta directa a Supabase en lugar de Prisma
+  const { data: fuelLogs, error } = await supabase
+    .from('FuelLog')
+    .select('*')
+    .eq('userCarId', data.activeCarId)
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error("Error cargando fuel logs:", error);
+  }
 
   return (
     <div className="p-8">
-      <FuelTracker fuelLogs={fuelLogs as any} activeCarId={data.activeCarId} />
+      <FuelTracker fuelLogs={(fuelLogs || []) as any} activeCarId={data.activeCarId} />
     </div>
   );
 }

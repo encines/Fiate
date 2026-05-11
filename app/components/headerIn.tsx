@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { logout } from "../actions/logout";
 
 export default async function HeaderIn() {
-  const session = await auth();
-  const email = session?.user?.email || "Invitado";
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const email = user?.email || "Invitado";
 
   return (
     <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-950/90 px-4 py-4 text-zinc-900 dark:text-white backdrop-blur sm:px-6">

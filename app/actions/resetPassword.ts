@@ -1,28 +1,19 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import bcrypt from "bcryptjs";
-import { RegisterSchema } from "../../lib/validations";
+import { createClient } from "../../lib/supabase/server";
 
-export async function resetPasswordAction(email: string, newPassword: string) {
+export async function sendPasswordResetEmail(email: string) {
   try {
-    // Validar contraseña (usamos la misma lógica que el registro)
-    if (newPassword.length < 6) {
-      return { error: "La contraseña debe tener al menos 6 caracteres." };
-    }
-
-    // Encriptar la nueva contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Actualizar en Prisma (Nuestra fuente de verdad para el login)
-    await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword },
+    const supabase = await createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
     });
 
-    return { success: true };
+    if (error) return { error: error.message };
+
+    return { success: true, message: "Si el correo existe, recibirás instrucciones." };
   } catch (error) {
-    console.error("Error reseteando contraseña en Prisma:", error);
-    return { error: "No se pudo actualizar la contraseña en la base de datos principal." };
+    console.error("Error enviando email de recuperación:", error);
+    return { error: "No se pudo enviar el correo de recuperación." };
   }
 }

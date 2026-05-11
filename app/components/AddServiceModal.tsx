@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { addCustomService } from "../actions/addCustomService";
 
@@ -13,6 +13,8 @@ interface AddServiceModalProps {
 export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddServiceModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
   const DEFAULT_TASKS = [
     "Cambio de Aceite", 
     "Rotación de Llantas", 
@@ -38,8 +40,29 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
     setMounted(true);
   }, []);
 
+  // Bloquear scroll usando la clase lock-scroll
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("lock-scroll");
+      // Forzar a que la clase se aplique también al HTML por si Lenis está ahí
+      document.documentElement.classList.add("lock-scroll");
+    } else {
+      document.body.classList.remove("lock-scroll");
+      document.documentElement.classList.remove("lock-scroll");
+    }
+    return () => {
+      document.body.classList.remove("lock-scroll");
+      document.documentElement.classList.remove("lock-scroll");
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (state?.success) {
+      setSelectedTasks([]);
+      setCustomTasks([]);
+      setCustomTaskInput("");
+      setSelectedImageName(null);
+      if (formRef.current) formRef.current.reset();
       setIsOpen(false);
     }
   }, [state]);
@@ -75,8 +98,11 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
       </button>
 
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4">
-          <div className="relative w-full h-full sm:h-auto max-w-5xl sm:max-h-[90vh] sm:rounded-[32px] border-0 sm:border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden flex flex-col transition-colors">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Nuevo registro de servicio">
+          <div 
+            data-lenis-prevent
+            className="relative w-full h-full sm:h-auto max-w-5xl sm:max-h-[90vh] sm:rounded-[32px] border-0 sm:border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden flex flex-col transition-colors"
+          >
             {/* Header - Fixed */}
             <div className="p-6 md:p-8 border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
               <div className="flex justify-between items-start">
@@ -86,6 +112,7 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
                 </div>
                 <button 
                   onClick={() => setIsOpen(false)}
+                  aria-label="Cerrar"
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-colors"
                 >
                   ✕
@@ -95,7 +122,7 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
 
             {/* Body - Scrollable */}
             <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-              <form id="service-form" action={formAction}>
+              <form id="service-form" ref={formRef} action={formAction}>
                 <input type="hidden" name="userCarId" value={activeCar?.id || ""} />
                 <input type="hidden" name="customName" value={selectedTasks.join(", ")} />
 
@@ -152,10 +179,10 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
 
                       <div className="space-y-2">
                         <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Tipo de Servicio</label>
-                        <select className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all appearance-none">
-                          <option>Mantenimiento General</option>
-                          <option>Reparación Correctiva</option>
-                          <option>Mejora / Estética</option>
+                        <select name="serviceType" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all appearance-none">
+                          <option value="Mantenimiento General">Mantenimiento General</option>
+                          <option value="Reparación Correctiva">Reparación Correctiva</option>
+                          <option value="Mejora / Estética">Mejora / Estética</option>
                         </select>
                       </div>
                     </div>
@@ -262,6 +289,7 @@ export default function AddServiceModal({ cars, activeCarId, buttonClass }: AddS
                     </div>
                     <textarea 
                       name="notes"
+                      maxLength={500}
                       placeholder="Detalles adicionales..."
                       className="w-full h-24 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 text-xs text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all resize-none"
                     ></textarea>

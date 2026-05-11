@@ -4,7 +4,6 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 
 const SiderBar = dynamic(() => import("./sidebar"), { ssr: false });
-import HeaderIn from "./headerIn";
 
 import { SimplifiedCar, CatalogCar } from "../../lib/types";
 
@@ -14,6 +13,7 @@ interface ResponsiveLayoutProps {
   activeCarId: string | null | undefined;
   catalogCars: CatalogCar[];
   userEmail: string;
+  userPlan?: string;
 }
 
 export default function ResponsiveLayout({ 
@@ -21,7 +21,8 @@ export default function ResponsiveLayout({
   cars, 
   activeCarId, 
   catalogCars,
-  userEmail 
+  userEmail,
+  userPlan 
 }: ResponsiveLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -71,7 +72,18 @@ export default function ResponsiveLayout({
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="hidden text-xs text-zinc-400 sm:block">{userEmail}</span>
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="text-xs text-zinc-400">{userEmail}</span>
+                {userPlan && (
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    userPlan === "PRO"
+                      ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
+                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                  }`}>
+                    {userPlan}
+                  </span>
+                )}
+              </div>
               <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-zinc-200 dark:ring-zinc-800 transition-colors">
                 {userEmail[0]?.toUpperCase()}
               </div>

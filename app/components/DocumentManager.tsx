@@ -189,7 +189,7 @@ export default function DocumentManager({
       </div>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="Nuevo documento">
           <div className="w-full max-w-lg rounded-[40px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-8">
               <div>
@@ -198,6 +198,7 @@ export default function DocumentManager({
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar"
                 className="h-10 w-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
               >
                 ✕
@@ -274,6 +275,7 @@ export default function DocumentManager({
           <button 
             className="absolute right-8 top-8 h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-50"
             onClick={() => setShowLightbox(null)}
+            aria-label="Cerrar vista previa"
           >
             ✕
           </button>

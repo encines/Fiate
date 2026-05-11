@@ -1,6 +1,6 @@
 import ResponsiveLayout from "../../app/components/ResponsiveLayout";
 import { getActiveCarData } from "../../lib/get-active-car";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -8,9 +8,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
   
-  if (!session) {
+  if (error || !user) {
     redirect("/login");
   }
 
@@ -20,8 +21,9 @@ export default async function DashboardLayout({
     <ResponsiveLayout 
       cars={data?.cars || []} 
       activeCarId={data?.activeCarId} 
-      catalogCars={data?.catalogCars || []}
-      userEmail={session?.user?.email || "Usuario"}
+      catalogCars={[]} 
+      userEmail={user.email || "Usuario"}
+      userPlan={data?.user?.plan}
     >
       {children}
     </ResponsiveLayout>

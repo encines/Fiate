@@ -30,7 +30,7 @@ export default function ChangePasswordModal() {
       </button>
 
       {isOpen && createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 animate-in fade-in duration-300" role="dialog" aria-modal="true" aria-label="Cambiar contraseña">
           <div className="w-full max-w-md rounded-[40px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-10 shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="flex justify-between items-center mb-8">
               <div>
@@ -39,6 +39,7 @@ export default function ChangePasswordModal() {
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar"
                 className="h-10 w-10 flex items-center justify-center rounded-full border border-zinc-100 dark:border-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
               >
                 ✕

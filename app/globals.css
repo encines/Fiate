@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* Force recompile to clear print cache - v2 */
+/* Force recompile to clear print cache - v3 */
 
 :root {
   --background: #ffffff;
@@ -32,9 +32,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  /* Eliminamos gradientes complejos para descartar cuello de botella de renderizado */
   background-color: var(--background);
   overflow-x: hidden;
+}
+
+/* LOCK SCROLL UTILITY - Bloquea el scroll del contenedor principal */
+body.lock-scroll {
+  overflow: hidden !important;
+}
+
+body.lock-scroll main {
+  overflow: hidden !important;
+  padding-right: 0px; /* Evitar saltos de layout si es posible */
 }
 
 @layer utilities {
@@ -43,7 +52,6 @@ body {
   }
 
   .glass-panel {
-    /* Eliminamos backdrop-blur para ganar performance crítico */
     @apply rounded-3xl border border-zinc-200 dark:border-zinc-700/80 bg-white/95 dark:bg-zinc-900/95 shadow-xl shadow-zinc-200/50 dark:shadow-black/30 transition-colors;
   }
 
@@ -52,9 +60,8 @@ body {
   }
 }
 
-/* Estilos de Impresión Pro - Solo activos durante el comando de reporte */
+/* Estilos de Impresión Pro */
 @media print {
-  /* Forzar fondo blanco absoluto en TODO */
   *, *::before, *::after {
     background-color: transparent !important;
     background-image: none !important;
@@ -69,54 +76,52 @@ body {
     background-color: white !important;
   }
 
-  /* Ocultar elementos marcados como no-print */
   .no-print {
     display: none !important;
   }
 
-  /* El área del reporte debe ser blanca y visible */
   .printable-area {
     display: block !important;
     background-color: white !important;
     position: relative !important;
     width: 100% !important;
-  }
-
-  /* Mantener colores específicos para el diseño del reporte */
-  .bg-indigo-500, .bg-indigo-600, .bg-indigo-400 {
-    background-color: #6366f1 !important;
-    color: white !important;
-  }
-
-  .text-indigo-600, .text-indigo-400 {
-    color: #4f46e5 !important;
-  }
-
-  .border-indigo-500 {
-    border-color: #6366f1 !important;
-  }
-
-  /* Fondo gris claro para las tarjetas del reporte */
-  .bg-zinc-50, .bg-zinc-100 {
-    background-color: #f8fafc !important;
+    height: auto !important;
   }
 }
 
-/* Animaciones Premium */
-@keyframes bounce-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
 }
 
-.animate-bounce-slow {
-  animation: bounce-slow 6s ease-in-out infinite;
+/* Focus-visible para todos los elementos interactivos */
+*:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* Scrollbar Customization - Disabled for performance testing */
-/* .custom-scrollbar::-webkit-scrollbar { ... } */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
 
-/* Global Performance Override - Desactivar blur costoso en toda la app para ganar velocidad */
-* {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+/* Mejora de contraste dark mode para textos pequeños */
+@media (prefers-contrast: more) {
+  .dark .text-zinc-500 { color: #a1a1aa; }
+  .dark .text-zinc-400 { color: #c0c0c8; }
 }

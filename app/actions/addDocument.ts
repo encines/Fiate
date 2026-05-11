@@ -1,14 +1,15 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "../../lib/supabase";
 import { DocumentSchema } from "../../lib/validations";
 
 export async function addDocument(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) {
     return { error: "No autorizado." };
   }
 
@@ -27,16 +28,18 @@ export async function addDocument(prevState: any, formData: FormData) {
   const { userCarId, type, name, expiryDate } = parsed.data;
  
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true }
-    });
+    // 1. Verificar propiedad del coche usando Supabase
+    const { data: userCar, error: carError } = await supabase
+      .from('UserCar')
+      .select('id, userId, User(plan, email)')
+      .eq('id', userCarId)
+      .single();
  
-    if (!userCar || userCar.user.email !== session.user.email) {
-      return { error: "Vehículo no encontrado." };
+    if (carError || !userCar || (userCar.User as any).email !== sbUser.email) {
+      return { error: "Vehículo no encontrado o no autorizado." };
     }
  
-    const isPro = userCar.user.plan === "PRO";
+    const isPro = (userCar.User as any).plan === "PRO";
     const allImages = formData.getAll("image").filter(item => 
       item instanceof File && item.size > 0
     ) as File[];
@@ -54,12 +57,17 @@ export async function addDocument(prevState: any, formData: FormData) {
       let fileExt: string;
 
       if (item instanceof File && item.size > 0) {
+        if (!item.type.startsWith('image/')) {
+          return { error: `El archivo ${item.name} debe ser una imagen válida.` };
+        }
+        if (item.size > 10 * 1024 * 1024) {
+          return { error: `El archivo ${item.name} no debe superar los 10 MB.` };
+        }
         const buffer = await item.arrayBuffer();
         fileBuffer = Buffer.from(buffer);
         contentType = item.type;
         fileExt = item.name.split('.').pop() || 'jpg';
       } else if (typeof item === "string" && item.startsWith("data:image")) {
-        // Manejar Base64 (de la compresión en cliente)
         const [meta, data] = item.split(",");
         contentType = meta.split(":")[1].split(";")[0];
         fileBuffer = Buffer.from(data, "base64");
@@ -86,16 +94,18 @@ export async function addDocument(prevState: any, formData: FormData) {
       uploadedPaths.push(data.path);
     }
  
-    await prisma.carDocument.create({
-      data: {
+    // 2. Crear documento en Supabase
+    const { error: insertError } = await supabase
+      .from('CarDocument')
+      .insert({
         userCarId,
         type,
         name,
-        // Guardamos los paths en lugar de Base64
         imageUrl: JSON.stringify(uploadedPaths),
         expiryDate: expiryDate || null,
-      }
-    });
+      });
+
+    if (insertError) throw insertError;
  
     revalidatePath("/documents");
     return { success: true };

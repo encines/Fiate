@@ -1,7 +1,6 @@
 import Services from "../../components/services";
 import { getActiveCarData } from "../../../lib/get-active-car";
-import { auth } from "../../../auth";
-import { prisma } from "../../../lib/prisma";
+import { redirect } from "next/navigation";
 
 export default async function ServicesPage({
   searchParams,
@@ -9,20 +8,19 @@ export default async function ServicesPage({
   searchParams: Promise<{ page?: string; filter?: string }>;
 }) {
   const data = await getActiveCarData();
-  const session = await auth();
-  const resolvedParams = await searchParams;
+  
+  if (!data) {
+    redirect("/login");
+  }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
-    select: { plan: true }
-  });
+  const resolvedParams = await searchParams;
 
   return (
     <Services 
-      car={data?.activeCar} 
-      cars={data?.cars || []} 
-      activeCarId={data?.activeCarId} 
-      userPlan={user?.plan || "STANDARD"}
+      car={data.activeCar} 
+      cars={data.cars || []} 
+      activeCarId={data.activeCarId} 
+      userPlan={data.user.plan || "STANDARD"}
       initialFilter={resolvedParams.filter || "Todos"}
       initialPage={Number(resolvedParams.page) || 1}
     />

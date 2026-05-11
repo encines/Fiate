@@ -1,37 +1,39 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function deleteService(serviceId: string) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return { error: "No autorizado." };
-  }
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) return { error: "No autorizado" };
 
   try {
-    const service = await prisma.serviceHistory.findUnique({
-      where: { id: serviceId },
-      include: { userCar: { include: { user: true } } }
-    });
+    const { data: service, error: fetchError } = await supabase
+      .from('ServiceHistory')
+      .select('id, UserCar(userId)')
+      .eq('id', serviceId)
+      .single();
 
-    if (!service || service.userCar.user.email !== session.user.email) {
-      return { error: "Servicio no encontrado o no autorizado." };
+    if (fetchError || !service || (service.UserCar as any).userId !== sbUser.id) {
+      return { error: "Registro no encontrado o no autorizado" };
     }
 
-    await prisma.serviceHistory.delete({
-      where: { id: serviceId }
-    });
+    const { error: deleteError } = await supabase
+      .from('ServiceHistory')
+      .delete()
+      .eq('id', serviceId);
 
+    if (deleteError) throw deleteError;
+
+    revalidatePath("/services");
     revalidatePath("/dashboard");
     revalidatePath("/mycar");
-    revalidatePath("/plan");
-    revalidatePath("/services");
     
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { error: "Error al eliminar el servicio." };
+    return { error: "Error al eliminar el registro" };
   }
 }

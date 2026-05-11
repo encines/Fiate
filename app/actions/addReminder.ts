@@ -1,13 +1,14 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { ReminderSchema } from "../../lib/validations";
 
 export async function addReminder(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) {
     return { error: "No autorizado." };
   }
 
@@ -27,29 +28,33 @@ export async function addReminder(prevState: any, formData: FormData) {
   const { userCarId, title, date, detail } = parsed.data;
 
   try {
-    const userCar = await prisma.userCar.findUnique({
-      where: { id: userCarId },
-      include: { user: true }
-    });
+    const { data: userCar, error: carError } = await supabase
+      .from('UserCar')
+      .select('id, userId')
+      .eq('id', userCarId)
+      .eq('userId', authUser.id)
+      .single();
 
-    if (!userCar || userCar.user.email !== session.user.email) {
+    if (carError || !userCar) {
       return { error: "Vehículo no encontrado o no te pertenece." };
     }
 
-    await prisma.reminder.create({
-      data: {
+    const { error: insertError } = await supabase
+      .from('Reminder')
+      .insert({
         userCarId,
         title,
         date: date,
         detail,
-      }
-    });
+      });
+
+    if (insertError) throw insertError;
 
     revalidatePath("/reminders");
     
     return { success: true };
   } catch (error) {
-    console.error(error);
+    console.error("Error al crear recordatorio:", error);
     return { error: "Error al crear el recordatorio." };
   }
 }

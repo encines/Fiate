@@ -23,13 +23,13 @@ export default function NotFound() {
         </div>
 
         <div className="space-y-6">
-          <h1 className="text-[120px] font-black leading-none tracking-tighter text-white/5 sm:text-[180px]">
+          <div aria-hidden="true" className="text-[120px] font-black leading-none tracking-tighter text-white/5 select-none sm:text-[180px]">
             404
-          </h1>
+          </div>
           <div className="-mt-16 sm:-mt-24 space-y-4">
-            <h2 className="text-3xl font-medium tracking-tight text-white sm:text-5xl">
+            <h1 className="text-3xl font-medium tracking-tight text-white sm:text-5xl">
               Ruta no <span className="text-indigo-500 font-black italic">encontrada.</span>
-            </h2>
+            </h1>
             <p className="mx-auto max-w-md text-sm font-light leading-relaxed text-zinc-500 sm:text-base">
               Parece que has tomado un desvío inexistente. Regresemos al garaje principal para retomar el camino.
             </p>

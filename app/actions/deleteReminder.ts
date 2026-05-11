@@ -1,34 +1,38 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function deleteReminder(reminderId: string) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return { error: "No autorizado." };
-  }
+  const supabase = await createClient();
+  const { data: { user: sbUser } } = await supabase.auth.getUser();
+
+  if (!sbUser?.email) return { error: "No autorizado" };
 
   try {
-    const reminder = await prisma.reminder.findUnique({
-      where: { id: reminderId },
-      include: { userCar: { include: { user: true } } }
-    });
+    const { data: reminder, error: fetchError } = await supabase
+      .from('Reminder')
+      .select('id, UserCar(userId)')
+      .eq('id', reminderId)
+      .single();
 
-    if (!reminder || reminder.userCar.user.email !== session.user.email) {
-      return { error: "Recordatorio no encontrado o no te pertenece." };
+    if (fetchError || !reminder || (reminder.UserCar as any).userId !== sbUser.id) {
+      return { error: "Recordatorio no encontrado o no autorizado" };
     }
 
-    await prisma.reminder.delete({
-      where: { id: reminderId }
-    });
+    const { error: deleteError } = await supabase
+      .from('Reminder')
+      .delete()
+      .eq('id', reminderId);
 
+    if (deleteError) throw deleteError;
+
+    revalidatePath("/dashboard");
     revalidatePath("/reminders");
     
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { error: "Error al eliminar el recordatorio." };
+    return { error: "Error al eliminar el recordatorio" };
   }
 }

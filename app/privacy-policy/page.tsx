@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
 
           <div className="rounded-3xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 p-8 mt-16">
             <p className="text-sm italic">
-              "Fiate se compromete a no vender nunca su información personal a anunciantes o corredores de datos."
+              &ldquo;Fiate se compromete a no vender nunca su información personal a anunciantes o corredores de datos.&rdquo;
             </p>
           </div>
         </div>

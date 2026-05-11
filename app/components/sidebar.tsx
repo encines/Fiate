@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { logout } from "../actions/logout";
 import CarSelector from "./CarSelector";
 import dynamic from "next/dynamic";
 import { ThemeToggle } from "./ThemeToggle";
 
-const AddVehicleModal = dynamic(() => import("./AddVehicleModal"), { ssr: false });
+const AddVehicleModalDynamic = dynamic(() => import("./AddVehicleModal"), { ssr: false });
 
 const navItems = [
   { 
@@ -140,11 +140,11 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
           </div>
           
           <div className="px-1">
-            <AddVehicleModal catalogCars={catalogCars} />
+            <AddVehicleModalDynamic catalogCars={catalogCars} />
           </div>
           
           <button 
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={() => logout()}
             className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all group"
           >
             <svg className="transition-transform group-hover:-translate-x-1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>

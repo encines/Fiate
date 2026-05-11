@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "../../lib/supabase";
+import { createClient } from "../../lib/supabase/client";
+
+const supabase = createClient();
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

@@ -37,12 +37,13 @@ export default function AddCustomServiceModal({ userCarId, currentKm }: AddCusto
       </button>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Registrar gasto extra">
           <div className="w-full max-w-md rounded-2xl border border-zinc-700/80 bg-zinc-900 shadow-2xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-white">Registrar Gasto Extra</h3>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar"
                 className="text-zinc-400 hover:text-white"
               >
                 ✕

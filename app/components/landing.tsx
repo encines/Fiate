@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Icons } from "./Icons";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+const PricingPanel = dynamic(() => import("./PricingPanel"));
 
 const FEATURES = [
   { title: "Métricas en Vivo", Icon: Icons.Metrics },
@@ -14,20 +17,34 @@ const FEATURES = [
 ];
 
 export default function Landing() {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Scroll to element if URL contains a hash when the component mounts
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        // small timeout to allow layout to settle
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 50);
+      }
+    }
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white selection:bg-indigo-500/30 font-sans transition-colors duration-500">
       {/* Texture Layer: Grid */}
-      <div className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-10 [mask-image:radial-gradient(ellipse_at_center,black,transparent)]" 
+      <div className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-10 [mask-image:radial-gradient(ellipse_at_center,black,transparent)] pointer-events-none" 
            style={{ 
-             backgroundImage: mounted ? `linear-gradient(to right, ${theme === 'dark' ? '#808080' : '#d1d1d1'} 1px, transparent 1px), linear-gradient(to bottom, ${theme === 'dark' ? '#808080' : '#d1d1d1'} 1px, transparent 1px)` : 'none', 
-             backgroundSize: '40px 40px' 
+             backgroundImage: mounted ? `radial-gradient(circle, ${theme === 'dark' ? '#808080' : '#d1d1d1'} 0.5px, transparent 0.5px)` : 'none', 
+             backgroundSize: '30px 30px',
+             willChange: 'transform'
            }} />
 
       {/* Hero Section */}
@@ -108,8 +125,10 @@ export default function Landing() {
       </div>
 
       {/* Features Grid */}
-      <div className="relative z-10 bg-zinc-50 dark:bg-white py-40 text-zinc-900 dark:text-black transition-colors">
+      <div id="features" className="relative z-10 bg-zinc-50 dark:bg-white py-40 text-zinc-900 dark:text-black transition-colors">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          {/* Anchor for security section referenced from footer */}
+          <div id="security" className="sr-only" />
           <div className="grid gap-20 lg:grid-cols-2 lg:items-center">
             <div className="space-y-8">
               <h2 className="text-sm font-black uppercase tracking-[0.4em] text-indigo-600">Ingeniería de Software</h2>
@@ -136,6 +155,9 @@ export default function Landing() {
           </div>
         </div>
       </div>
+
+      {/* Pricing Panel */}
+      <PricingPanel />
 
       {/* Final CTA */}
       <div className="relative py-48 bg-white dark:bg-zinc-950 flex flex-col items-center justify-center overflow-hidden transition-colors">

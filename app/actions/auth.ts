@@ -1,14 +1,15 @@
 "use server";
 
-import { signIn } from "../../auth";
-import { AuthError } from "next-auth";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { createClient } from "../../lib/supabase/server";
 import { LoginSchema } from "../../lib/validations";
+import { redirect } from "next/navigation";
 
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
+  const supabase = await createClient();
+  
   const rawData = {
     email: formData.get("email"),
     password: formData.get("password"),
@@ -19,20 +20,16 @@ export async function authenticate(
     return parsed.error.issues[0].message;
   }
 
-  try {
-    await signIn("credentials", parsed.data);
-  } catch (error) {
-    if (isRedirectError(error)) {
-        throw error;
-    }
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return "Credenciales incorrectas.";
-        default:
-          return "Algo salió mal.";
-      }
-    }
-    throw error;
+  const { email, password } = parsed.data;
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return "Credenciales incorrectas o cuenta no verificada.";
   }
+
+  redirect("/dashboard");
 }

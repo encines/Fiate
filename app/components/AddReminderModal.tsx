@@ -36,12 +36,13 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
       </button>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Nuevo recordatorio">
           <div className="w-full max-w-md rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl p-8 transition-colors">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">Nuevo Recordatorio</h3>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               >
                 ✕

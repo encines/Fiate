@@ -232,7 +232,7 @@ export default function MaintenancePlanTable({ tasks, history, currentKm, userCa
 
       {/* Modal para editar frecuencia */}
       {editingTask && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Editar tarea">
           <div className="w-full max-w-sm rounded-[24px] border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-2xl">
             <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">Editar Tarea</h3>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Ajusta cada cuánto se debe realizar: <span className="text-zinc-900 dark:text-white font-medium">{editingTask.name}</span></p>
@@ -286,7 +286,7 @@ export default function MaintenancePlanTable({ tasks, history, currentKm, userCa
 
       {/* Modal para agregar nueva tarea */}
       {isAddingTask && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Nueva tarea manual">
           <div className="w-full max-w-sm rounded-[24px] border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-2xl animate-in zoom-in duration-200">
             <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">Nueva Tarea Manual</h3>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Agrega un recordatorio de mantenimiento recurrente al plan.</p>

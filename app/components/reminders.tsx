@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { createClient } from "../../lib/supabase/server";
 import AddReminderModal from "./AddReminderModal";
 import { deleteReminder } from "../actions/deleteReminder";
 
@@ -10,6 +10,8 @@ interface RemindersProps {
 }
 
 export default async function Reminders({ activeCar }: RemindersProps) {
+  const supabase = await createClient();
+  
   if (!activeCar) {
     return (
       <div className="glass-panel p-12 text-center text-zinc-400">
@@ -18,10 +20,12 @@ export default async function Reminders({ activeCar }: RemindersProps) {
     );
   }
 
-  const reminders = await prisma.reminder.findMany({
-    where: { userCarId: activeCar.id },
-    orderBy: { date: "asc" },
-  });
+  // Consulta directa a Supabase en lugar de Prisma
+  const { data: reminders } = await supabase
+    .from('Reminder')
+    .select('*')
+    .eq('userCarId', activeCar.id)
+    .order('date', { ascending: true });
 
   return (
     <div className="view-shell space-y-6">
@@ -35,7 +39,7 @@ export default async function Reminders({ activeCar }: RemindersProps) {
         <AddReminderModal userCarId={activeCar.id} />
       </section>
 
-      {reminders.length === 0 ? (
+      {(!reminders || reminders.length === 0) ? (
         <div className="glass-panel p-12 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-[24px]">
           <p className="text-zinc-400 italic">No tienes recordatorios activos.</p>
           <p className="text-sm text-zinc-500 mt-2">Crea uno nuevo para no olvidar trámites importantes.</p>
@@ -61,7 +65,7 @@ export default async function Reminders({ activeCar }: RemindersProps) {
                   </span>
                 </div>
                 <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
-                  <span className="font-semibold text-zinc-400 uppercase text-[10px] tracking-widest">Vence:</span> {formatDate(item.date)}
+                  <span className="font-semibold text-zinc-400 uppercase text-[10px] tracking-widest">Vence:</span> {formatDate(new Date(item.date))}
                 </p>
                 {item.detail && (
                   <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-500 italic line-clamp-2">{item.detail}</p>
@@ -92,4 +96,3 @@ export default async function Reminders({ activeCar }: RemindersProps) {
     </div>
   );
 }
-

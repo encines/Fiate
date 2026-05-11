@@ -1,130 +1,147 @@
 import { cookies } from "next/headers";
-import { prisma } from "./prisma";
-import { auth } from "../auth";
+import { createClient } from "./supabase/server";
 import { cache } from "react";
-import { getSignedUrl } from "./supabase";
 
-/**
- * Obtiene los datos del dashboard.
- * Optimización: Obtiene la lista de autos de forma ligera y solo hace un fetch profundo
- * de las relaciones para el auto que está activo actualmente.
- */
+export interface UserCarSummary {
+  id: string;
+  imageUrl: string | null;
+  licensePlate: string | null;
+  currentKm: number;
+  brand: string | null;
+  model: string | null;
+  year: number | null;
+  catalogCar?: {
+    year: number;
+    model: {
+      name: string;
+      brand: { name: string };
+    };
+  } | null;
+}
+
+interface UserWithCars {
+  id: string;
+  email: string;
+  plan: string;
+  cars: UserCarSummary[];
+}
+
 export const getActiveCarData = cache(async () => {
-  const session = await auth();
-  if (!session?.user?.email) return null;
+  const supabase = await createClient();
+  
+  const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+  if (authError || !authUser) return null;
 
-  // 1. Obtenemos el usuario y la lista básica de sus vehículos
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: {
-      id: true,
-      email: true,
-      plan: true,
-      cars: {
-        select: {
-          id: true,
-          imageUrl: true,
-          licensePlate: true,
-          currentKm: true,
-          catalogCar: {
-            select: {
-              year: true,
-              model: {
-                select: {
-                  name: true,
-                  brand: { select: { name: true } }
-                }
-              }
-            }
-          }
-        }
-      }
+  // 1. Intentar obtener el usuario
+  const { data: userData, error: userError } = await supabase
+    .from('User')
+    .select(`
+      id, email, name, plan,
+      cars:UserCar (
+        id, imageUrl, licensePlate, currentKm, brand, model, year,
+        catalogCar:CatalogCar (
+          year,
+          model:CarModel (
+            name,
+            brand:Brand ( name )
+          )
+        )
+      )
+    `)
+    .eq('id', authUser.id)
+    .single();
+
+  let user = userData;
+
+  // 2. SI NO EXISTE EN LA TABLA "User", LO CREAMOS AL VUELO
+  if (userError || !user) {
+    const { data: newUser, error: createError } = await supabase
+      .from('User')
+      .insert({
+        id: authUser.id,
+        email: authUser.email,
+        name: authUser.user_metadata?.full_name || 'Usuario',
+        plan: 'STANDARD'
+      })
+      .select()
+      .single();
+    
+    if (createError || !newUser) {
+      console.error("Error auto-creando perfil:", createError);
+      return null;
     }
-  });
+    user = { ...newUser, cars: [] } as typeof userData;
+  }
 
   if (!user) return null;
 
   const cookieStore = await cookies();
   const activeCarIdFromCookie = cookieStore.get("fiate_active_car")?.value;
   
-  // Validamos que el ID de la cookie realmente pertenezca al usuario
-  const cookieCarExists = user.cars.some(c => c.id === activeCarIdFromCookie);
-  const targetCarId = cookieCarExists ? activeCarIdFromCookie : user.cars[0]?.id;
+  const userWithCars = user as unknown as UserWithCars;
+  const cars = userWithCars.cars || [];
+  const cookieCarExists = cars.some((c) => c.id === activeCarIdFromCookie);
+  const targetCarId = cookieCarExists ? activeCarIdFromCookie : cars[0]?.id;
 
-  // 2. Fetch profundo SOLO para el vehículo activo
-  // Esto reduce drásticamente el tamaño del payload y la carga en DB
-  const activeCar = targetCarId ? await prisma.userCar.findUnique({
-    where: { id: targetCarId },
-    include: {
-      tasks: true,
-      catalogCar: {
-        include: {
-          model: {
-            include: { brand: true },
-          },
-        },
-      },
-      history: {
-        orderBy: {
-          date: "desc",
-        },
-        take: 50,
-      },
-      maintenanceChecks: true,
-      documents: true,
-      fuelLogs: true,
-      reminders: {
-        orderBy: {
-          date: 'asc'
-        }
-      },
-    },
-  }) : null;
-
-  const simplifiedCars = await Promise.all(user.cars.map(async (c) => {
-    let finalImageUrl = c.imageUrl;
-    if (c.imageUrl && !c.imageUrl.startsWith('data:image')) {
-      // Es un path de Supabase, generamos Signed URL
-      finalImageUrl = await getSignedUrl(c.imageUrl, 'vehicles');
-    }
+  // 3. Fetch profundo del vehículo activo
+  let activeCar = null;
+  if (targetCarId) {
+    const { data } = await supabase
+      .from('UserCar')
+      .select(`
+        *,
+        tasks:MaintenanceTask (*),
+        history:ServiceHistory (*),
+        reminders:Reminder (*),
+        maintenanceChecks:MaintenanceCheck (*),
+        documents:CarDocument (*),
+        fuelLogs:FuelLog (*),
+        catalogCar:CatalogCar (
+          year,
+          model:CarModel (
+            name,
+            brand:Brand ( name )
+          )
+        )
+      `)
+      .eq('id', targetCarId)
+      .single();
     
+    activeCar = data;
+  }
+
+  // 4. Procesar URLs firmadas y nombres
+  const processedCars = await Promise.all(cars.map(async (c: UserCarSummary) => {
+    let url: string | null = c.imageUrl;
+    if (url && !url.startsWith('http')) {
+      const { data: signed } = await supabase.storage.from('vehicles').createSignedUrl(url, 3600);
+      url = signed?.signedUrl ?? null;
+    }
+
     return {
       id: c.id,
-      model: c.catalogCar.model.name,
-      brand: c.catalogCar.model.brand.name,
-      year: c.catalogCar.year,
-      imageUrl: finalImageUrl,
+      brand: c.brand || c.catalogCar?.model?.brand?.name || 'Genérico',
+      model: c.model || c.catalogCar?.model?.name || 'Vehículo',
+      year: c.year || c.catalogCar?.year,
+      imageUrl: url,
       licensePlate: c.licensePlate,
     };
   }));
 
-  // También procesamos el activeCar si existe
-  if (activeCar && activeCar.imageUrl && !activeCar.imageUrl.startsWith('data:image')) {
-    activeCar.imageUrl = await getSignedUrl(activeCar.imageUrl, 'vehicles');
+  if (activeCar && activeCar.imageUrl && !activeCar.imageUrl.startsWith('http')) {
+    const { data: signed } = await supabase.storage.from('vehicles').createSignedUrl(activeCar.imageUrl, 3600);
+    activeCar.imageUrl = signed?.signedUrl;
   }
-
-  const catalogCars = await prisma.catalogCar.findMany({
-    select: {
-      id: true,
-      year: true,
-      model: {
-        select: {
-          name: true,
-          brand: { select: { name: true } }
-        }
-      }
-    }
-  });
 
   return {
     user: {
       id: user.id,
       email: user.email,
+      name: (user as any).name,
       plan: user.plan
     },
     activeCar,
-    cars: simplifiedCars,
+    cars: processedCars,
     activeCarId: activeCar?.id || null,
-    catalogCars,
   };
 });

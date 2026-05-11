@@ -1,35 +1,39 @@
+"use client";
+
 import Link from "next/link";
 import { useMemo } from "react";
 import Image from "next/image";
+import AddVehicleModal from "./AddVehicleModal";
 
-export default function Dashboard({ activeCar }: { activeCar: any }) {
+export default function Dashboard({ activeCar }: { activeCar?: Record<string, any> | null }) {
 
   const serviceHistory = activeCar?.history?.slice(0, 5) || [];
   
-  // Lógica de Health Score Premium
   const calculateHealth = () => {
     if (!activeCar || !activeCar.tasks || activeCar.tasks.length === 0) return 100;
-    
     const tasks = activeCar.tasks;
     const checks = activeCar.maintenanceChecks || [];
-    const currentKm = activeCar.currentKm;
-    
+    const currentKm = activeCar.currentKm || 0;
     let totalExpectedChecks = 0;
     tasks.forEach((t: any) => {
       if (t.frequencyKm && t.frequencyKm > 0) {
         totalExpectedChecks += Math.floor(currentKm / t.frequencyKm);
       }
     });
-
     if (totalExpectedChecks === 0) return 100;
-    
-    const completedCount = checks.length;
-    const score = Math.max(0, Math.min(100, Math.round((completedCount / totalExpectedChecks) * 100)));
-    return score;
+    return Math.max(0, Math.min(100, Math.round((checks.length / totalExpectedChecks) * 100)));
   };
 
   const healthScore = useMemo(() => calculateHealth(), [activeCar]);
   const totalSpent = useMemo(() => activeCar?.history?.reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0, [activeCar?.history]);
+
+  const carName = activeCar?.brand 
+    ? `${activeCar.brand} ${activeCar.model}` 
+    : activeCar?.catalogCar?.model
+      ? `${activeCar.catalogCar.model.brand.name} ${activeCar.catalogCar.model.name}`
+      : "Selecciona un vehículo";
+
+  const carYear = activeCar?.year || activeCar?.catalogCar?.year;
 
   const stats = [
     {
@@ -50,7 +54,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
     },
     {
       label: "Kilometraje",
-      value: activeCar ? `${activeCar.currentKm.toLocaleString()} km` : "0 km",
+      value: activeCar ? `${(activeCar.currentKm || 0).toLocaleString()} km` : "0 km",
       meta: "recorridos",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>,
       color: "text-blue-500",
@@ -65,6 +69,7 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
       bg: "bg-indigo-500/10"
     },
   ];
+
   return (
     <div className="text-zinc-900 dark:text-zinc-100 p-6 sm:p-8 transition-colors">
       <section className="space-y-8 max-w-7xl mx-auto">
@@ -81,37 +86,17 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight sm:text-4xl lg:text-5xl">
-                  {activeCar?.catalogCar?.model 
-                    ? `${activeCar.catalogCar.model.brand.name} ${activeCar.catalogCar.model.name}` 
-                    : "Selecciona un vehículo"}
+                  {carName}
                 </h1>
                 <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg">
-                  {activeCar?.catalogCar 
-                    ? `${activeCar.catalogCar.year} · ${activeCar.catalogCar.trim || ""} · ${activeCar.licensePlate || "Sin placas"}` 
-                    : ""}
+                  {carYear ? `${carYear} · ` : ""} {activeCar?.catalogCar?.trim || ""} {activeCar?.licensePlate ? ` · ${activeCar.licensePlate}` : "Sin placas"}
                 </p>
               </div>
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Kilometraje</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                    {activeCar?.currentKm.toLocaleString() || 0} <span className="text-sm font-medium text-zinc-500">KM</span>
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Último servicio</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                    {activeCar?.history?.[0]?.date 
-                      ? new Date(activeCar.history[0].date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-                      : "N/A"}
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white/50 dark:bg-zinc-950/40 border border-zinc-200 dark:border-zinc-800/50 p-4 sm:p-5 group/item hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Servicios</p>
-                  <p className="mt-1 text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                    {activeCar?.history?.length || 0} <span className="text-sm font-medium text-zinc-500">REG</span>
-                  </p>
-                </div>
+              <div className="flex flex-wrap gap-4">
+                <AddVehicleModal catalogCars={[]} />
+                <Link href="/services" className="rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 font-bold text-sm hover:scale-105 transition-transform">
+                  Ver Historial
+                </Link>
               </div>
             </div>
 
@@ -191,7 +176,6 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
             </div>
           </div>
 
-          {/* Resale Value Card */}
           <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 relative overflow-hidden group">
             <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>
@@ -206,112 +190,53 @@ export default function Dashboard({ activeCar }: { activeCar: any }) {
                 <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">sobre el valor base</span>
               </div>
               <p className="mt-2 text-xs text-zinc-500">
-                Basado en tu historial y mantenimientos.
+                Basado en tu historial y mantenimientos registrados en Fiate.
               </p>
             </div>
           </div>
         </div>
 
-        {/* History and Upcoming Grid */}
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-6 sm:p-8 overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-              <div>
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Servicios Recientes</h2>
-                <p className="mt-1 text-sm text-zinc-500">
-                  Últimos mantenimientos registrados.
-                </p>
-              </div>
-              <Link
-                href="/services"
-                className="inline-flex items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-transparent px-4 py-2 text-xs font-bold text-indigo-500 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500 hover:text-indigo-600 dark:hover:text-white transition-all"
-              >
-                Ver todos
-              </Link>
+        {/* Recent History Grid */}
+        <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-6 sm:p-8 overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Servicios Recientes</h2>
+              <p className="mt-1 text-sm text-zinc-500">Últimos mantenimientos registrados.</p>
             </div>
-
-            <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/20 custom-scrollbar">
-              <table className="w-full text-left text-sm min-w-[500px]">
-                <thead>
-                  <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Fecha</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Servicio</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right">Kilometraje</th>
-                    <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right">Costo</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50">
-                  {serviceHistory.length > 0 ? (
-                    serviceHistory.map((item: any) => (
-                      <tr
-                        key={item.id}
-                        className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors group"
-                      >
-                        <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                          {new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
-                        </td>
-                        <td className="px-6 py-4 font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
-                          {item.customName || "Mantenimiento"}
-                        </td>
-                        <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 text-right font-medium">
-                          {item.kmAtService.toLocaleString()} <span className="text-[10px]">KM</span>
-                        </td>
-                        <td className="px-6 py-4 text-zinc-900 dark:text-white text-right font-bold">
-                          ${item.cost?.toLocaleString() || 0}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
-                        No hay servicios recientes registrados.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <Link href="/services" className="text-xs font-bold text-indigo-500 hover:text-indigo-600">Ver todos</Link>
           </div>
 
-          <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 flex flex-col h-full">
-            <div className="flex items-center justify-between gap-4 mb-8">
-              <div>
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Recordatorios</h2>
-                <p className="mt-1 text-sm text-zinc-500">Próximos eventos importantes.</p>
-              </div>
-              <Link
-                href="/reminders"
-                className="text-xs font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"
-              >
-                Gestionar
-              </Link>
-            </div>
-
-            <div className="flex-1 space-y-4">
-              {activeCar?.reminders?.length > 0 ? (
-                activeCar.reminders.slice(0, 3).map((reminder: any) => (
-                  <div key={reminder.id} className="group relative flex items-center gap-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/20 p-4 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 transition-all">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{reminder.title}</p>
-                      <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
-                        {new Date(reminder.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long' })}
-                      </p>
-                    </div>
-                    <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/20">
-                  <div className="h-12 w-12 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 dark:text-zinc-600 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                  </div>
-                  <p className="text-sm text-zinc-500 px-4">No tienes recordatorios próximos.</p>
-                </div>
-              )}
-            </div>
+          <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full text-left text-sm min-w-[500px]">
+              <thead>
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Fecha</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Servicio</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right">Costo</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50">
+                {serviceHistory.length > 0 ? (
+                  serviceHistory.map((item: any) => (
+                    <tr key={item.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40">
+                      <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
+                        {new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-zinc-800 dark:text-zinc-200">
+                        {item.customName || "Mantenimiento"}
+                      </td>
+                      <td className="px-6 py-4 text-zinc-900 dark:text-white text-right font-bold">
+                        ${item.cost?.toLocaleString() || 0}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-12 text-center text-zinc-500">No hay servicios recientes.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>

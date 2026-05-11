@@ -1,15 +1,15 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
+import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { supabaseAdmin } from "../../lib/supabase";
 import { AddVehicleSchema } from "../../lib/validations";
-import { discoverMaintenancePlan } from "./discoverMaintenancePlan";
 
 export async function addVehicle(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const supabase = await createClient();
+  
+  // Obtener usuario actual
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
     return { error: "No autorizado." };
   }
 
@@ -26,107 +26,61 @@ export async function addVehicle(prevState: any, formData: FormData) {
     return { error: parsed.error.issues[0].message };
   }
 
-  const { brand: brandName, model: modelName, year, currentKm, lastServiceKm } = parsed.data;
+  const { brand, model, year, currentKm } = parsed.data;
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        _count: {
-          select: { cars: true }
-        }
-      }
-    });
+    // 1. Verificación de Plan (Opcional, se puede manejar con RLS en Supabase)
+    const { data: userData } = await supabase
+      .from('User')
+      .select('plan, cars:UserCar(count)')
+      .eq('id', user.id)
+      .single();
 
-    if (!user) return { error: "Usuario no encontrado." };
-
-    // Verificación de Plan
-    if (user.plan === "STANDARD" && user._count.cars >= 1) {
+    if (userData && userData.plan === "STANDARD" && (userData.cars as any)[0].count >= 1) {
       return { 
         error: "Has alcanzado el límite de 1 vehículo para el plan Estándar. ¡Pásate a PRO para agregar vehículos ilimitados!" 
       };
     }
 
-    // 1. Encontrar o crear la Marca
-    const brand = await prisma.brand.upsert({
-      where: { name: brandName },
-      update: {},
-      create: { name: brandName },
-    });
-
-    // 2. Encontrar o crear el Modelo
-    const carModel = await prisma.carModel.upsert({
-      where: { 
-        name_brandId: {
-          name: modelName,
-          brandId: brand.id
-        }
-      },
-      update: {},
-      create: { 
-        name: modelName,
-        brandId: brand.id
-      },
-    });
-
-    // 3. Encontrar o crear el CatalogCar
-    const catalogCar = await prisma.catalogCar.upsert({
-      where: {
-        modelId_year: {
-          modelId: carModel.id,
-          year: year
-        }
-      },
-      update: {},
-      create: {
-        modelId: carModel.id,
-        year: year
-      },
-    });
-
-    // Lógica para imagen (Supabase Storage)
+    // 2. Manejo de Imagen
     const imageFile = formData.get("image") as File;
     let imageUrl = null;
     
     if (imageFile && imageFile.size > 0) {
-      try {
-        const fileExt = imageFile.name.split('.').pop() || 'jpg';
-        const fileName = `car_${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `user_${user.id}/${fileName}`;
+      if (!imageFile.type.startsWith('image/')) {
+        return { error: "El archivo debe ser una imagen válida." };
+      }
+      if (imageFile.size > 10 * 1024 * 1024) {
+        return { error: "La imagen no debe superar los 10 MB." };
+      }
+      const fileExt = imageFile.name.split('.').pop() || 'jpg';
+      const fileName = `car_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `user_${user.id}/${fileName}`;
 
-        const { data, error: uploadError } = await supabaseAdmin.storage
-          .from('vehicles')
-          .upload(filePath, imageFile, {
-            contentType: imageFile.type,
-            upsert: true
-          });
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('vehicles')
+        .upload(filePath, imageFile);
 
-        if (uploadError) {
-          console.error("Error al subir imagen de vehículo:", uploadError);
-        } else {
-          imageUrl = data.path;
-        }
-      } catch (e) {
-        console.error("Error al procesar la imagen:", e);
+      if (!uploadError) {
+        imageUrl = uploadData.path;
       }
     }
 
-    // 4. Crear el Auto del Usuario
-    const newCar = await prisma.userCar.create({
-      data: {
+    // 3. Crear el Vehículo en Supabase
+    const { data: newCar, error: insertError } = await supabase
+      .from('UserCar')
+      .insert({
         userId: user.id,
-        catalogCarId: catalogCar.id,
+        brand,
+        model,
+        year,
         currentKm,
-        imageUrl, // Ahora guarda el path de Supabase
-      },
-    });
+        imageUrl,
+      })
+      .select()
+      .single();
 
-    // 5. Autodiscover plan si existe en catálogo o IA
-    try {
-      await discoverMaintenancePlan(newCar.id);
-    } catch (e) {
-      console.warn("No se pudo autodiscurbir el plan al crear:", e);
-    }
+    if (insertError) throw insertError;
 
     revalidatePath("/dashboard");
     revalidatePath("/mycar");

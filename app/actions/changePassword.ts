@@ -1,49 +1,46 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import { auth } from "../../auth";
-import bcrypt from "bcryptjs";
-import { ChangePasswordSchema } from "../../lib/validations";
+import { createClient } from "../../lib/supabase/server";
 
 export async function changePassword(prevState: any, formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return { error: "No autorizado." };
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "No autorizado." };
+
+  const currentPassword = formData.get("currentPassword") as string;
+  const newPassword = formData.get("newPassword") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!currentPassword) {
+    return { error: "La contraseña actual es requerida." };
   }
 
-  const rawData = Object.fromEntries(formData.entries());
-  const parsed = ChangePasswordSchema.safeParse(rawData);
-
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+  if (newPassword !== confirmPassword) {
+    return { error: "Las contraseñas no coinciden." };
   }
 
-  const { currentPassword, newPassword } = parsed.data;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user || !user.password) {
-      return { error: "Usuario no encontrado o no tiene contraseña definida." };
-    }
-
-    const isValid = await bcrypt.compare(currentPassword, user.password);
-    if (!isValid) {
-      return { error: "La contraseña actual es incorrecta." };
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { password: hashedPassword },
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error("Error al cambiar contraseña:", error);
-    return { error: "Ocurrió un error al cambiar la contraseña." };
+  if (newPassword.length < 6) {
+    return { error: "La contraseña debe tener al menos 6 caracteres." };
   }
+
+  // Verificar contraseña actual antes de cambiarla
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    return { error: "La contraseña actual es incorrecta." };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
 }

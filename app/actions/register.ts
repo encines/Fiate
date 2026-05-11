@@ -1,11 +1,12 @@
 "use server";
 
-import { prisma } from "../../lib/prisma";
-import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase/server";
 import { RegisterSchema } from "../../lib/validations";
+import { redirect } from "next/navigation";
 
 export async function registerUser(prevState: any, formData: FormData) {
+  const supabase = await createClient();
+  
   const rawData = {
     name: formData.get("name"),
     email: formData.get("email"),
@@ -20,27 +21,21 @@ export async function registerUser(prevState: any, formData: FormData) {
 
   const { name, email, password } = parsed.data;
 
-  // Verificar si el usuario ya existe
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) {
-    return { error: "Este correo ya está registrado." };
-  }
-
-  // Encriptar contraseña
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Crear usuario
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
+  // Registrar en Supabase Auth
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: name,
+      },
     },
   });
 
-  // Redirigir al login después del registro exitoso
-  redirect("/login");
+  if (error) {
+    return { error: error.message };
+  }
+
+  // Redirigir al login o al dashboard dependiendo de si quieres confirmar email
+  redirect("/login?message=Verifica tu correo para continuar");
 }

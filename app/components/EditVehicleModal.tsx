@@ -59,12 +59,13 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
       </button>
 
       {isOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Editar vehículo">
           <div className="w-full max-w-md rounded-2xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl p-6 transition-colors">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Editar Vehículo</h3>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Cerrar"
                 className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               >
                 ✕
@@ -80,7 +81,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                   <input 
                     type="text" 
                     name="brand" 
-                    defaultValue={userCar.catalogCar.model.brand.name}
+                    defaultValue={userCar.catalogCar?.model?.brand?.name || userCar.brand || ""}
                     className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
@@ -89,7 +90,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                   <input 
                     type="text" 
                     name="model" 
-                    defaultValue={userCar.catalogCar.model.name}
+                    defaultValue={userCar.catalogCar?.model?.name || userCar.model || ""}
                     className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
@@ -101,7 +102,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                   <input 
                     type="number" 
                     name="year" 
-                    defaultValue={userCar.catalogCar.year}
+                    defaultValue={userCar.catalogCar?.year || userCar.year || ""}
                     className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
