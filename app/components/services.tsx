@@ -49,7 +49,7 @@ export default function Services({
   const searchParams = useSearchParams();
 
   const isPro = userPlan === "PRO";
-  const history: Service[] = car?.history || [];
+  const history: Service[] = (car?.history || []).filter((s: any) => s.customName);
   
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isEditing, setIsEditing] = useState(false);

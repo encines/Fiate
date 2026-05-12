@@ -7,7 +7,7 @@ import AddVehicleModal from "./AddVehicleModal";
 
 export default function Dashboard({ activeCar }: { activeCar?: Record<string, any> | null }) {
 
-  const serviceHistory = activeCar?.history?.slice(0, 5) || [];
+  const serviceHistory = (activeCar?.history || []).filter((s: any) => s.customName).slice(0, 5);
   
   const calculateHealth = () => {
     if (!activeCar || !activeCar.tasks || activeCar.tasks.length === 0) return 100;
@@ -25,7 +25,7 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
   };
 
   const healthScore = useMemo(() => calculateHealth(), [activeCar]);
-  const totalSpent = useMemo(() => activeCar?.history?.reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0, [activeCar?.history]);
+  const totalSpent = useMemo(() => (activeCar?.history || []).filter((s: any) => s.customName).reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0, [activeCar?.history]);
 
   const carName = activeCar?.brand 
     ? `${activeCar.brand} ${activeCar.model}` 

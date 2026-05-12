@@ -40,7 +40,7 @@ export default async function MyCar({ car }: MyCarProps) {
   const { catalogCar, history, currentKm, documents = [], fuelLogs = [] } = car;
 
   // 1. Cálculos de Eficiencia y Costo
-  const totalServiceCost = history.reduce((sum: number, h: any) => sum + (h.cost || 0), 0);
+  const totalServiceCost = (history || []).filter((h: any) => h.customName).reduce((sum: number, h: any) => sum + (h.cost || 0), 0);
   const totalFuelCost = fuelLogs.reduce((sum: number, f: any) => sum + (f.totalCost || 0), 0);
   
   let avgConsumption = 0;
