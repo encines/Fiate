@@ -5,16 +5,19 @@ import { revalidatePath } from "next/cache";
 
 export async function updateProfile(name: string) {
   const supabase = await createClient();
-  
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
   if (authError || !user) return { error: "No autorizado." };
 
   if (!name || !name.trim()) return { error: "El nombre es requerido." };
 
   const { error } = await supabase
-    .from('User')
+    .from("User")
     .update({ name })
-    .eq('id', user.id);
+    .eq("id", user.id);
 
   if (error) {
     return { error: "Error al actualizar el perfil." };
@@ -22,7 +25,7 @@ export async function updateProfile(name: string) {
 
   // También actualizar en Auth metadata por si acaso
   await supabase.auth.updateUser({
-    data: { full_name: name }
+    data: { full_name: name },
   });
 
   revalidatePath("/settings");

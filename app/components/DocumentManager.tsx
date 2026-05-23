@@ -83,8 +83,9 @@ export default function DocumentManager({
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     
-    if (!isPro && (previews.length + files.length) > 1) {
+    if (!isPro && files.length > 0) {
       toast.info("El plan Estándar solo permite 1 foto por documento. ¡Pásate a PRO para subir fotos ilimitadas!");
+      e.target.value = "";
       return;
     }
 
@@ -245,7 +246,7 @@ export default function DocumentManager({
                       </button>
                     </div>
                   ))}
-                  {(isPro || previews.length === 0) && (
+                  {isPro && (
                     <label className="h-20 w-20 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                       <svg className="text-zinc-400" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg>
                       <span className="text-[8px] font-black text-zinc-400">SUBIR</span>
@@ -327,4 +328,3 @@ export default function DocumentManager({
     </div>
   );
 }
-

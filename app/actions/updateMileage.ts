@@ -39,10 +39,6 @@ export async function updateMileage(prevState: any, formData: FormData) {
       return { error: "Vehículo no encontrado." };
     }
 
-    if (newKm < (userCar.currentKm || 0)) {
-      return { error: "El nuevo kilometraje no puede ser menor al actual." };
-    }
-
     const { error: updateError } = await supabase
       .from('UserCar')
       .update({ currentKm: newKm })

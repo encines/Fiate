@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getAIPlanForCar } from "../../lib/gemini";
 
 // Base de datos de conocimientos de la IA para modelos comunes
-const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
+const AI_KNOWLEDGE_BASE: Record<string, { name: string; km: number }[]> = {
   "fiat uno": [
     { name: "Cambio de aceite y filtro", km: 10000 },
     { name: "Sustitución de filtro de aire", km: 10000 },
@@ -120,7 +120,7 @@ const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
     { name: "Aceite de transmisión S-Tronic", km: 60000 },
     { name: "Líquido de frenos", km: 30000 },
   ],
-  "generic": [
+  generic: [
     { name: "Cambio de aceite y filtro", km: 10000 },
     { name: "Filtro de aire", km: 20000 },
     { name: "Filtro de cabina", km: 20000 },
@@ -128,20 +128,23 @@ const AI_KNOWLEDGE_BASE: Record<string, { name: string, km: number }[]> = {
     { name: "Líquido de frenos", km: 40000 },
     { name: "Bujías", km: 60000 },
     { name: "Anticongelante", km: 80000 },
-  ]
+  ],
 };
 
 export async function discoverMaintenancePlan(userCarId: string) {
   const supabase = await createClient();
-  const { data: { user: sbUser } } = await supabase.auth.getUser();
+  const {
+    data: { user: sbUser },
+  } = await supabase.auth.getUser();
 
   if (!sbUser) return { error: "No autorizado." };
 
   try {
     // 1. Obtener datos del vehículo usando Supabase
     const { data: userCar, error: carError } = await supabase
-      .from('UserCar')
-      .select(`
+      .from("UserCar")
+      .select(
+        `
         id, userId, brand, model, year,
         User(plan),
         catalogCar:CatalogCar (
@@ -151,8 +154,9 @@ export async function discoverMaintenancePlan(userCarId: string) {
             brand:Brand (name)
           )
         )
-      `)
-      .eq('id', userCarId)
+      `,
+      )
+      .eq("id", userCarId)
       .single();
 
     if (carError || !userCar) return { error: "Vehículo no encontrado." };
@@ -165,19 +169,17 @@ export async function discoverMaintenancePlan(userCarId: string) {
     const modelName = catalogCar
       ? (catalogCar as any).model.name.toLowerCase()
       : (userCar as any).model.toLowerCase();
-    const year = catalogCar
-      ? (catalogCar as any).year
-      : (userCar as any).year;
+    const year = catalogCar ? (catalogCar as any).year : (userCar as any).year;
     const fullKey = `${brandName} ${modelName}`;
-    
-    let plan: { name: string, km: number }[] | null = null;
+
+    let plan: { name: string; km: number }[] | null = null;
     let source = "";
 
     // 2. Buscar en la Base de Datos Local primero
     const { data: catalogEntry } = await supabase
-      .from('MaintenanceCatalog')
-      .select('tasksJson')
-      .eq('key', fullKey)
+      .from("MaintenanceCatalog")
+      .select("tasksJson")
+      .eq("key", fullKey)
       .single();
 
     if (catalogEntry) {
@@ -189,14 +191,12 @@ export async function discoverMaintenancePlan(userCarId: string) {
         try {
           console.log(`Buscando plan con Gemini para: ${fullKey} ${year}`);
           plan = await getAIPlanForCar(brandName, modelName, year);
-          
+
           if (plan) {
-            await supabase
-              .from('MaintenanceCatalog')
-              .insert({
-                key: fullKey,
-                tasksJson: JSON.stringify(plan)
-              });
+            await supabase.from("MaintenanceCatalog").insert({
+              key: fullKey,
+              tasksJson: JSON.stringify(plan),
+            });
             source = "Inteligencia Artificial (Gemini)";
           }
         } catch (aiError) {
@@ -206,36 +206,45 @@ export async function discoverMaintenancePlan(userCarId: string) {
 
       // 4. Fallback estático
       if (!plan) {
-        plan = AI_KNOWLEDGE_BASE[fullKey] || 
-               Object.entries(AI_KNOWLEDGE_BASE).find(([key]) => fullKey.includes(key))?.[1] || 
-               AI_KNOWLEDGE_BASE["generic"];
-        source = isPro ? "el catálogo estático de respaldo" : "el catálogo estándar (Pásate a PRO para usar Inteligencia Artificial)";
+        plan =
+          AI_KNOWLEDGE_BASE[fullKey] ||
+          Object.entries(AI_KNOWLEDGE_BASE).find(([key]) =>
+            fullKey.includes(key),
+          )?.[1] ||
+          AI_KNOWLEDGE_BASE["generic"];
+        source = isPro
+          ? "el catálogo estático de respaldo"
+          : "el catálogo estándar (Pásate a PRO para usar Inteligencia Artificial)";
       }
     }
 
     if (!plan || plan.length === 0) {
-      return { error: `No se pudo generar un plan de mantenimiento para ${brandName} ${modelName}.` };
+      return {
+        error: `No se pudo generar un plan de mantenimiento para ${brandName} ${modelName}.`,
+      };
     }
 
     // 5. Limpiar tareas existentes
-    await supabase
-      .from('MaintenanceTask')
-      .delete()
-      .eq('userCarId', userCarId);
+    await supabase.from("MaintenanceTask").delete().eq("userCarId", userCarId);
 
     // 6. Crear las nuevas tareas
     const { error: insertError } = await supabase
-      .from('MaintenanceTask')
-      .insert(plan.map(task => ({
-        name: task.name,
-        frequencyKm: task.km,
-        userCarId: userCarId
-      })));
+      .from("MaintenanceTask")
+      .insert(
+        plan.map((task) => ({
+          name: task.name,
+          frequencyKm: task.km,
+          userCarId: userCarId,
+        })),
+      );
 
     if (insertError) throw insertError;
 
     revalidatePath("/plan");
-    return { success: true, message: `Plan para ${brandName} ${modelName} generado exitosamente desde ${source}.` };
+    return {
+      success: true,
+      message: `Plan para ${brandName} ${modelName} generado exitosamente desde ${source}.`,
+    };
   } catch (error) {
     console.error(error);
     return { error: "Error durante el descubrimiento por IA." };

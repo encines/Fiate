@@ -5,12 +5,18 @@ import { useMemo } from "react";
 import Image from "next/image";
 import AddVehicleModal from "./AddVehicleModal";
 
-export default function Dashboard({ activeCar }: { activeCar?: Record<string, any> | null }) {
+export default function Dashboard({
+  activeCar,
+}: {
+  activeCar?: Record<string, any> | null;
+}) {
+  const serviceHistory = (activeCar?.history || [])
+    .filter((s: any) => s.customName)
+    .slice(0, 5);
 
-  const serviceHistory = (activeCar?.history || []).filter((s: any) => s.customName).slice(0, 5);
-  
   const calculateHealth = () => {
-    if (!activeCar || !activeCar.tasks || activeCar.tasks.length === 0) return 100;
+    if (!activeCar || !activeCar.tasks || activeCar.tasks.length === 0)
+      return 100;
     const tasks = activeCar.tasks;
     const checks = activeCar.maintenanceChecks || [];
     const currentKm = activeCar.currentKm || 0;
@@ -21,14 +27,23 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
       }
     });
     if (totalExpectedChecks === 0) return 100;
-    return Math.max(0, Math.min(100, Math.round((checks.length / totalExpectedChecks) * 100)));
+    return Math.max(
+      0,
+      Math.min(100, Math.round((checks.length / totalExpectedChecks) * 100)),
+    );
   };
 
   const healthScore = useMemo(() => calculateHealth(), [activeCar]);
-  const totalSpent = useMemo(() => (activeCar?.history || []).filter((s: any) => s.customName).reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0, [activeCar?.history]);
+  const totalSpent = useMemo(
+    () =>
+      (activeCar?.history || [])
+        .filter((s: any) => s.customName)
+        .reduce((acc: number, curr: any) => acc + (curr.cost || 0), 0) || 0,
+    [activeCar?.history],
+  );
 
-  const carName = activeCar?.brand 
-    ? `${activeCar.brand} ${activeCar.model}` 
+  const carName = activeCar?.brand
+    ? `${activeCar.brand} ${activeCar.model}`
     : activeCar?.catalogCar?.model
       ? `${activeCar.catalogCar.model.brand.name} ${activeCar.catalogCar.model.name}`
       : "Selecciona un vehículo";
@@ -39,34 +54,115 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
     {
       label: "Salud del Auto",
       value: `${healthScore}%`,
-      meta: healthScore > 90 ? "Excelente" : healthScore > 70 ? "Regular" : "Crítico",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
-      color: healthScore > 90 ? "text-emerald-500" : healthScore > 70 ? "text-amber-500" : "text-rose-500",
-      bg: healthScore > 90 ? "bg-emerald-500/10" : healthScore > 70 ? "bg-amber-500/10" : "bg-rose-500/10"
+      meta:
+        healthScore > 90
+          ? "Excelente"
+          : healthScore > 70
+            ? "Regular"
+            : "Crítico",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        </svg>
+      ),
+      color:
+        healthScore > 90
+          ? "text-emerald-500"
+          : healthScore > 70
+            ? "text-amber-500"
+            : "text-rose-500",
+      bg:
+        healthScore > 90
+          ? "bg-emerald-500/10"
+          : healthScore > 70
+            ? "bg-amber-500/10"
+            : "bg-rose-500/10",
     },
     {
       label: "Inversión Total",
       value: `$${totalSpent.toLocaleString()}`,
       meta: "en mantenimientos",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>,
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 2v20" />
+          <path d="m17 5-5-3-5 3" />
+          <path d="m17 19-5 3-5-3" />
+          <path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2" />
+          <path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5" />
+        </svg>
+      ),
       color: "text-emerald-500",
-      bg: "bg-emerald-500/10"
+      bg: "bg-emerald-500/10",
     },
     {
       label: "Kilometraje",
-      value: activeCar ? `${(activeCar.currentKm || 0).toLocaleString()} km` : "0 km",
+      value: activeCar
+        ? `${(activeCar.currentKm || 0).toLocaleString()} km`
+        : "0 km",
       meta: "recorridos",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>,
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m12 14 4-4" />
+          <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+        </svg>
+      ),
       color: "text-blue-500",
-      bg: "bg-blue-500/10"
+      bg: "bg-blue-500/10",
     },
     {
       label: "Próximo Servicio",
-      value: activeCar?.tasks?.[0] ? `${activeCar.tasks[0].frequencyKm?.toLocaleString()} km` : "N/A",
+      value: activeCar?.tasks?.[0]
+        ? `${activeCar.tasks[0].frequencyKm?.toLocaleString()} km`
+        : "N/A",
       meta: "estimado",
-      icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      ),
       color: "text-indigo-500",
-      bg: "bg-indigo-500/10"
+      bg: "bg-indigo-500/10",
     },
   ];
 
@@ -89,12 +185,19 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
                   {carName}
                 </h1>
                 <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-base sm:text-lg">
-                  {carYear ? `${carYear} · ` : ""} {activeCar?.catalogCar?.trim || ""} {activeCar?.licensePlate ? ` · ${activeCar.licensePlate}` : "Sin placas"}
+                  {carYear ? `${carYear} · ` : ""}{" "}
+                  {activeCar?.catalogCar?.trim || ""}{" "}
+                  {activeCar?.licensePlate
+                    ? ` · ${activeCar.licensePlate}`
+                    : "Sin placas"}
                 </p>
               </div>
               <div className="flex flex-wrap gap-4">
                 <AddVehicleModal catalogCars={[]} />
-                <Link href="/services" className="rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 font-bold text-sm hover:scale-105 transition-transform">
+                <Link
+                  href="/services"
+                  className="rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-3 font-bold text-sm hover:scale-105 transition-transform"
+                >
                   Ver Historial
                 </Link>
               </div>
@@ -123,10 +226,14 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
               className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/20 p-6 hover:bg-white/80 dark:hover:bg-zinc-900/40 transition-all duration-300 group"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`h-10 w-10 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`h-10 w-10 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                >
                   {stat.icon}
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{stat.meta}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  {stat.meta}
+                </span>
               </div>
               <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                 {stat.label}
@@ -160,34 +267,62 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-zinc-900 dark:text-white">{healthScore}%</span>
-                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-500">Salud</span>
+                <span className="text-2xl font-black text-zinc-900 dark:text-white">
+                  {healthScore}%
+                </span>
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-500">
+                  Salud
+                </span>
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Estado Mecánico</h3>
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
+                Estado Mecánico
+              </h3>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                {healthScore > 90 
+                {healthScore > 90
                   ? "Tu vehículo está en condiciones óptimas. Sigue así para mantener su valor."
-                  : healthScore > 70 
-                  ? "Tienes algunos servicios pendientes. Programarlos pronto evitará averías costosas."
-                  : "¡Atención! Tu vehículo requiere mantenimiento urgente para garantizar su seguridad."}
+                  : healthScore > 70
+                    ? "Tienes algunos servicios pendientes. Programarlos pronto evitará averías costosas."
+                    : "¡Atención! Tu vehículo requiere mantenimiento urgente para garantizar su seguridad."}
               </p>
             </div>
           </div>
 
           <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-8 relative overflow-hidden group">
             <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2"/><path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 2v20" />
+                <path d="m17 5-5-3-5 3" />
+                <path d="m17 19-5 3-5-3" />
+                <path d="M2 7h5c2.2 0 4 1.8 4 4s-1.8 4-4 4H2" />
+                <path d="M22 17h-5c-2.2 0-4-1.8-4-4s1.8-4 4-4h5" />
+              </svg>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Confianza de Mercado</p>
-              <h3 className="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">Valor de Reventa</h3>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                Confianza de Mercado
+              </p>
+              <h3 className="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">
+                Valor de Reventa
+              </h3>
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="text-3xl font-black text-zinc-900 dark:text-white">
                   +{healthScore > 80 ? "15" : healthScore > 50 ? "8" : "3"}%
                 </span>
-                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">sobre el valor base</span>
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                  sobre el valor base
+                </span>
               </div>
               <p className="mt-2 text-xs text-zinc-500">
                 Basado en tu historial y mantenimientos registrados en Fiate.
@@ -200,27 +335,48 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
         <div className="rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-6 sm:p-8 overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Servicios Recientes</h2>
-              <p className="mt-1 text-sm text-zinc-500">Últimos mantenimientos registrados.</p>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+                Servicios Recientes
+              </h2>
+              <p className="mt-1 text-sm text-zinc-500">
+                Últimos mantenimientos registrados.
+              </p>
             </div>
-            <Link href="/services" className="text-xs font-bold text-indigo-500 hover:text-indigo-600">Ver todos</Link>
+            <Link
+              href="/services"
+              className="text-xs font-bold text-indigo-500 hover:text-indigo-600"
+            >
+              Ver todos
+            </Link>
           </div>
 
           <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800">
             <table className="w-full text-left text-sm min-w-[500px]">
               <thead>
                 <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Fecha</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Servicio</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right">Costo</th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                    Servicio
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right">
+                    Costo
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/50">
                 {serviceHistory.length > 0 ? (
                   serviceHistory.map((item: any) => (
-                    <tr key={item.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40">
+                    <tr
+                      key={item.id}
+                      className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40"
+                    >
                       <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
-                        {new Date(item.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                        {new Date(item.date).toLocaleDateString("es-ES", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
                       </td>
                       <td className="px-6 py-4 font-bold text-zinc-800 dark:text-zinc-200">
                         {item.customName || "Mantenimiento"}
@@ -232,7 +388,12 @@ export default function Dashboard({ activeCar }: { activeCar?: Record<string, an
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center text-zinc-500">No hay servicios recientes.</td>
+                    <td
+                      colSpan={3}
+                      className="px-6 py-12 text-center text-zinc-500"
+                    >
+                      No hay servicios recientes.
+                    </td>
                   </tr>
                 )}
               </tbody>

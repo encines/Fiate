@@ -4,6 +4,7 @@ import { createClient } from "../../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { EditVehicleSchema } from "../../lib/validations";
 import { verifyCarOwnership } from "../../lib/verify-ownership";
+import { optimizeImageFile } from "../../lib/optimize-image";
 
 export async function editVehicle(prevState: any, formData: FormData) {
   const supabase = await createClient();
@@ -44,13 +45,13 @@ export async function editVehicle(prevState: any, formData: FormData) {
       if (imageFile.size > 10 * 1024 * 1024) {
         return { error: "La imagen no debe superar los 10 MB." };
       }
-      const fileExt = imageFile.name.split('.').pop() || 'jpg';
-      const fileName = `car_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { buffer, contentType, ext } = await optimizeImageFile(imageFile, "vehicle");
+      const fileName = `car_${Math.random().toString(36).substring(2)}.${ext}`;
       const filePath = `user_${sbUser.id}/${fileName}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('vehicles')
-        .upload(filePath, imageFile);
+        .upload(filePath, buffer, { contentType, upsert: true });
 
       if (uploadError) {
         console.error(uploadError);

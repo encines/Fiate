@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../../lib/supabase/server";
+import { optimizeImageFile } from "../../lib/optimize-image";
 import { revalidatePath } from "next/cache";
 import { AddVehicleSchema } from "../../lib/validations";
 
@@ -53,13 +54,13 @@ export async function addVehicle(prevState: any, formData: FormData) {
       if (imageFile.size > 10 * 1024 * 1024) {
         return { error: "La imagen no debe superar los 10 MB." };
       }
-      const fileExt = imageFile.name.split('.').pop() || 'jpg';
-      const fileName = `car_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const { buffer, contentType, ext } = await optimizeImageFile(imageFile, "vehicle");
+      const fileName = `car_${Math.random().toString(36).substring(2)}.${ext}`;
       const filePath = `user_${user.id}/${fileName}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('vehicles')
-        .upload(filePath, imageFile);
+        .upload(filePath, buffer, { contentType, upsert: true });
 
       if (!uploadError) {
         imageUrl = uploadData.path;
