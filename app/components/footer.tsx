@@ -52,6 +52,7 @@ export default function Footer() {
               links: [
                 { name: "Privacidad", href: "/privacy-policy" },
                 { name: "Términos", href: "/terms-of-service" },
+                { name: "Eliminar cuenta", href: "/delete-account" },
                 { name: "Cookies", href: "/cookies" },
               ],
             },
