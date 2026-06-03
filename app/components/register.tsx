@@ -29,11 +29,11 @@ export default function Register() {
           className="relative z-10 flex items-center gap-2 transition-transform hover:scale-105 active:scale-95"
         >
           <Image
-            src="/screen.png"
+            src="/app-icon.png"
             alt="Fiate"
             width={60}
             height={60}
-            className="h-10 w-auto object-contain brightness-110"
+            className="h-10 w-10 rounded-xl object-cover"
           />
           <span className="text-xl font-black uppercase tracking-tighter text-white">
             Fiate

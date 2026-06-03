@@ -895,7 +895,7 @@ export default function Services({
           <div>
             <div className="flex items-center gap-3 mb-2">
               <img
-                src="/screen.png"
+                src="/app-icon.png"
                 alt="Fiate"
                 className="h-10 w-10 object-contain"
               />

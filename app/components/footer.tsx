@@ -17,11 +17,11 @@ export default function Footer() {
           <div className="space-y-10">
             <Link href="/" className="flex items-center gap-2 group">
               <Image
-                src="/screen.png"
+                src="/app-icon.png"
                 alt="Fiate Logo"
                 width={60}
                 height={60}
-                className="h-10 w-auto object-contain brightness-110 transition-transform group-hover:scale-110"
+                className="h-10 w-10 rounded-xl object-cover transition-transform group-hover:scale-110"
               />
               <span className="text-xl font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Fiate</span>
             </Link>

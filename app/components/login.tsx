@@ -20,7 +20,7 @@ export default function Login() {
         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-orange-600/20 blur-[120px]" />
         
         <Link href="/" className="relative z-10 flex items-center gap-2 transition-transform hover:scale-105 active:scale-95">
-          <Image src="/screen.png" alt="Fiate" width={60} height={60} className="h-10 w-auto object-contain brightness-110" />
+          <Image src="/app-icon.png" alt="Fiate" width={60} height={60} className="h-10 w-10 rounded-xl object-cover" />
           <span className="text-xl font-black uppercase tracking-tighter text-white">Fiate</span>
         </Link>
 

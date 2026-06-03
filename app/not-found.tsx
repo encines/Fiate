@@ -16,7 +16,7 @@ export default function NotFound() {
       <div className="relative z-10 flex flex-col items-center space-y-12 px-6 text-center">
         <div className="space-y-4">
           <Link href="/" className="flex items-center justify-center gap-2 transition-transform hover:scale-105 active:scale-95">
-            <Image src="/screen.png" alt="Fiate" width={60} height={60} className="h-10 w-auto object-contain brightness-110" />
+            <Image src="/app-icon.png" alt="Fiate" width={60} height={60} className="h-10 w-10 rounded-xl object-cover" />
             <span className="text-xl font-black uppercase tracking-tighter text-white">Fiate</span>
           </Link>
           <div className="h-[1px] w-12 mx-auto bg-orange-500/50" />
