@@ -12,7 +12,7 @@ export default function Register() {
   );
 
   return (
-    <div className="relative flex min-h-screen overflow-x-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30">
+    <div className="relative flex min-h-screen overflow-x-hidden bg-zinc-950 font-sans selection:bg-orange-500/30">
       {/* Visual Side (Hidden on mobile) */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden border-r border-white/5">
         <div

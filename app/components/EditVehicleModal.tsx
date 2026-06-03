@@ -53,7 +53,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400"
+        className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400"
       >
         Editar perfil del vehículo
       </button>
@@ -82,7 +82,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                     type="text" 
                     name="brand" 
                     defaultValue={userCar.catalogCar?.model?.brand?.name || userCar.brand || ""}
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -91,7 +91,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                     type="text" 
                     name="model" 
                     defaultValue={userCar.catalogCar?.model?.name || userCar.model || ""}
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -103,7 +103,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                     type="number" 
                     name="year" 
                     defaultValue={userCar.catalogCar?.year || userCar.year || ""}
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -112,7 +112,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                     type="text" 
                     name="color" 
                     defaultValue={userCar.color || ""}
-                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
+                    className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                   type="text" 
                   name="licensePlate" 
                   defaultValue={userCar.licensePlate || ""}
-                  className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -144,7 +144,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                     name="image" 
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="block w-full text-sm text-zinc-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 dark:file:bg-indigo-500/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-500/20"
+                    className="block w-full text-sm text-zinc-500 file:mr-4 file:rounded-full file:border-0 file:bg-orange-50 dark:file:bg-orange-500/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-orange-600 dark:file:text-orange-400 hover:file:bg-orange-100 dark:hover:file:bg-orange-500/20"
                   />
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function EditVehicleModal({ userCar }: EditVehicleModalProps) {
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
+                    className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400 disabled:opacity-50"
                   >
                     {isPending ? "Guardando..." : "Guardar Cambios"}
                   </button>

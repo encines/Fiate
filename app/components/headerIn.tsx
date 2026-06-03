@@ -20,7 +20,7 @@ export default async function HeaderIn() {
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <button className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400">
+          <button className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400">
             + Agregar servicio
           </button>
           

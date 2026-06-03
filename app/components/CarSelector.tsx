@@ -31,7 +31,7 @@ export default function CarSelector({ cars, activeCarId }: CarSelectorProps) {
           value={activeCarId || (cars.length > 0 ? cars[0].id : "")}
           onChange={handleSelect}
           disabled={isPending || cars.length === 0}
-          className="w-full appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 dark:bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50 transition-all cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600"
+          className="w-full appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-100 dark:bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-50 transition-all cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-600"
         >
           {cars.length === 0 ? (
             <option value="" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">
@@ -52,7 +52,7 @@ export default function CarSelector({ cars, activeCarId }: CarSelectorProps) {
         </div>
       </div>
       {isPending && (
-        <div className="mt-1 px-2 text-[10px] text-indigo-400 animate-pulse">
+        <div className="mt-1 px-2 text-[10px] text-orange-400 animate-pulse">
           Cambiando vehículo...
         </div>
       )}

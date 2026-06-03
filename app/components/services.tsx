@@ -18,7 +18,7 @@ const CATEGORIES = [
   {
     name: "Motor",
     keywords: ["aceite", "filtro", "bujía", "bujia", "anticongelante", "motor"],
-    color: "bg-indigo-500",
+    color: "bg-orange-500",
   },
   {
     name: "Frenos",
@@ -229,7 +229,7 @@ export default function Services({
                           updateUrl({ filter: filterOption, page: 1 });
                           setShowFilterMenu(false);
                         }}
-                        className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
+                        className={`w-full text-left rounded-xl px-4 py-2 text-sm font-medium transition-colors ${activeFilter === filterOption ? "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400" : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"}`}
                       >
                         {filterOption}
                       </button>
@@ -259,7 +259,7 @@ export default function Services({
               }}
               className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl border px-4 py-3 sm:py-2.5 text-xs sm:text-sm font-bold transition-all ${
                 isPro
-                  ? "border-indigo-500 bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/20"
+                  ? "border-orange-500 bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20"
                   : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
               }`}
             >
@@ -311,7 +311,7 @@ export default function Services({
                 <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   Servicios Totales
                 </span>
-                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -540,7 +540,7 @@ export default function Services({
                     onClick={() => updateUrl({ page })}
                     className={`h-10 w-10 rounded-xl text-sm font-bold transition-all ${
                       currentPage === page
-                        ? "bg-indigo-500 text-white"
+                        ? "bg-orange-500 text-white"
                         : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
                     }`}
                   >
@@ -652,7 +652,7 @@ export default function Services({
                           <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
                             INVERSIÓN
                           </p>
-                          <p className="text-sm font-bold text-indigo-400">
+                          <p className="text-sm font-bold text-orange-400">
                             ${selectedService.cost?.toLocaleString() || "0.00"}
                           </p>
                         </div>
@@ -771,7 +771,7 @@ export default function Services({
                             name="customName"
                             defaultValue={selectedService.customName ?? ""}
                             required
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-2">
@@ -783,7 +783,7 @@ export default function Services({
                             type="number"
                             defaultValue={selectedService.kmAtService}
                             required
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-2">
@@ -795,7 +795,7 @@ export default function Services({
                             type="number"
                             step="0.01"
                             defaultValue={selectedService.cost ?? ""}
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-2">
@@ -810,7 +810,7 @@ export default function Services({
                                 .toISOString()
                                 .split("T")[0]
                             }
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                           />
                         </div>
                       </div>
@@ -822,7 +822,7 @@ export default function Services({
                           name="notes"
                           maxLength={500}
                           defaultValue={selectedService.notes || ""}
-                          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all min-h-[100px]"
+                          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all min-h-[100px]"
                         />
                       </div>
 
@@ -837,7 +837,7 @@ export default function Services({
                         <button
                           type="submit"
                           disabled={isPending}
-                          className="flex-1 rounded-2xl bg-indigo-500 py-3 text-sm font-bold text-white hover:bg-indigo-400 transition-all disabled:opacity-50"
+                          className="flex-1 rounded-2xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 transition-all disabled:opacity-50"
                         >
                           {isPending ? "Guardando..." : "Guardar Cambios"}
                         </button>
@@ -891,7 +891,7 @@ export default function Services({
 
       {/* Reporte de Impresión (Solo visible al imprimir el reporte pro) */}
       <div className="hidden printable-area">
-        <div className="flex items-center justify-between border-b-4 border-indigo-500 pb-8 mb-8">
+        <div className="flex items-center justify-between border-b-4 border-orange-500 pb-8 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <img
@@ -899,7 +899,7 @@ export default function Services({
                 alt="Fiate"
                 className="h-10 w-10 object-contain"
               />
-              <h1 className="text-4xl font-black tracking-tighter text-indigo-600">
+              <h1 className="text-4xl font-black tracking-tighter text-orange-600">
                 FIATE
               </h1>
             </div>
@@ -932,7 +932,7 @@ export default function Services({
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">
               Inversión Estimada
             </p>
-            <p className="text-2xl font-black text-indigo-600">
+            <p className="text-2xl font-black text-orange-600">
               $
               {mounted
                 ? history
@@ -954,7 +954,7 @@ export default function Services({
           </div>
         </div>
 
-        <h3 className="text-lg font-black uppercase tracking-widest mb-6 border-l-4 border-indigo-500 pl-4">
+        <h3 className="text-lg font-black uppercase tracking-widest mb-6 border-l-4 border-orange-500 pl-4">
           Historial Detallado
         </h3>
         <table className="w-full text-left text-sm mb-12">

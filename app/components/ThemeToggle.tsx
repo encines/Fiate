@@ -21,7 +21,7 @@ export function ThemeToggle() {
         onClick={() => setTheme("light")}
         className={`flex-1 flex justify-center py-2 rounded-lg transition-all ${
           theme === "light" 
-            ? "bg-white text-indigo-500 shadow-sm" 
+            ? "bg-white text-orange-500 shadow-sm" 
             : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
         }`}
         title="Modo Claro"
@@ -32,7 +32,7 @@ export function ThemeToggle() {
         onClick={() => setTheme("dark")}
         className={`flex-1 flex justify-center py-2 rounded-lg transition-all ${
           theme === "dark" 
-            ? "bg-zinc-800 text-indigo-400 shadow-sm" 
+            ? "bg-zinc-800 text-orange-400 shadow-sm" 
             : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
         }`}
         title="Modo Oscuro"
@@ -43,7 +43,7 @@ export function ThemeToggle() {
         onClick={() => setTheme("system")}
         className={`flex-1 flex justify-center py-2 rounded-lg transition-all ${
           theme === "system" 
-            ? "bg-white dark:bg-zinc-800 text-indigo-500 dark:text-indigo-400 shadow-sm" 
+            ? "bg-white dark:bg-zinc-800 text-orange-500 dark:text-orange-400 shadow-sm" 
             : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
         }`}
         title="Sistema"

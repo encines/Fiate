@@ -24,7 +24,7 @@ export default function ChangePasswordModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full rounded-[18px] bg-indigo-500 px-6 py-4 text-sm font-bold text-white hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
+        className="w-full rounded-[18px] bg-orange-500 px-6 py-4 text-sm font-bold text-white hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20 active:scale-[0.98]"
       >
         Cambiar contraseña
       </button>
@@ -54,7 +54,7 @@ export default function ChangePasswordModal() {
                   name="currentPassword"
                   required
                   placeholder="••••••••"
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white placeholder:text-zinc-700"
+                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all dark:text-white placeholder:text-zinc-700"
                 />
               </div>
 
@@ -65,7 +65,7 @@ export default function ChangePasswordModal() {
                   name="newPassword"
                   required
                   placeholder="Mínimo 6 caracteres"
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white placeholder:text-zinc-700"
+                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all dark:text-white placeholder:text-zinc-700"
                 />
               </div>
 
@@ -76,7 +76,7 @@ export default function ChangePasswordModal() {
                   name="confirmPassword"
                   required
                   placeholder="Repite la nueva contraseña"
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white placeholder:text-zinc-700"
+                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 px-5 py-4 text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all dark:text-white placeholder:text-zinc-700"
                 />
               </div>
 
@@ -97,7 +97,7 @@ export default function ChangePasswordModal() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 rounded-2xl bg-indigo-500 px-6 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-400 disabled:opacity-50 transition-all active:scale-95"
+                  className="flex-1 rounded-2xl bg-orange-500 px-6 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-orange-500/20 hover:bg-orange-400 disabled:opacity-50 transition-all active:scale-95"
                 >
                   {isPending ? "Procesando..." : "Actualizar"}
                 </button>

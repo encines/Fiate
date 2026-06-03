@@ -43,7 +43,7 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
         <div className="flex flex-col gap-3">
           <button 
             onClick={onConfirm}
-            className="w-full rounded-2xl bg-indigo-500 py-3.5 text-sm font-bold text-white hover:bg-indigo-600 transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20"
+            className="w-full rounded-2xl bg-orange-500 py-3.5 text-sm font-bold text-white hover:bg-orange-600 transition-all active:scale-[0.98] shadow-lg shadow-orange-500/20"
           >
             Confirmar
           </button>

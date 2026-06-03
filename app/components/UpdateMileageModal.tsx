@@ -34,7 +34,7 @@ export default function UpdateMileageModal({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="mt-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 underline decoration-indigo-400/30 underline-offset-4 transition-colors"
+        className="mt-2 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 underline decoration-orange-400/30 underline-offset-4 transition-colors"
       >
         Actualizar
       </button>
@@ -75,7 +75,7 @@ export default function UpdateMileageModal({
                     defaultValue={currentKm}
                     min={0}
                     required
-                    className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   />
                 </div>
 
@@ -94,7 +94,7 @@ export default function UpdateMileageModal({
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
+                    className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400 disabled:opacity-50"
                   >
                     {isPending ? "Guardando..." : "Guardar"}
                   </button>

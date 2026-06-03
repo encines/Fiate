@@ -143,7 +143,7 @@ export default function Settings({ cars = [], car, user }: SettingsProps) {
           Mi Perfil
         </h2>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500 font-bold text-2xl">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 font-bold text-2xl">
             {userName ? userName[0].toUpperCase() : "U"}
           </div>
           <div className="flex-1 space-y-1">
@@ -153,14 +153,14 @@ export default function Settings({ cars = [], car, user }: SettingsProps) {
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="Escribe tu nombre"
                   autoFocus
                 />
                 <button
                   onClick={handleSaveName}
                   disabled={isPending}
-                  className="p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+                  className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -203,7 +203,7 @@ export default function Settings({ cars = [], car, user }: SettingsProps) {
                 </h3>
                 <button
                   onClick={() => setEditingName(true)}
-                  className="text-zinc-400 hover:text-indigo-500 transition-colors"
+                  className="text-zinc-400 hover:text-orange-500 transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +269,7 @@ export default function Settings({ cars = [], car, user }: SettingsProps) {
                 className="group flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 gap-4"
               >
                 <div className="flex items-center gap-4 sm:gap-6">
-                  <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                  <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                     {car.imageUrl ? (
                       <img
                         src={car.imageUrl}

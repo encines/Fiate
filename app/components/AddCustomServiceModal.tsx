@@ -74,7 +74,7 @@ export default function AddCustomServiceModal({
                     name="customName"
                     required
                     placeholder="Ej: Cambio de batería, Llantas nuevas..."
-                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   />
                 </div>
 
@@ -89,7 +89,7 @@ export default function AddCustomServiceModal({
                       defaultValue={currentKm}
                       required
                       min="0"
-                      className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                     />
                   </div>
                   <div>
@@ -102,7 +102,7 @@ export default function AddCustomServiceModal({
                       placeholder="0"
                       min="0"
                       step="0.01"
-                      className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                     />
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export default function AddCustomServiceModal({
                     type="date"
                     name="date"
                     defaultValue={new Date().toISOString().split("T")[0]}
-                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   />
                 </div>
 
@@ -134,7 +134,7 @@ export default function AddCustomServiceModal({
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
+                    className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400 disabled:opacity-50"
                   >
                     {isPending ? "Guardando..." : "Guardar Registro"}
                   </button>

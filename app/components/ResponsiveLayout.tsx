@@ -65,7 +65,7 @@ export default function ResponsiveLayout({
               <div className="flex items-center gap-2">
                 <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
                 <div className="flex flex-col">
-                  <h1 className="text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em] leading-none">Fiate</h1>
+                  <h1 className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em] leading-none">Fiate</h1>
                   <span className="text-sm font-semibold text-zinc-900 dark:text-white">Dashboard</span>
                 </div>
               </div>
@@ -77,14 +77,14 @@ export default function ResponsiveLayout({
                 {userPlan && (
                   <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                     userPlan === "PRO"
-                      ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
+                      ? "bg-orange-100 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
                       : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
                   }`}>
                     {userPlan}
                   </span>
                 )}
               </div>
-              <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-zinc-200 dark:ring-zinc-800 transition-colors">
+              <div className="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-zinc-200 dark:ring-zinc-800 transition-colors">
                 {userEmail[0]?.toUpperCase()}
               </div>
             </div>

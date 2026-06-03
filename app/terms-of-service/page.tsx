@@ -12,7 +12,7 @@ export default function TermsOfService() {
         <header className="mb-16 space-y-4">
           <h1 className="text-4xl font-medium tracking-tight text-zinc-900 dark:text-white sm:text-6xl">
             Términos de <br />
-            <span className="text-indigo-500 italic font-black">Servicio.</span>
+            <span className="text-orange-500 italic font-black">Servicio.</span>
           </h1>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">Última actualización: Mayo 2026</p>
         </header>
@@ -39,8 +39,8 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          <div className="rounded-3xl border-2 border-indigo-500/20 bg-indigo-500/[0.02] p-8 mt-16">
-            <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
+          <div className="rounded-3xl border-2 border-orange-500/20 bg-orange-500/[0.02] p-8 mt-16">
+            <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
               Importante: Fiate no sustituye las revisiones técnicas oficiales obligatorias por ley en su jurisdicción.
             </p>
           </div>

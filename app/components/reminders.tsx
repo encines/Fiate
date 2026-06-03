@@ -59,7 +59,7 @@ export default async function Reminders({ activeCar }: RemindersProps) {
                   <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                     isNear 
                       ? "bg-rose-500/10 text-rose-500" 
-                      : "bg-indigo-500/10 text-indigo-500 dark:text-indigo-400"
+                      : "bg-orange-500/10 text-orange-500 dark:text-orange-400"
                   }`}>
                     {isNear ? "Urgente" : "Pendiente"}
                   </span>

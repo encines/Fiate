@@ -91,12 +91,12 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
     <aside className="w-64 h-[100dvh] border-r border-zinc-200/50 dark:border-zinc-800/50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl text-zinc-900 dark:text-white flex-shrink-0 flex flex-col transition-all overflow-hidden">
       <div className="p-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
         <div className="mb-10 flex items-center gap-3 px-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 overflow-hidden ring-1 ring-indigo-500/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 dark:bg-orange-500/20 overflow-hidden ring-1 ring-orange-500/20">
             <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-black tracking-tighter text-zinc-900 dark:text-white leading-none">Fiate</span>
-            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Control Total</span>
+            <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mt-0.5">Control Total</span>
           </div>
         </div>
 
@@ -117,11 +117,11 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
                       onClick={onClose}
                       className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all group ${
                         isActive
-                          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-indigo-500/50"
+                          ? "bg-orange-600 text-white shadow-lg shadow-orange-500/25 ring-1 ring-orange-500/50"
                           : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-white"
                       }`}
                     >
-                      <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-white" : "text-zinc-400 dark:text-zinc-500 group-hover:text-indigo-500"}`}>
+                      <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-white" : "text-zinc-400 dark:text-zinc-500 group-hover:text-orange-500"}`}>
                         {item.icon}
                       </span>
                       {item.label}

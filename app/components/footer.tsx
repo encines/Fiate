@@ -9,7 +9,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-zinc-50 dark:bg-zinc-950 pt-32 pb-16 overflow-hidden border-t border-zinc-200 dark:border-white/5 transition-colors duration-500">
       {/* Subtle Background Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-96 w-[90%] bg-indigo-500/5 dark:bg-indigo-500/[0.03] blur-[140px]" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-96 w-[90%] bg-orange-500/5 dark:bg-orange-500/[0.03] blur-[140px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12">
         <div className="grid gap-16 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">

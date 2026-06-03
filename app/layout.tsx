@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -11,6 +11,13 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Fiate | Gestión Inteligente de Vehículos",
   description: "Monitorea y agenda los mantenimientos de tu vehículo basado en su kilometraje.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F97316",
 };
 
 import SmoothScroll from "./components/SmoothScroll";

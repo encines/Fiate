@@ -64,7 +64,7 @@ export default function FuelTracker({
         </h1>
         <button
           onClick={() => setIsOpen(true)}
-          className="rounded-xl bg-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition-all active:scale-95"
+          className="rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400 transition-all active:scale-95"
         >
           + Registrar Carga
         </button>
@@ -73,7 +73,7 @@ export default function FuelTracker({
       <div className="grid gap-6 md:grid-cols-3">
         {/* Card Eficiencia */}
         <div className="md:col-span-1 rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-8 flex flex-col items-center justify-center text-center">
-          <div className="h-16 w-16 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-4">
+          <div className="h-16 w-16 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -281,7 +281,7 @@ export default function FuelTracker({
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="flex-1 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-400 disabled:opacity-50"
+                    className="flex-1 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white hover:bg-orange-400 disabled:opacity-50"
                   >
                     {isPending ? "Guardando..." : "Guardar"}
                   </button>

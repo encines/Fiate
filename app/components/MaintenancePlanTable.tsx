@@ -168,7 +168,7 @@ export default function MaintenancePlanTable({
             disabled={isPending || !isPro}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 disabled:opacity-50 ${
               isPro
-                ? "bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white group"
+                ? "bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500 hover:text-white group"
                 : "bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-400 cursor-not-allowed"
             }`}
             onClick={isPro ? handleAIDiscovery : undefined}
@@ -416,7 +416,7 @@ export default function MaintenancePlanTable({
                         frequency: parseInt(e.target.value),
                       })
                     }
-                    className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                    className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-bold">
                     KM
@@ -428,7 +428,7 @@ export default function MaintenancePlanTable({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full rounded-xl bg-indigo-500 py-3 text-sm font-bold text-white hover:bg-indigo-400 transition-all disabled:opacity-50"
+                  className="w-full rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 transition-all disabled:opacity-50"
                 >
                   {isPending ? "Guardando..." : "Guardar Cambios"}
                 </button>
@@ -493,7 +493,7 @@ export default function MaintenancePlanTable({
                   type="text"
                   required
                   placeholder="Ej: Cambio de Anticongelante"
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                 />
               </div>
 
@@ -509,7 +509,7 @@ export default function MaintenancePlanTable({
                     min="1000"
                     required
                     defaultValue="10000"
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-bold">
                     KM
@@ -528,7 +528,7 @@ export default function MaintenancePlanTable({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 rounded-xl bg-indigo-500 py-3 text-sm font-bold text-white hover:bg-indigo-400 transition-all disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-400 transition-all disabled:opacity-50"
                 >
                   {isPending ? "Guardando..." : "Agregar"}
                 </button>

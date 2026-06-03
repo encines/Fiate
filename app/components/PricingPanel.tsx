@@ -81,8 +81,8 @@ export default function PricingPanel() {
           </Link>
         </div>
 
-        <div className="rounded-[32px] border-2 border-indigo-500/50 bg-white dark:bg-zinc-900 p-8 flex flex-col shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl">
+        <div className="rounded-[32px] border-2 border-orange-500/50 bg-white dark:bg-zinc-900 p-8 flex flex-col shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl">
             Recomendado
           </div>
 
@@ -107,7 +107,7 @@ export default function PricingPanel() {
                 className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400"
               >
                 <svg
-                  className="text-indigo-500 h-5 w-5 shrink-0"
+                  className="text-orange-500 h-5 w-5 shrink-0"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
@@ -127,7 +127,7 @@ export default function PricingPanel() {
 
           <Link
             href="/pricing"
-            className="w-full py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all active:scale-[0.98] text-center"
+            className="w-full py-4 rounded-2xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm uppercase tracking-widest shadow-lg shadow-orange-500/25 transition-all active:scale-[0.98] text-center"
           >
             Actualizar a PRO
           </Link>

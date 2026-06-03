@@ -134,7 +134,7 @@ export default function DocumentManager({
         </div>
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full sm:w-auto rounded-2xl bg-indigo-500 px-8 py-3.5 text-sm font-bold text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-400 transition-all active:scale-95 flex items-center justify-center gap-2"
+          className="w-full sm:w-auto rounded-2xl bg-orange-500 px-8 py-3.5 text-sm font-bold text-white shadow-xl shadow-orange-500/20 hover:bg-orange-400 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Nuevo Documento
@@ -148,7 +148,7 @@ export default function DocumentManager({
             ? doc.displayUrls 
             : parseImages(doc.imageUrl);
           return (
-            <div key={doc.id} className="group relative rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-5 hover:border-indigo-500/50 transition-all overflow-hidden backdrop-blur-sm">
+            <div key={doc.id} className="group relative rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40 p-5 hover:border-orange-500/50 transition-all overflow-hidden backdrop-blur-sm">
               <div 
                 onClick={() => images.length > 0 && setShowLightbox({ images, index: 0 })}
                 className="aspect-[4/3] rounded-2xl bg-zinc-100 dark:bg-zinc-900 mb-4 overflow-hidden flex items-center justify-center relative cursor-pointer group/img"
@@ -212,7 +212,7 @@ export default function DocumentManager({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Tipo</label>
-                  <select name="type" className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none appearance-none">
+                  <select name="type" className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none appearance-none">
                     <option>Seguro</option>
                     <option>Tarjeta de Circulación</option>
                     <option>Factura</option>
@@ -260,7 +260,7 @@ export default function DocumentManager({
 
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setIsOpen(false)} className="flex-1 rounded-2xl px-4 py-3.5 text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900">Cancelar</button>
-                <button type="submit" disabled={isPending} className="flex-1 rounded-2xl bg-indigo-500 px-4 py-3.5 text-sm font-bold text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-400 disabled:opacity-50 active:scale-95 transition-all">
+                <button type="submit" disabled={isPending} className="flex-1 rounded-2xl bg-orange-500 px-4 py-3.5 text-sm font-bold text-white shadow-xl shadow-orange-500/20 hover:bg-orange-400 disabled:opacity-50 active:scale-95 transition-all">
                   {isPending ? "Guardando..." : "Guardar Documento"}
                 </button>
               </div>
@@ -315,7 +315,7 @@ export default function DocumentManager({
                   <button 
                     key={i}
                     onClick={() => setShowLightbox(prev => prev ? { ...prev, index: i } : null)}
-                    className={`h-2 rounded-full transition-all ${showLightbox.index === i ? "w-8 bg-indigo-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
+                    className={`h-2 rounded-full transition-all ${showLightbox.index === i ? "w-8 bg-orange-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
                   />
                 ))}
               </div>

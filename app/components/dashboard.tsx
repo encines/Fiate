@@ -161,8 +161,8 @@ export default function Dashboard({
           <polyline points="12 6 12 12 16 14" />
         </svg>
       ),
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
+      color: "text-orange-500",
+      bg: "bg-orange-500/10",
     },
   ];
 
@@ -344,7 +344,7 @@ export default function Dashboard({
             </div>
             <Link
               href="/services"
-              className="text-xs font-bold text-indigo-500 hover:text-indigo-600"
+              className="text-xs font-bold text-orange-500 hover:text-orange-600"
             >
               Ver todos
             </Link>

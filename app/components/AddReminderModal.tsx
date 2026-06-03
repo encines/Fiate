@@ -30,7 +30,7 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition-all"
+        className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400 transition-all"
       >
         + Nuevo Recordatorio
       </button>
@@ -59,7 +59,7 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
                   name="title" 
                   required
                   placeholder="Ej: Verificación vehicular, Pago de tenencia..."
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-400"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-zinc-400"
                 />
               </div>
  
@@ -69,7 +69,7 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
                   type="date" 
                   name="date" 
                   required
-                  className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                  className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all"
                 />
               </div>
  
@@ -79,7 +79,7 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
                   name="detail" 
                   rows={3}
                   placeholder="Ej: Agenda cita con anticipación..."
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none transition-all placeholder:text-zinc-400"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-3 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 resize-none transition-all placeholder:text-zinc-400"
                 ></textarea>
               </div>
  
@@ -100,7 +100,7 @@ export default function AddReminderModal({ userCarId }: AddReminderModalProps) {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-xl bg-indigo-500 px-8 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-400 disabled:opacity-50 active:scale-[0.98] transition-all"
+                  className="rounded-xl bg-orange-500 px-8 py-3 text-sm font-bold text-white shadow-xl shadow-orange-500/20 hover:bg-orange-400 disabled:opacity-50 active:scale-[0.98] transition-all"
                 >
                   {isPending ? "Creando..." : "Crear Recordatorio"}
                 </button>

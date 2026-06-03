@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
         <header className="mb-16 space-y-4">
           <h1 className="text-4xl font-medium tracking-tight text-zinc-900 dark:text-white sm:text-6xl">
             Política de <br />
-            <span className="text-indigo-500 italic font-black">Privacidad.</span>
+            <span className="text-orange-500 italic font-black">Privacidad.</span>
           </h1>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">Última actualización: Mayo 2026</p>
         </header>

@@ -98,7 +98,7 @@ export default async function MyCar({ car }: MyCarProps) {
                   <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">ID: {car.id.slice(-6)}</span>
                 </div>
                 <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl leading-none">
-                  {catalogCar?.model?.brand?.name || car.brand || "Genérico"} <span className="text-indigo-500 dark:text-indigo-400">{catalogCar?.model?.name || car.model || "Vehículo"}</span>
+                  {catalogCar?.model?.brand?.name || car.brand || "Genérico"} <span className="text-orange-500 dark:text-orange-400">{catalogCar?.model?.name || car.model || "Vehículo"}</span>
                 </h1>
                 <p className="max-w-md text-lg text-zinc-500 dark:text-zinc-400 font-medium">
                   Modelo {catalogCar?.year || car.year || ""} · {car.licensePlate || "Sin Placas"}
@@ -120,7 +120,7 @@ export default async function MyCar({ car }: MyCarProps) {
         {/* Quick Actions Panel */}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
           <a href="/services" className="flex items-center gap-4 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all group">
-            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+            <div className="h-10 w-10 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
             </div>
             <span className="text-xs font-black uppercase tracking-wider">Historial de Servicio</span>
@@ -145,11 +145,11 @@ export default async function MyCar({ car }: MyCarProps) {
             {/* Real Stats Grid */}
             <div className="grid gap-4 sm:grid-cols-2">
               {quickStatus.map((item) => (
-                <article key={item.label} className="glass-panel group relative flex flex-col justify-between overflow-hidden rounded-[32px] p-6 hover:border-indigo-500/30 transition-all">
+                <article key={item.label} className="glass-panel group relative flex flex-col justify-between overflow-hidden rounded-[32px] p-6 hover:border-orange-500/30 transition-all">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{item.label}</p>
-                      <div className="text-zinc-400 group-hover:text-indigo-500 transition-colors">{item.icon}</div>
+                      <div className="text-zinc-400 group-hover:text-orange-500 transition-colors">{item.icon}</div>
                     </div>
                     {item.type === "badge" ? (
                       <div className="flex items-center gap-2">
@@ -172,13 +172,13 @@ export default async function MyCar({ car }: MyCarProps) {
             </div>
 
             {/* Financial Insight */}
-            <div className="glass-panel rounded-[40px] p-8 border-l-8 border-indigo-500">
+            <div className="glass-panel rounded-[40px] p-8 border-l-8 border-orange-500">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-black uppercase tracking-tight">Inversión Total</h3>
                   <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Mantenimiento + Combustible</p>
                 </div>
-                <p className="text-3xl font-black text-indigo-500">${(totalServiceCost + totalFuelCost).toLocaleString()}</p>
+                <p className="text-3xl font-black text-orange-500">${(totalServiceCost + totalFuelCost).toLocaleString()}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-2xl">

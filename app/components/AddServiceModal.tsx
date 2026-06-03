@@ -104,7 +104,7 @@ export default function AddServiceModal({
           "flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-200 transition-colors hover:border-zinc-200 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/70"
         }
       >
-        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-indigo-500 dark:text-indigo-400">
+        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-orange-500/20 text-orange-500 dark:text-orange-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -176,7 +176,7 @@ export default function AddServiceModal({
                     <div className="space-y-6">
                       {/* Service Details Card */}
                       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-6 space-y-6">
-                        <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 font-medium uppercase text-xs tracking-widest">
+                        <div className="flex items-center gap-2 text-orange-500 dark:text-orange-400 font-medium uppercase text-xs tracking-widest">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
@@ -198,7 +198,7 @@ export default function AddServiceModal({
                         <div className="space-y-4">
                           <div className="flex items-center justify-between rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-4">
                             <div className="flex items-center gap-4">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 dark:text-orange-400">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="20"
@@ -242,7 +242,7 @@ export default function AddServiceModal({
                               defaultValue={
                                 new Date().toISOString().split("T")[0]
                               }
-                              className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                              className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                             />
                           </div>
                           <div className="space-y-2">
@@ -255,7 +255,7 @@ export default function AddServiceModal({
                                 name="kmAtService"
                                 required
                                 placeholder="Ej: 45,000"
-                                className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all pr-12"
+                                className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all pr-12"
                               />
                               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-zinc-500 font-bold">
                                 KM
@@ -270,7 +270,7 @@ export default function AddServiceModal({
                           </label>
                           <select
                             name="serviceType"
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all appearance-none"
+                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all appearance-none"
                           >
                             <option value="Mantenimiento General">
                               Mantenimiento General
@@ -287,7 +287,7 @@ export default function AddServiceModal({
 
                       {/* Tasks Performed Card */}
                       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 font-medium uppercase text-xs tracking-widest">
+                        <div className="flex items-center gap-2 text-orange-500 dark:text-orange-400 font-medium uppercase text-xs tracking-widest">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
@@ -309,7 +309,7 @@ export default function AddServiceModal({
                           {[...DEFAULT_TASKS, ...customTasks].map((task) => (
                             <label
                               key={task}
-                              className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${selectedTasks.includes(task) ? "border-indigo-500/50 bg-indigo-500/10 text-zinc-900 dark:text-white" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700"}`}
+                              className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 cursor-pointer transition-all ${selectedTasks.includes(task) ? "border-orange-500/50 bg-orange-500/10 text-zinc-900 dark:text-white" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700"}`}
                             >
                               <input
                                 type="checkbox"
@@ -318,7 +318,7 @@ export default function AddServiceModal({
                                 onChange={() => toggleTask(task)}
                               />
                               <div
-                                className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${selectedTasks.includes(task) ? "bg-indigo-500 border-indigo-500" : "border-zinc-300 dark:border-zinc-700"}`}
+                                className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${selectedTasks.includes(task) ? "bg-orange-500 border-orange-500" : "border-zinc-300 dark:border-zinc-700"}`}
                               >
                                 {selectedTasks.includes(task) && (
                                   <svg
@@ -347,12 +347,12 @@ export default function AddServiceModal({
                             value={customTaskInput}
                             onChange={(e) => setCustomTaskInput(e.target.value)}
                             placeholder="Otra tarea..."
-                            className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-xs text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                            className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-xs text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                           />
                           <button
                             type="button"
                             onClick={addCustomTask}
-                            className="rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-500 hover:text-white transition-colors"
+                            className="rounded-xl bg-orange-500/10 dark:bg-orange-500/20 px-4 py-2 text-xs font-bold text-orange-600 dark:text-orange-400 hover:bg-orange-600 dark:hover:bg-orange-500 hover:text-white transition-colors"
                           >
                             AGREGAR
                           </button>
@@ -364,7 +364,7 @@ export default function AddServiceModal({
                     <div className="space-y-6">
                       {/* Financial Card */}
                       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 font-medium uppercase text-xs tracking-widest">
+                        <div className="flex items-center gap-2 text-orange-500 dark:text-orange-400 font-medium uppercase text-xs tracking-widest">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
@@ -394,7 +394,7 @@ export default function AddServiceModal({
                               name="cost"
                               step="0.01"
                               placeholder="0.00"
-                              className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pl-8 pr-4 py-3 text-right text-2xl font-bold text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all"
+                              className="appearance-none w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pl-8 pr-4 py-3 text-right text-2xl font-bold text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all"
                             />
                           </div>
                         </div>
@@ -402,7 +402,7 @@ export default function AddServiceModal({
 
                       {/* Documentation Card */}
                       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-6 space-y-4">
-                        <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 font-medium uppercase text-xs tracking-widest">
+                        <div className="flex items-center gap-2 text-orange-500 dark:text-orange-400 font-medium uppercase text-xs tracking-widest">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
@@ -432,7 +432,7 @@ export default function AddServiceModal({
                               }
                             }}
                           />
-                          <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                          <div className="h-8 w-8 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
@@ -457,7 +457,7 @@ export default function AddServiceModal({
 
                       {/* Notes Card */}
                       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 p-6 space-y-3">
-                        <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 font-medium uppercase text-xs tracking-widest">
+                        <div className="flex items-center gap-2 text-orange-500 dark:text-orange-400 font-medium uppercase text-xs tracking-widest">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="18"
@@ -479,7 +479,7 @@ export default function AddServiceModal({
                           name="notes"
                           maxLength={500}
                           placeholder="Detalles adicionales..."
-                          className="w-full h-24 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 text-xs text-zinc-900 dark:text-white focus:border-indigo-500 focus:outline-none transition-all resize-none"
+                          className="w-full h-24 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 text-xs text-zinc-900 dark:text-white focus:border-orange-500 focus:outline-none transition-all resize-none"
                         ></textarea>
                       </div>
                     </div>
@@ -507,7 +507,7 @@ export default function AddServiceModal({
                     type="submit"
                     form="service-form"
                     disabled={isPending}
-                    className="order-1 sm:order-2 rounded-2xl bg-indigo-500 px-12 py-3 text-sm font-bold text-white shadow-xl shadow-indigo-500/20 hover:bg-indigo-400 disabled:opacity-50 transition-all active:scale-[0.98]"
+                    className="order-1 sm:order-2 rounded-2xl bg-orange-500 px-12 py-3 text-sm font-bold text-white shadow-xl shadow-orange-500/20 hover:bg-orange-400 disabled:opacity-50 transition-all active:scale-[0.98]"
                   >
                     {isPending ? "Guardando..." : "Guardar Registro"}
                   </button>

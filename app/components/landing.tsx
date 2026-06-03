@@ -38,7 +38,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white selection:bg-indigo-500/30 font-sans transition-colors duration-500">
+    <div className="relative min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white selection:bg-orange-500/30 font-sans transition-colors duration-500">
       {/* Texture Layer: Grid */}
       <div className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-10 [mask-image:radial-gradient(ellipse_at_center,black,transparent)] pointer-events-none" 
            style={{ 
@@ -52,14 +52,14 @@ export default function Landing() {
         <div className="flex flex-col items-center gap-24 lg:flex-row lg:items-start lg:justify-between">
           <section className="max-w-3xl space-y-12 text-center lg:text-left">
             <div className="inline-flex items-center gap-3 rounded-full border border-zinc-200 dark:border-white/5 bg-zinc-100/50 dark:bg-white/[0.03] px-4 py-2">
-              <span className="flex h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+              <span className="flex h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">Plataforma de Gestión Automotriz 2026</span>
             </div>
             
             <div className="space-y-8">
               <h1 className="text-6xl font-medium leading-[0.95] tracking-[-0.04em] sm:text-8xl lg:text-[100px]">
                 El arte de <br />
-                <span className="bg-gradient-to-r from-indigo-500 via-zinc-900 to-teal-500 dark:from-indigo-400 dark:via-white dark:to-teal-400 bg-clip-text text-transparent">cuidar tu motor.</span>
+                <span className="bg-gradient-to-r from-orange-500 via-zinc-900 to-teal-500 dark:from-orange-400 dark:via-white dark:to-teal-400 bg-clip-text text-transparent">cuidar tu motor.</span>
               </h1>
               <p className="mx-auto max-w-xl text-lg font-light leading-relaxed text-zinc-500 lg:mx-0 lg:text-xl">
                 Fiate redefine la relación con tu vehículo. Una suite de herramientas de precisión para quienes ven en su auto más que un medio de transporte.
@@ -97,13 +97,13 @@ export default function Landing() {
                     <p className="text-xs font-bold uppercase tracking-widest text-zinc-500 mt-1">Status: En Ruta</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-4xl font-black text-indigo-600 dark:text-indigo-500">95%</p>
+                    <p className="text-4xl font-black text-orange-600 dark:text-orange-500">95%</p>
                     <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">Health Score</p>
                   </div>
                 </div>
                 
                 <div className="h-2 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-                  <div className="h-full w-[95%] bg-gradient-to-r from-indigo-500 to-teal-400" />
+                  <div className="h-full w-[95%] bg-gradient-to-r from-orange-500 to-teal-400" />
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@ export default function Landing() {
           <div id="security" className="sr-only" />
           <div className="grid gap-20 lg:grid-cols-2 lg:items-center">
             <div className="space-y-8">
-              <h2 className="text-sm font-black uppercase tracking-[0.4em] text-indigo-600">Ingeniería de Software</h2>
+              <h2 className="text-sm font-black uppercase tracking-[0.4em] text-orange-600">Ingeniería de Software</h2>
               <h3 className="text-5xl font-medium tracking-tighter sm:text-7xl">
                 Diseñado para <br />
                 quienes exigen <br />
@@ -161,12 +161,12 @@ export default function Landing() {
 
       {/* Final CTA */}
       <div className="relative py-48 bg-white dark:bg-zinc-950 flex flex-col items-center justify-center overflow-hidden transition-colors">
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08),transparent_70%)]" />
         <div className="relative z-10 text-center space-y-12 max-w-4xl px-6">
           <h2 className="text-5xl font-medium tracking-tighter sm:text-8xl text-zinc-900 dark:text-white">
             La carretera <br /> te está esperando.
           </h2>
-          <Link href="/register" className="inline-flex h-20 items-center justify-center rounded-full bg-indigo-600 px-16 text-sm font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-indigo-500 hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(79,70,229,0.3)]">
+          <Link href="/register" className="inline-flex h-20 items-center justify-center rounded-full bg-orange-600 px-16 text-sm font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-orange-500 hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(249,115,22,0.3)]">
             Obtener Acceso Inmediato
           </Link>
           <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-600 dark:text-zinc-600">Únete a la nueva era del mantenimiento automotriz</p>
