@@ -92,7 +92,7 @@ export default function SiderBar({ cars = [], activeCarId = null, catalogCars = 
       <div className="p-6 flex flex-col h-full overflow-y-auto custom-scrollbar">
         <div className="mb-10 flex items-center gap-3 px-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 dark:bg-orange-500/20 overflow-hidden ring-1 ring-orange-500/20">
-            <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
+            <img src="/app-icon.png" alt="Fiate Logo" className="h-7 w-7 rounded-md object-cover" />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-black tracking-tighter text-zinc-900 dark:text-white leading-none">Fiate</span>

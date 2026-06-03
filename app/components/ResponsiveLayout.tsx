@@ -63,7 +63,7 @@ export default function ResponsiveLayout({
               </button>
               
               <div className="flex items-center gap-2">
-                <img src="/screen.png" alt="Fiate Logo" className="h-7 w-7 object-contain" />
+                <img src="/app-icon.png" alt="Fiate Logo" className="h-7 w-7 rounded-md object-cover" />
                 <div className="flex flex-col">
                   <h1 className="text-[10px] font-bold text-orange-500 uppercase tracking-[0.2em] leading-none">Fiate</h1>
                   <span className="text-sm font-semibold text-zinc-900 dark:text-white">Dashboard</span>

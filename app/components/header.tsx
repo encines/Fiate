@@ -29,11 +29,11 @@ export default function Header() {
         }`}>
           <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shrink-0">
             <Image
-              src="/screen.png"
+              src="/app-icon.png"
               alt="Fiate Logo"
               width={50}
               height={50}
-              className="h-8 w-auto object-contain brightness-110"
+              className="h-8 w-8 rounded-lg object-cover"
             />
             <span className="text-lg font-black uppercase tracking-tighter sm:text-xl text-zinc-900 dark:text-white">
               Fiate
