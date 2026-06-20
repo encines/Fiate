@@ -160,6 +160,18 @@ export default function Register() {
             >
               {isPending ? "Creando Cuenta..." : "Registrarse en Fiate"}
             </button>
+
+            <p className="text-center text-[10px] font-medium leading-relaxed text-zinc-500">
+              Al registrarte aceptas nuestros{" "}
+              <Link href="/terms" className="text-orange-500 hover:text-orange-400">
+                Términos de Servicio
+              </Link>{" "}
+              y{" "}
+              <Link href="/privacy" className="text-orange-500 hover:text-orange-400">
+                Política de Privacidad
+              </Link>
+              .
+            </p>
           </form>
 
           <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-zinc-600">

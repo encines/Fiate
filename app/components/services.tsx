@@ -596,7 +596,6 @@ export default function Services({
               aria-label="Detalles del servicio"
             >
               <div
-                data-lenis-prevent
                 className="relative w-full max-w-2xl rounded-[32px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 shadow-2xl animate-in fade-in zoom-in duration-200"
               >
                 <button

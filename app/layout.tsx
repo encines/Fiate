@@ -20,8 +20,6 @@ export const viewport: Viewport = {
   themeColor: "#F97316",
 };
 
-import SmoothScroll from "./components/SmoothScroll";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,10 +32,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider attribute="class" defaultTheme="dark"> 
-          <SmoothScroll>
-            {children}
-          </SmoothScroll>
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          {children}
           <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
       </body>

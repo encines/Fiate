@@ -107,6 +107,20 @@ export default function Login() {
               Crea tu cuenta
             </Link>
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+            <Link href="/privacy" className="hover:text-orange-400 transition-colors">
+              Privacidad
+            </Link>
+            <span>·</span>
+            <Link href="/terms" className="hover:text-orange-400 transition-colors">
+              Términos
+            </Link>
+            <span>·</span>
+            <Link href="/cookies" className="hover:text-orange-400 transition-colors">
+              Cookies
+            </Link>
+          </div>
         </div>
       </div>
     </div>

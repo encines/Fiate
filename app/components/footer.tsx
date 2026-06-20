@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { LEGAL_ROUTES, SUPPORT_EMAIL } from "@/lib/legal-routes";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -43,17 +44,17 @@ export default function Footer() {
             {
               title: "Soporte",
               links: [
-                { name: "Centro de Ayuda", href: "mailto:soporte@fiate.com" },
+                { name: "Centro de Ayuda", href: `mailto:${SUPPORT_EMAIL}` },
                 { name: "Contacto Directo", href: "https://wa.me/526671361586" },
               ],
             },
             {
               title: "Legal",
               links: [
-                { name: "Privacidad", href: "/privacy-policy" },
-                { name: "Términos", href: "/terms-of-service" },
-                { name: "Eliminar cuenta", href: "/delete-account" },
-                { name: "Cookies", href: "/cookies" },
+                { name: "Privacidad", href: LEGAL_ROUTES.privacy },
+                { name: "Términos", href: LEGAL_ROUTES.terms },
+                { name: "Eliminar cuenta", href: LEGAL_ROUTES.deleteAccount },
+                { name: "Cookies", href: LEGAL_ROUTES.cookies },
               ],
             },
           ].map((column) => (

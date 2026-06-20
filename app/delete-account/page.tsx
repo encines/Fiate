@@ -2,6 +2,7 @@
 
 import Header from "../components/header";
 import Footer from "../components/footer";
+import { SUPPORT_EMAIL } from "@/lib/legal-routes";
 
 export default function DeleteAccount() {
   return (
@@ -62,12 +63,13 @@ export default function DeleteAccount() {
 
           <div className="rounded-3xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 p-8 mt-16">
             <p className="text-sm">
-              Si no puedes acceder a tu cuenta, escríbenos a{" "}
+              Si tienes PRO activo, cancela primero tu suscripción en Google Play. Si no
+              puedes acceder a tu cuenta, escríbenos a{" "}
               <a
-                href="mailto:soporte@fiate.com"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="font-bold text-orange-600 dark:text-orange-400"
               >
-                soporte@fiate.com
+                {SUPPORT_EMAIL}
               </a>
               .
             </p>

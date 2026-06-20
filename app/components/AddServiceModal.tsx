@@ -132,7 +132,6 @@ export default function AddServiceModal({
             aria-label="Nuevo registro de servicio"
           >
             <div
-              data-lenis-prevent
               className="relative w-full h-full sm:h-auto max-w-5xl sm:max-h-[90vh] sm:rounded-[32px] border-0 sm:border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden flex flex-col transition-colors"
             >
               {/* Header - Fixed */}
